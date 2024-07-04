@@ -18,3 +18,19 @@ impl_unit_ops!(
     Mass,
     Time,
 );
+
+impl_unit_pow!(
+    Distance,
+    Energy,
+    Force,
+    Mass,
+    Time,
+);
+
+impl_unit_pow_n!(
+    Distance,
+    Energy,
+    Force,
+    Mass,
+    Time,
+);

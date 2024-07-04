@@ -37,7 +37,44 @@ pub trait UnitCompound: Unit {}
 pub trait UnitConcrete: Unit {}
 
 
+//region Exponential traits.
 pub trait UnitNonExp: Unit {}
+impl<U: UnitConcrete> UnitNonExp for U {}
+
+//region Positive exponents.
+pub trait CanSquare: Unit {
+    type Output: Unit;
+    fn squared(self) -> Self::Output;
+}
+
+pub trait CanCube: Unit {
+    type Output: Unit;
+    fn cubed(self) -> Self::Output;
+}
+
+pub trait CanPow<P: super::compound::unit_pow_n::Exp>: Unit {
+    type Output: Unit;
+    fn pow(self, exp: P) -> Self::Output;
+}
+//endregion
+
+//region Roots.
+pub trait CanSquareRoot: Unit {
+    type Output: Unit;
+    fn sqrt(self) -> Self::Output;
+}
+
+pub trait CanCubeRoot: Unit {
+    type Output: Unit;
+    fn cbrt(self) -> Self::Output;
+}
+
+pub trait CanRoot<R: super::compound::unit_pow_n::Exp>: Unit {
+    type Output: Unit;
+    fn root(self, root: R) -> Self::Output;
+}
+//endregion
+//endregion
 
 
 /// A compound Unit type with two sides.

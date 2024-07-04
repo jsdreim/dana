@@ -37,3 +37,42 @@ macro_rules! impl_unit_ops {
         $(impl_unit_ops!($unit $(<$($tv: $t0 $(+ $t1)*),+>)?);)+
     };
 }
+
+macro_rules! impl_unit_pow {
+    ($unit:ident $(<$($tv:ident: $t0:ident $(+ $t1:ident)*),+>)?) => {
+        impl$(<$($tv: $t0 $(+ $t1)*),+>)?
+        $crate::units::traits::CanSquare
+        for $unit$(<$($tv),+>)?
+        {
+            type Output = $crate::units::UnitSquared<Self>;
+            fn squared(self) -> Self::Output { Self::Output::new(self) }
+        }
+
+        impl$(<$($tv: $t0 $(+ $t1)*),+>)?
+        $crate::units::traits::CanCube
+        for $unit$(<$($tv),+>)?
+        {
+            type Output = $crate::units::UnitCubed<Self>;
+            fn cubed(self) -> Self::Output { Self::Output::new(self) }
+        }
+    };
+    ($($unit:ident $(<$($tv:ident: $t0:ident $(+ $t1:ident)*),+>)?),+$(,)?) => {
+        $(impl_unit_pow!($unit $(<$($tv: $t0 $(+ $t1)*),+>)?);)+
+    };
+}
+
+macro_rules! impl_unit_pow_n {
+    ($unit:ident $(<$($tv:ident: $t0:ident $(+ $t1:ident)*),+>)?) => {
+        impl<_P: $crate::units::compound::unit_pow_n::Exp $($(, $tv: $t0 $(+ $t1)*)+)?>
+        $crate::units::traits::CanPow<_P>
+        for $unit$(<$($tv),+>)? where
+            f64: ::num_traits::Pow<_P, Output=f64>,
+        {
+            type Output = $crate::units::UnitPow<Self, _P>;
+            fn pow(self, exp: _P) -> Self::Output { Self::Output::new(self, exp) }
+        }
+    };
+    ($($unit:ident $(<$($tv:ident: $t0:ident $(+ $t1:ident)*),+>)?),+$(,)?) => {
+        $(impl_unit_pow_n!($unit $(<$($tv: $t0 $(+ $t1)*),+>)?);)+
+    };
+}
