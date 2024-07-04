@@ -6,6 +6,11 @@ use crate::units::traits::*;
 Eq, PartialEq, Ord, PartialOrd)]
 pub struct UnitDiv<A: Unit, B: Unit>(pub A, pub B);
 
+impl<A: Unit, B: Unit> UnitDiv<A, B> {
+    pub const fn numerator(&self) -> A { self.0 }
+    pub const fn denominator(&self) -> B { self.1 }
+}
+
 impl<A: Unit, B: Unit> Unit for UnitDiv<A, B> {
     // type ScaleType = f64;
 

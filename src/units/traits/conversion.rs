@@ -82,7 +82,8 @@ pub trait ConvertRight<U: Unit>: UnitBinary {
 
 
 pub trait Cancel: Unit {
-    fn cancel<S: Scalar>(&self) -> S;
+    fn cancel(&self) -> f64;
+    fn cancel_to<S: Scalar>(&self) -> S { S::from_f64(self.cancel()).unwrap() }
 }
 
 pub trait CancelLeft: UnitBinary {

@@ -1,5 +1,6 @@
 use std::ops::{Add, Sub};
-use crate::{Scalar, units::traits::*};
+use num_traits::{Inv, Zero};
+use crate::{Scalar, units::{compound::*, traits::*}};
 
 
 type ScalarDefault = f64;
@@ -48,7 +49,6 @@ impl<U: Unit, V: Scalar> Quantity<U, V> {
         self.value * V::from_f64(factor).unwrap()
     }
 }
-
 
 /// Unit conversion.
 impl<U: Unit, V: Scalar + 'static> Quantity<U, V> {
@@ -152,10 +152,19 @@ impl<U: Unit, V: Scalar, W: Scalar> Sub<Quantity<U, W>> for Quantity<U, V> where
 
 
 // impl<U: Unit, V: Scalar> num_traits:: for Quantity<U, V> {}
-// impl<U: Unit, V: Scalar> num_traits::Signed for Quantity<U, V> {}
+
+impl<U: Unit, V: Scalar> Inv for Quantity<U, V> where
+    V: Inv, <V as Inv>::Output: Scalar,
+{
+    type Output = Quantity<PerUnit<U>, <V as Inv>::Output>;
+
+    fn inv(self) -> Self::Output {
+        Quantity::new(PerUnit(self.unit), self.value.inv())
+    }
+}
 
 
-impl<U: Unit, V: Scalar> num_traits::Zero for Quantity<U, V> {
+impl<U: Unit, V: Scalar> Zero for Quantity<U, V> {
     fn zero() -> Self {
         Self { value: V::zero(), unit: U::default() }
     }
