@@ -10,7 +10,7 @@ impl<A: Unit, B: Unit> Unit for UnitMul<A, B> {
     // type ScaleType = f64;
 
     fn scale(&self) -> f64 {
-        todo!()
+        self.0.scale() * self.1.scale()
     }
 }
 

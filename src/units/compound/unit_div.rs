@@ -1,7 +1,7 @@
 use crate::units::traits::*;
 
 
-/// Two units multiplied; For example, Newton-Meters.
+/// One unit divided by another; For example, Meters per Second.
 #[derive(Clone, Copy, Debug, Default, //Deserialize, Serialize,
 Eq, PartialEq, Ord, PartialOrd)]
 pub struct UnitDiv<A: Unit, B: Unit>(pub A, pub B);
@@ -10,7 +10,7 @@ impl<A: Unit, B: Unit> Unit for UnitDiv<A, B> {
     // type ScaleType = f64;
 
     fn scale(&self) -> f64 {
-        todo!()
+        self.0.scale() / self.1.scale()
     }
 }
 
