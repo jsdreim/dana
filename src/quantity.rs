@@ -50,6 +50,8 @@ impl<U: Unit, V: Scalar> Quantity<U, V> {
     }
 }
 
+
+//region Methods for unit operations.
 /// Unit conversion.
 impl<U: Unit, V: Scalar + 'static> Quantity<U, V> {
     /// Perform trait-based unit conversion. This kind of conversion can cross
@@ -87,8 +89,10 @@ impl<U: Unit, V: Scalar + 'static> Quantity<U, V> {
         self.unit.simplify::<V>().apply(self.value)
     }
 }
+//endregion
 
 
+//region Methods for value-equivalent unit reorganization.
 /// Associative Property.
 impl<U: Unit, V: Scalar> Quantity<U, V> {
     pub fn reassociate<W: Unit>(self) -> Quantity<W, V> where
@@ -122,6 +126,7 @@ impl<U: Unit, V: Scalar> Quantity<U, V> {
         U::Right: Commutative,
     { Quantity::new(self.unit.commute_right(), self.value) }
 }
+//endregion
 
 
 //region Standard library operators.
@@ -210,6 +215,8 @@ impl<U: Unit, V: Scalar, X: Scalar> Mul<X> for Quantity<U, V> where
 //endregion
 //endregion
 
+
+//region Traits from `num_traits`.
 // impl<U: Unit, V: Scalar> num_traits:: for Quantity<U, V> {}
 
 impl<U: Unit, V: Scalar> Inv for Quantity<U, V> where
@@ -232,3 +239,4 @@ impl<U: Unit, V: Scalar> Zero for Quantity<U, V> {
         self.value.is_zero()
     }
 }
+//endregion
