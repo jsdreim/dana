@@ -23,6 +23,3 @@ impl UnitConcrete for Force {}
 impl Default for Force {
     fn default() -> Self { Self::Newton }
 }
-
-
-impl_mul_unit_scalar!(Force);

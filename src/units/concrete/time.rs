@@ -27,6 +27,3 @@ impl UnitConcrete for Time {}
 impl Default for Time {
     fn default() -> Self { Self::Second }
 }
-
-
-impl_mul_unit_scalar!(Time);

@@ -23,6 +23,3 @@ impl UnitConcrete for Energy {}
 impl Default for Energy {
     fn default() -> Self { Self::Joule }
 }
-
-
-impl_mul_unit_scalar!(Energy);

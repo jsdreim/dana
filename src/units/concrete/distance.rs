@@ -27,6 +27,3 @@ impl UnitConcrete for Distance {}
 impl Default for Distance {
     fn default() -> Self { Self::Meter }
 }
-
-
-impl_mul_unit_scalar!(Distance);

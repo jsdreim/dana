@@ -25,6 +25,3 @@ impl UnitConcrete for Mass {}
 impl Default for Mass {
     fn default() -> Self { Self::Kilogram }
 }
-
-
-impl_mul_unit_scalar!(Mass);
