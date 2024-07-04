@@ -1,4 +1,4 @@
-use std::ops::{Add, Sub};
+use std::ops::{Add, Div, Mul, Sub};
 use num_traits::{Inv, Zero};
 use crate::{Scalar, units::{compound::*, traits::*}};
 
@@ -124,12 +124,14 @@ impl<U: Unit, V: Scalar> Quantity<U, V> {
 }
 
 
-impl<U: Unit, V: Scalar, W: Scalar> Add<Quantity<U, W>> for Quantity<U, V> where
-    V: Add<W>, <V as Add<W>>::Output: Scalar,
+//region Standard library operators.
+//region Addition/subtraction between same-unit quantities.
+impl<U: Unit, V: Scalar, X: Scalar> Add<Quantity<U, X>> for Quantity<U, V> where
+    V: Add<X>, <V as Add<X>>::Output: Scalar,
 {
-    type Output = Quantity<U, <V as Add<W>>::Output>;
+    type Output = Quantity<U, <V as Add<X>>::Output>;
 
-    fn add(self, rhs: Quantity<U, W>) -> Self::Output {
+    fn add(self, rhs: Quantity<U, X>) -> Self::Output {
         Quantity {
             value: self.value + rhs.value_as(self.unit),
             unit: self.unit,
@@ -137,19 +139,76 @@ impl<U: Unit, V: Scalar, W: Scalar> Add<Quantity<U, W>> for Quantity<U, V> where
     }
 }
 
-impl<U: Unit, V: Scalar, W: Scalar> Sub<Quantity<U, W>> for Quantity<U, V> where
-    V: Sub<W>, <V as Sub<W>>::Output: Scalar,
+impl<U: Unit, V: Scalar, X: Scalar> Sub<Quantity<U, X>> for Quantity<U, V> where
+    V: Sub<X>, <V as Sub<X>>::Output: Scalar,
 {
-    type Output = Quantity<U, <V as Sub<W>>::Output>;
+    type Output = Quantity<U, <V as Sub<X>>::Output>;
 
-    fn sub(self, rhs: Quantity<U, W>) -> Self::Output {
+    fn sub(self, rhs: Quantity<U, X>) -> Self::Output {
         Quantity {
             value: self.value - rhs.value_as(self.unit),
             unit: self.unit,
         }
     }
 }
+//endregion
 
+//region Division/multiplication between quantities.
+impl<U: Unit, V: Scalar, W: Unit, X: Scalar> Div<Quantity<W, X>> for Quantity<U, V> where
+    V: Div<X>, <V as Div<X>>::Output: Scalar,
+{
+    type Output = Quantity<UnitDiv<U, W>, <V as Div<X>>::Output>;
+
+    fn div(self, rhs: Quantity<W, X>) -> Self::Output {
+        Quantity {
+            value: self.value / rhs.value,
+            unit: UnitDiv(self.unit, rhs.unit),
+        }
+    }
+}
+
+impl<U: Unit, V: Scalar, W: Unit, X: Scalar> Mul<Quantity<W, X>> for Quantity<U, V> where
+    V: Mul<X>, <V as Mul<X>>::Output: Scalar,
+{
+    type Output = Quantity<UnitMul<U, W>, <V as Mul<X>>::Output>;
+
+    fn mul(self, rhs: Quantity<W, X>) -> Self::Output {
+        Quantity {
+            value: self.value * rhs.value,
+            unit: UnitMul(self.unit, rhs.unit),
+        }
+    }
+}
+//endregion
+
+//region Division/multiplication between quantities and scalars.
+impl<U: Unit, V: Scalar, X: Scalar> Div<X> for Quantity<U, V> where
+    V: Div<X>, <V as Div<X>>::Output: Scalar,
+{
+    type Output = Quantity<U, <V as Div<X>>::Output>;
+
+    fn div(self, rhs: X) -> Self::Output {
+        Quantity {
+            value: self.value / rhs,
+            unit: self.unit,
+        }
+    }
+}
+
+impl<U: Unit, V: Scalar, X: Scalar> Mul<X> for Quantity<U, V> where
+    V: Mul<X>, <V as Mul<X>>::Output: Scalar,
+{
+    type Output = Quantity<U, <V as Mul<X>>::Output>;
+
+    fn mul(self, rhs: X) -> Self::Output {
+        Quantity {
+            value: self.value * rhs,
+            unit: self.unit,
+        }
+    }
+}
+//endregion
+//endregion
 
 // impl<U: Unit, V: Scalar> num_traits:: for Quantity<U, V> {}
 
