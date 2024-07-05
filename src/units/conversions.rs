@@ -16,7 +16,7 @@ impl ConvertFrom<Energy> for Mass {
 
 #[test]
 fn test_e_mc2() {
-    let kg = quantity!(1.0 Mass::Kilogram);
+    let kg = quantity!(1.0 kg);
     let e = kg.convert_to(Energy::Joule);
 
     assert!((89.8e15..89.9e15).contains(&e.value));

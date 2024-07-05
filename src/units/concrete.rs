@@ -22,3 +22,15 @@ concrete_types!(
     mass::Mass,
     time::Time,
 );
+
+
+#[macro_export]
+macro_rules! unit_from_symbol {
+    (m) => { $crate::units::Distance::Meter };
+    (J) => { $crate::units::Energy::Joule };
+    (N) => { $crate::units::Force::Newton };
+    (kg) => { $crate::units::Mass::Kilogram };
+    (s) => { $crate::units::Time::Second };
+
+    ($t:tt) => { $t };
+}

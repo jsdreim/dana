@@ -1,55 +1,56 @@
 #[macro_export]
 macro_rules! utype {
     //  Unpack braces.
-    (($($t:tt)+)) => { utype!($($t)+) };
-    ({$($t:tt)+}) => { utype!($($t)+) };
+    (($($t:tt)+)) => { $crate::utype!($($t)+) };
+    ({$($t:tt)+}) => { $crate::utype!($($t)+) };
 
     //  Pass through a single path.
     ($p:path) => { $p };
 
     //  Exponents.
-    ($a:tt $(::$b:tt)* ^ -1) => { $crate::units::PerUnit<utype!($a $(::$b)*)> };
-    ($a:tt $(::$b:tt)* ^ 2) => { $crate::units::UnitSquared<utype!($a $(::$b)*)> };
-    ($a:tt $(::$b:tt)* ^ 3) => { $crate::units::UnitCubed<utype!($a $(::$b)*)> };
-    ($a:tt $(::$b:tt)* ^ $e:tt) => { $crate::units::UnitPow<utype!($a $(::$b)*)> };
+    ($a:tt $(::$b:tt)* ^ -1)    => { $crate::units::PerUnit     <$crate::utype!($a $(::$b)*)> };
+    ($a:tt $(::$b:tt)* ^ 2)     => { $crate::units::UnitSquared <$crate::utype!($a $(::$b)*)> };
+    ($a:tt $(::$b:tt)* ^ 3)     => { $crate::units::UnitCubed   <$crate::utype!($a $(::$b)*)> };
+    ($a:tt $(::$b:tt)* ^ $e:tt) => { $crate::units::UnitPow     <$crate::utype!($a $(::$b)*)> };
 
     //  Simpler operations.
     ($a:tt $(::$b:tt)* $(^ $e:tt)? / $($z:tt)*) => {
-        $crate::units::UnitDiv<utype!($a $(::$b)* $(^ $e)?), utype!($($z)*)>
+        $crate::units::UnitDiv<$crate::utype!($a $(::$b)* $(^ $e)?), $crate::utype!($($z)*)>
     };
     ($a:tt $(::$b:tt)* $(^ $e:tt)? * $($z:tt)*) => {
-        $crate::units::UnitMul<utype!($a $(::$b)* $(^ $e)?), utype!($($z)*)>
+        $crate::units::UnitMul<$crate::utype!($a $(::$b)* $(^ $e)?), $crate::utype!($($z)*)>
     };
 }
 
 #[macro_export]
 macro_rules! unit {
     //  Unpack braces.
-    (($($t:tt)+)) => { unit!($($t)+) };
-    ({$($t:tt)+}) => { unit!($($t)+) };
+    (($($t:tt)+)) => { $crate::unit!($($t)+) };
+    ({$($t:tt)+}) => { $crate::unit!($($t)+) };
 
-    //  Pass through a single path.
+    //  Pass through a single token or path.
+    ($u:tt) => { $crate::unit_from_symbol!($u) };
     ($p:path) => { $p };
 
     //  Exponents.
-    ($a:tt $(::$b:tt)* ^ -1) => { $crate::units::PerUnit(unit!($a $(::$b)*)) };
-    ($a:tt $(::$b:tt)* ^ 2) => { $crate::units::UnitSquared(unit!($a $(::$b)*)) };
-    ($a:tt $(::$b:tt)* ^ 3) => { $crate::units::UnitCubed(unit!($a $(::$b)*)) };
-    ($a:tt $(::$b:tt)* ^ $e:tt) => { $crate::units::UnitPow(unit!($a $(::$b)*), $e) };
+    ($a:tt $(::$b:tt)* ^ -1)    => { $crate::units::PerUnit     ($crate::unit!($a $(::$b)*)) };
+    ($a:tt $(::$b:tt)* ^ 2)     => { $crate::units::UnitSquared ($crate::unit!($a $(::$b)*)) };
+    ($a:tt $(::$b:tt)* ^ 3)     => { $crate::units::UnitCubed   ($crate::unit!($a $(::$b)*)) };
+    ($a:tt $(::$b:tt)* ^ $e:tt) => { $crate::units::UnitPow     ($crate::unit!($a $(::$b)*), $e) };
 
     //  Simpler operations.
     ($a:tt $(::$b:tt)* $(^ $e:tt)? / $($z:tt)*) => {
-        $crate::units::UnitDiv(unit!($a $(::$b)* $(^ $e)?), unit!($($z)*))
+        $crate::units::UnitDiv($crate::unit!($a $(::$b)* $(^ $e)?), $crate::unit!($($z)*))
     };
     ($a:tt $(::$b:tt)* $(^ $e:tt)? * $($z:tt)*) => {
-        $crate::units::UnitMul(unit!($a $(::$b)* $(^ $e)?), unit!($($z)*))
+        $crate::units::UnitMul($crate::unit!($a $(::$b)* $(^ $e)?), $crate::unit!($($z)*))
     };
 }
 
 #[macro_export]
 macro_rules! qtype {
-    ($ty:ty: $($t:tt)*) => {$crate::Quantity<utype!($($t)*), $ty>};
-    ($($t:tt)*) => {$crate::Quantity<utype!($($t)*)>};
+    ($ty:ty: $($t:tt)*) => {$crate::Quantity<$crate::utype!($($t)*), $ty>};
+    ($($t:tt)*) => {$crate::Quantity<$crate::utype!($($t)*)>};
 }
 
 #[macro_export]
@@ -57,7 +58,7 @@ macro_rules! quantity {
     ($val:tt $($t:tt)*) => {
         $crate::Quantity {
             value: $val,
-            unit: unit!($($t)*),
+            unit: $crate::unit!($($t)*),
         }
     };
 }
