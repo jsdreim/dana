@@ -6,13 +6,14 @@ use crate::units::traits::*;
 type ExpDefault = f64;
 
 
-pub trait Exp: Num + Copy {}
-impl<T: Num + Copy> Exp for T {}
+pub trait Exp: Num + Copy + std::fmt::Display {}
+impl<T: Num + Copy + std::fmt::Display> Exp for T {}
 
 
 /// A unit raised to an arbitrary power.
-#[derive(Clone, Copy, Debug, //Deserialize, Serialize,
+#[derive(Clone, Copy, Debug,
 Eq, PartialEq, Ord, PartialOrd)]
+#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 pub struct UnitPow<U: Unit, P: Exp = ExpDefault>(pub U, pub P);
 
 impl<U: Unit, P: Exp> UnitPow<U, P> {
@@ -33,6 +34,12 @@ impl<U: Unit, P: Exp> Unit for UnitPow<U, P> where
 
     fn scale(&self) -> f64 {
         self.0.scale().pow(self.1)
+    }
+}
+
+impl<U: Unit, P: Exp> std::fmt::Display for UnitPow<U, P> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{:#}^{}", self.base(), self.exponent())
     }
 }
 

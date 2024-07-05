@@ -1,5 +1,6 @@
+use std::fmt::Display;
 use num_traits::{FromPrimitive, Num};
 
 
-pub trait Scalar: FromPrimitive + Num + Clone {}
-impl<N: FromPrimitive + Num + Clone> Scalar for N {}
+pub trait Scalar: FromPrimitive + Num + Clone + Display {}
+impl<N: FromPrimitive + Num + Clone + Display> Scalar for N {}

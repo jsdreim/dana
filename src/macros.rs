@@ -63,6 +63,20 @@ macro_rules! quantity {
 }
 
 
+macro_rules! impl_unit_concrete {
+    ($unit:ident) => {
+        impl ::std::fmt::Display for $unit {
+            fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+                <str as std::fmt::Display>::fmt(self.symbol(), f)
+            }
+        }
+    };
+    ($($unit:ident),+$(,)?) => {
+        $(impl_unit_concrete!($unit);)+
+    };
+}
+
+
 macro_rules! impl_unit_ops {
     ($unit:ident $(<$($tv:ident: $t0:ident $(+ $t1:ident)*),+>)?) => {
         /*/// Unit multiplication by scalar.

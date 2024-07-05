@@ -9,7 +9,7 @@ pub use commutative::*;
 pub use conversion::*;
 
 
-pub trait Unit: Copy + Default + PartialEq {
+pub trait Unit: Copy + Default + std::fmt::Display + PartialEq {
     // type ScaleType: crate::Scalar;
 
     fn scale(&self) -> f64;
@@ -34,7 +34,9 @@ pub trait Unit: Copy + Default + PartialEq {
 
 
 pub trait UnitCompound: Unit {}
-pub trait UnitConcrete: Unit {}
+pub trait UnitConcrete: Unit {
+    fn symbol(&self) -> &'static str;
+}
 
 
 //region Exponential traits.

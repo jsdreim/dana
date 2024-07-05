@@ -22,7 +22,16 @@ impl Unit for Distance {
     }
 }
 
-impl UnitConcrete for Distance {}
+impl UnitConcrete for Distance {
+    fn symbol(&self) -> &'static str {
+        match self {
+            Self::Millimeter => "mm",
+            Self::Centimeter => "cm",
+            Self::Meter => "m",
+            Self::Kilometer => "km",
+        }
+    }
+}
 
 impl Default for Distance {
     fn default() -> Self { Self::Meter }

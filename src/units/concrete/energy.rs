@@ -18,7 +18,14 @@ impl Unit for Energy {
     }
 }
 
-impl UnitConcrete for Energy {}
+impl UnitConcrete for Energy {
+    fn symbol(&self) -> &'static str {
+        match self {
+            Self::Joule => "J",
+            Self::Kilojoule => "kJ",
+        }
+    }
+}
 
 impl Default for Energy {
     fn default() -> Self { Self::Joule }

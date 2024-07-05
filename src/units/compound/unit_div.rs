@@ -2,8 +2,9 @@ use crate::units::traits::*;
 
 
 /// One unit divided by another; For example, Meters per Second.
-#[derive(Clone, Copy, Debug, Default, //Deserialize, Serialize,
+#[derive(Clone, Copy, Debug, Default,
 Eq, PartialEq, Ord, PartialOrd)]
+#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 pub struct UnitDiv<A: Unit, B: Unit>(pub A, pub B);
 
 impl<A: Unit, B: Unit> UnitDiv<A, B> {
@@ -19,11 +20,15 @@ impl<A: Unit, B: Unit> Unit for UnitDiv<A, B> {
     }
 }
 
-// impl<A: Unit, B: Unit> std::fmt::Display for UnitMul<A, B> {
-//     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-//         write!(f, "{}/{}", self.0, self.1)
-//     }
-// }
+impl<A: Unit, B: Unit> std::fmt::Display for UnitDiv<A, B> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        if f.alternate() {
+            write!(f, "({:#}/{:#})", self.0, self.1)
+        } else {
+            write!(f, "{:#}/{:#}", self.0, self.1)
+        }
+    }
+}
 
 
 impl<A: Unit, B: Unit> UnitCompound for UnitDiv<A, B> {}

@@ -22,7 +22,16 @@ impl Unit for Time {
     }
 }
 
-impl UnitConcrete for Time {}
+impl UnitConcrete for Time {
+    fn symbol(&self) -> &'static str {
+        match self {
+            Self::Millisecond => "ms",
+            Self::Second => "s",
+            Self::Minute => "min",
+            Self::Hour => "h",
+        }
+    }
+}
 
 impl Default for Time {
     fn default() -> Self { Self::Second }

@@ -262,3 +262,26 @@ impl<U: Unit, V: Scalar> Zero for Quantity<U, V> {
     }
 }
 //endregion
+
+
+macro_rules! impl_fmt {
+    ($($fmt:path),+$(,)?) => {$(
+    impl<U: Unit, V: Scalar> $fmt for Quantity<U, V> where V: $fmt {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            <V as $fmt>::fmt(&self.value, f)?;
+            write!(f, " {}", self.unit)
+        }
+    }
+    )+};
+}
+
+impl_fmt!(
+    std::fmt::Display,
+    std::fmt::Octal,
+    std::fmt::LowerHex,
+    std::fmt::UpperHex,
+    std::fmt::Pointer,
+    std::fmt::Binary,
+    std::fmt::LowerExp,
+    std::fmt::UpperExp,
+);

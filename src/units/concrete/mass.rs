@@ -20,7 +20,15 @@ impl Unit for Mass {
     }
 }
 
-impl UnitConcrete for Mass {}
+impl UnitConcrete for Mass {
+    fn symbol(&self) -> &'static str {
+        match self {
+            Self::Gram => "g",
+            Self::Kilogram => "kg",
+            Self::MetricTon => "T",
+        }
+    }
+}
 
 impl Default for Mass {
     fn default() -> Self { Self::Kilogram }

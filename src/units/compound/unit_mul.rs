@@ -2,8 +2,9 @@ use crate::units::traits::*;
 
 
 /// Two units multiplied; For example, Newton-Meters.
-#[derive(Clone, Copy, Debug, Default, //Deserialize, Serialize,
+#[derive(Clone, Copy, Debug, Default,
 Eq, PartialEq, Ord, PartialOrd)]
+#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 pub struct UnitMul<A: Unit, B: Unit>(pub A, pub B);
 
 impl<A: Unit, B: Unit> Unit for UnitMul<A, B> {
@@ -14,11 +15,15 @@ impl<A: Unit, B: Unit> Unit for UnitMul<A, B> {
     }
 }
 
-// impl<A: Unit, B: Unit> std::fmt::Display for UnitMul<A, B> {
-//     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-//         write!(f, "{}{}", self.0, self.1)
-//     }
-// }
+impl<A: Unit, B: Unit> std::fmt::Display for UnitMul<A, B> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        if f.alternate() {
+            write!(f, "({:#}*{:#})", self.0, self.1)
+        } else {
+            write!(f, "{:#}*{:#}", self.0, self.1)
+        }
+    }
+}
 
 
 impl<A: Unit, B: Unit> UnitCompound for UnitMul<A, B> {}
