@@ -213,6 +213,28 @@ impl<U: Unit, V: Scalar, X: Scalar> Mul<X> for Quantity<U, V> where
     }
 }
 //endregion
+
+//region Division/multiplication between quantities and pure units.
+impl<U: Unit, V: Scalar> Quantity<U, V> {
+    pub fn div_unit<W: Unit>(self, rhs: W) -> Quantity<<U as Div<W>>::Output, V> where
+        U: Div<W>, <U as Div<W>>::Output: Unit,
+    {
+        Quantity {
+            value: self.value,
+            unit: self.unit / rhs,
+        }
+    }
+
+    pub fn mul_unit<W: Unit>(self, rhs: W) -> Quantity<<U as Mul<W>>::Output, V> where
+        U: Mul<W>, <U as Mul<W>>::Output: Unit,
+    {
+        Quantity {
+            value: self.value,
+            unit: self.unit * rhs,
+        }
+    }
+}
+//endregion
 //endregion
 
 
