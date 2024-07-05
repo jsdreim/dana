@@ -9,7 +9,7 @@ pub use traits::{Unit, UnitCompound, UnitConcrete};
 
 
 pub type Speed = utype!(Distance / Time);
-pub type Acceleration = utype!(Speed / Time);
+pub type Accel = utype!(Speed / Time);
 pub type Momentum = utype!(Mass * Speed);
 
 pub type Area = utype!(Distance^2);
@@ -40,7 +40,7 @@ macro_rules! utype_from_symbol {
 
     //  Compound.
     (v) => { $crate::units::Speed };
-    (a) => { $crate::units::Acceleration };
+    (a) => { $crate::units::Accel };
     (p) => { $crate::units::Momentum };
 
     // (A) => { $crate::units::Area };
@@ -55,5 +55,5 @@ macro_rules! utype_from_symbol {
 #[test]
 pub fn test_macros() {
     let _accel_1: utype!(l/t/t) = unit!((m/s)/s);
-    let _accel_2: Acceleration = unit!(m/s/s);
+    let _accel_2: Accel = unit!(m/s/s);
 }

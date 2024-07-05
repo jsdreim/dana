@@ -31,10 +31,21 @@ macro_rules! unit_from_symbol {
         let $t = $crate::unit_from_symbol!(@$t);
         $t
     }};
+
+    (@mm) => { $crate::units::Distance::Millimeter };
+    (@cm) => { $crate::units::Distance::Centimeter };
     (@m) => { $crate::units::Distance::Meter };
+    (@km) => { $crate::units::Distance::Kilometer };
+
     (@J) => { $crate::units::Energy::Joule };
+    (@kJ) => { $crate::units::Energy::Kilojoule };
+
     (@N) => { $crate::units::Force::Newton };
+    (@kN) => { $crate::units::Force::Kilonewton };
+
+    (@g) => { $crate::units::Mass::Gram };
     (@kg) => { $crate::units::Mass::Kilogram };
+
     (@s) => { $crate::units::Time::Second };
 
     (@$t:tt) => { $t };

@@ -137,6 +137,7 @@ macro_rules! qtype {
 
 #[macro_export]
 macro_rules! quantity {
+    ($qty:tt as $($t:tt)*) => { $qty.convert_to($crate::unit!($($t)*)) };
     ($val:tt $($t:tt)*) => {
         $crate::Quantity {
             value: $val,

@@ -26,7 +26,7 @@ pub const G: qtype!(GravParam / Mass) = quantity!(6.6743e-11 m^3/s^2/kg);
 ///
 /// [m]: Distance::Meter
 /// [s]: Time::Second
-pub const GFORCE: qtype!(Acceleration) = quantity!(9.80665 m/s/s);
+pub const GFORCE: qtype!(Accel) = quantity!(9.80665 m/s/s);
 
 
 #[test]
