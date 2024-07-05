@@ -1,3 +1,68 @@
+#[macro_export]
+macro_rules! utype {
+    //  Unpack braces.
+    (($($t:tt)+)) => { utype!($($t)+) };
+    ({$($t:tt)+}) => { utype!($($t)+) };
+
+    //  Pass through a single path.
+    ($p:path) => { $p };
+
+    //  Exponents.
+    ($a:tt $(::$b:tt)* ^ -1) => { $crate::units::PerUnit<utype!($a $(::$b)*)> };
+    ($a:tt $(::$b:tt)* ^ 2) => { $crate::units::UnitSquared<utype!($a $(::$b)*)> };
+    ($a:tt $(::$b:tt)* ^ 3) => { $crate::units::UnitCubed<utype!($a $(::$b)*)> };
+    ($a:tt $(::$b:tt)* ^ $e:tt) => { $crate::units::UnitPow<utype!($a $(::$b)*)> };
+
+    //  Simpler operations.
+    ($a:tt $(::$b:tt)* $(^ $e:tt)? / $($z:tt)*) => {
+        $crate::units::UnitDiv<utype!($a $(::$b)* $(^ $e)?), utype!($($z)*)>
+    };
+    ($a:tt $(::$b:tt)* $(^ $e:tt)? * $($z:tt)*) => {
+        $crate::units::UnitMul<utype!($a $(::$b)* $(^ $e)?), utype!($($z)*)>
+    };
+}
+
+#[macro_export]
+macro_rules! unit {
+    //  Unpack braces.
+    (($($t:tt)+)) => { unit!($($t)+) };
+    ({$($t:tt)+}) => { unit!($($t)+) };
+
+    //  Pass through a single path.
+    ($p:path) => { $p };
+
+    //  Exponents.
+    ($a:tt $(::$b:tt)* ^ -1) => { $crate::units::PerUnit(unit!($a $(::$b)*)) };
+    ($a:tt $(::$b:tt)* ^ 2) => { $crate::units::UnitSquared(unit!($a $(::$b)*)) };
+    ($a:tt $(::$b:tt)* ^ 3) => { $crate::units::UnitCubed(unit!($a $(::$b)*)) };
+    ($a:tt $(::$b:tt)* ^ $e:tt) => { $crate::units::UnitPow(unit!($a $(::$b)*), $e) };
+
+    //  Simpler operations.
+    ($a:tt $(::$b:tt)* $(^ $e:tt)? / $($z:tt)*) => {
+        $crate::units::UnitDiv(unit!($a $(::$b)* $(^ $e)?), unit!($($z)*))
+    };
+    ($a:tt $(::$b:tt)* $(^ $e:tt)? * $($z:tt)*) => {
+        $crate::units::UnitMul(unit!($a $(::$b)* $(^ $e)?), unit!($($z)*))
+    };
+}
+
+#[macro_export]
+macro_rules! qtype {
+    ($ty:ty: $($t:tt)*) => {$crate::Quantity<utype!($($t)*), $ty>};
+    ($($t:tt)*) => {$crate::Quantity<utype!($($t)*)>};
+}
+
+#[macro_export]
+macro_rules! quantity {
+    ($val:tt $($t:tt)*) => {
+        $crate::Quantity {
+            value: $val,
+            unit: unit!($($t)*),
+        }
+    };
+}
+
+
 macro_rules! impl_unit_ops {
     ($unit:ident $(<$($tv:ident: $t0:ident $(+ $t1:ident)*),+>)?) => {
         /*/// Unit multiplication by scalar.

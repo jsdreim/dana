@@ -7,15 +7,15 @@ pub use concrete::*;
 pub use traits::{Unit, UnitCompound, UnitConcrete};
 
 
-pub type Speed = UnitDiv<Distance, Time>;
-pub type Acceleration = UnitDiv<Speed, Time>;
-pub type Momentum = UnitMul<Mass, Speed>;
+pub type Speed = utype!(Distance / Time);
+pub type Acceleration = utype!(Speed / Time);
+pub type Momentum = utype!(Mass * Speed);
 
-pub type Area = UnitSquared<Distance>;
-pub type Volume = UnitCubed<Distance>;
+pub type Area = utype!(Distance^2);
+pub type Volume = utype!(Distance^3);
 
-pub type Pressure = UnitDiv<Force, Area>;
-pub type Density = UnitDiv<Mass, Volume>;
-pub type Torque = UnitMul<Distance, Force>;
+pub type Pressure = utype!(Force / Area);
+pub type Density = utype!(Mass / Volume);
+pub type Torque = utype!(Distance * Force);
 
-pub type GravParam = UnitDiv<Volume, UnitSquared<Time>>;
+pub type GravParam = utype!(Distance^3 / Time^2);
