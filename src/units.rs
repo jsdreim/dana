@@ -20,3 +20,10 @@ pub type Density = utype!(Mass / Volume);
 pub type Torque = utype!(Distance * Force);
 
 pub type GravParam = utype!(Distance^3 / Time^2);
+
+
+#[test]
+pub fn test_macros() {
+    let _accel_1: utype!(Distance / Time / Time) = unit!((m/s)/s);
+    let _accel_2: Acceleration = unit!(m/s/s);
+}

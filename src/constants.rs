@@ -5,31 +5,28 @@ use crate::units::*;
 ///
 /// Unit: [m]/[s]
 ///
-/// [m]: Meter
-/// [s]: Second
-pub const C: qtype!(Speed)
-= quantity!(299_792_458.0 m/s);
+/// [m]: Distance::Meter
+/// [s]: Time::Second
+pub const C: qtype!(Speed) = quantity!(299_792_458.0 m/s);
 
 
 /// Gravitational constant.
 ///
 /// Unit: ([m]³/[s]²)/[kg]
 ///
-/// [m]: Meter
-/// [s]: Second
-/// [kg]: Kilogram
-pub const G: qtype!(GravParam / Mass)
-= quantity!(6.6743e-11 (m^3/s^2)/kg);
+/// [m]: Distance::Meter
+/// [s]: Time::Second
+/// [kg]: Mass::Kilogram
+pub const G: qtype!(GravParam / Mass) = quantity!(6.6743e-11 m^3/s^2/kg);
 
 
 /// One "G"; The average acceleration due to gravity at the surface of Earth.
 ///
 /// Unit: [m]/[s]/[s]
 ///
-/// [m]: Meter
-/// [s]: Second
-pub const GFORCE: qtype!(Acceleration)
-= quantity!(9.80665 (m/s)/s);
+/// [m]: Distance::Meter
+/// [s]: Time::Second
+pub const GFORCE: qtype!(Acceleration) = quantity!(9.80665 m/s/s);
 
 
 #[test]
