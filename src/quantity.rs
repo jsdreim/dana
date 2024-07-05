@@ -57,28 +57,28 @@ impl<U: Unit, V: Scalar + 'static> Quantity<U, V> {
     /// Perform trait-based unit conversion. This kind of conversion can cross
     ///     between [`Unit`] types.
     pub fn convert_to<W: Unit>(self, unit: W) -> Quantity<W, V> where
-        U: ConvertTo<W>,
+        U: ConvertInto<W>,
         V: Clone,
     {
-        self.unit.conversion(unit).apply(self.value)
+        self.unit.conversion_into(unit).quantity(self.value)
     }
 
     pub fn convert_left_to<W: Unit>(self, unit: W)
         -> Quantity<U::WithLeftConverted, V> where
         U: ConvertLeft<W>,
-        U::Left: ConvertTo<W>,
+        U::Left: ConvertInto<W>,
         V: Clone,
     {
-        self.unit.convert_left(unit).apply(self.value)
+        self.unit.convert_left(unit).quantity(self.value)
     }
 
     pub fn convert_right_to<W: Unit>(self, unit: W)
         -> Quantity<U::WithRightConverted, V> where
         U: ConvertRight<W>,
-        U::Right: ConvertTo<W>,
+        U::Right: ConvertInto<W>,
         V: Clone,
     {
-        self.unit.convert_right(unit).apply(self.value)
+        self.unit.convert_right(unit).quantity(self.value)
     }
 
     /// Simplify redundant units.
@@ -86,7 +86,7 @@ impl<U: Unit, V: Scalar + 'static> Quantity<U, V> {
         U: Simplify<W>,
         V: Clone,
     {
-        self.unit.simplify::<V>().apply(self.value)
+        self.unit.simplify::<V>().quantity(self.value)
     }
 }
 //endregion

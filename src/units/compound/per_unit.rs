@@ -19,8 +19,3 @@ impl<U: Unit> Unit for PerUnit<U> {
 }
 
 impl<U: Unit> UnitNonExp for PerUnit<U> {}
-
-
-impl<U: Unit> Cancel for PerUnit<PerUnit<U>> {
-    fn cancel(&self) -> f64 { 1.0 }
-}
