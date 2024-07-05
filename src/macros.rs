@@ -7,6 +7,8 @@ macro_rules! utype {
     (($($t:tt)+)) => { $crate::utype!($($t)+) };
     ({$($t:tt)+}) => { $crate::utype!($($t)+) };
 
+    //  Try to interpret a single token as a unit type symbol.
+    ($u:tt) => { $crate::utype_from_symbol!($u) };
     //  Pass through a single path.
     ($p:path) => { $p };
 
