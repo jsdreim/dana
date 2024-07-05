@@ -1,5 +1,6 @@
 pub mod compound;
 pub mod concrete;
+pub mod conversions;
 pub mod traits;
 
 pub use compound::*;

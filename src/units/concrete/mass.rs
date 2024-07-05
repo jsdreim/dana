@@ -1,7 +1,7 @@
 use crate::units::{Unit, UnitConcrete};
 
 
-#[derive(Clone, Copy, PartialEq, PartialOrd, /*Eq, Ord*/)]
+#[derive(Clone, Copy, Debug, PartialEq, PartialOrd, /*Eq, Ord*/)]
 pub enum Mass {
     Gram,
     Kilogram,
