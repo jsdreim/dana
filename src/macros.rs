@@ -145,9 +145,9 @@ macro_rules! qtype {
 
 #[macro_export]
 macro_rules! quantity {
-    ($qty:tt as _) => { $qty.convert_to(<_>::default()) };
-    // ($qty:tt as *$ty:ty) => { $qty.convert_to(<$ty>::default()) };
-    ($qty:tt as $($t:tt)*) => { $qty.convert_to($crate::unit!($($t)*)) };
+    ($qty:tt as _) => { $qty.convert(<_>::default()) };
+    // ($qty:tt as *$ty:ty) => { $qty.convert(<$ty>::default()) };
+    ($qty:tt as $($t:tt)*) => { $qty.convert($crate::unit!($($t)*)) };
     ($val:tt $($t:tt)*) => {
         $crate::Quantity {
             value: $val,

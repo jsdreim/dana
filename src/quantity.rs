@@ -21,7 +21,7 @@ for Quantity<U, V> where
     X: Clone,
 {
     fn eq(&self, other: &Quantity<W, X>) -> bool {
-        let comp = other.clone().convert_to(self.unit);
+        let comp = other.clone().convert(self.unit);
         self.value.eq(&comp.value)
     }
 }
@@ -144,9 +144,8 @@ impl<U: Unit, V: Scalar> Quantity<U, V> {
 impl<U: Unit, V: Scalar + 'static> Quantity<U, V> {
     /// Perform trait-based unit conversion. This kind of conversion can cross
     ///     between [`Unit`] types.
-    pub fn convert_to<W: Unit>(self, unit: W) -> Quantity<W, V> where
+    pub fn convert<W: Unit>(self, unit: W) -> Quantity<W, V> where
         U: ConvertInto<W>,
-        V: Clone,
     {
         self.unit.conversion_into(unit).quantity(self.value)
     }
@@ -155,7 +154,6 @@ impl<U: Unit, V: Scalar + 'static> Quantity<U, V> {
         -> Quantity<U::WithLeftConverted, V> where
         U: ConvertLeft<W>,
         U::Left: ConvertInto<W>,
-        V: Clone,
     {
         self.unit.convert_left(unit).quantity(self.value)
     }
@@ -164,7 +162,6 @@ impl<U: Unit, V: Scalar + 'static> Quantity<U, V> {
         -> Quantity<U::WithRightConverted, V> where
         U: ConvertRight<W>,
         U::Right: ConvertInto<W>,
-        V: Clone,
     {
         self.unit.convert_right(unit).quantity(self.value)
     }
@@ -172,7 +169,6 @@ impl<U: Unit, V: Scalar + 'static> Quantity<U, V> {
     /// Simplify redundant units.
     pub fn simplify<W: Unit>(self) -> Quantity<W, V> where
         U: Simplify<W>,
-        V: Clone,
     {
         self.unit.simplify::<V>().quantity(self.value)
     }
