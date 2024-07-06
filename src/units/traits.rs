@@ -1,4 +1,4 @@
-use crate::Scalar;
+use crate::{Quantity, Scalar};
 
 pub mod associative;
 pub mod commutative;
@@ -23,12 +23,19 @@ pub trait Unit: Copy + Default + std::fmt::Display + PartialEq {
         have / want
     }
 
-    fn quantity<V: Scalar>(self, value: V) -> crate::Quantity<Self, V> {
-        crate::Quantity::new(self, value)
+    fn quantity<V: Scalar>(self, value: V) -> Quantity<Self, V> {
+        Quantity::new(self, value)
     }
 
-    fn default_quantity<V: Scalar>(value: V) -> crate::Quantity<Self, V> {
+    fn default_quantity<V: Scalar>(value: V) -> Quantity<Self, V> {
         Self::default().quantity(value)
+    }
+
+    fn convert_from<U, V>(self, qty: Quantity<U, V>) -> Quantity<Self, V> where
+        U: ConvertInto<Self>,
+        V: Scalar + 'static,
+    {
+        qty.convert(self)
     }
 }
 
