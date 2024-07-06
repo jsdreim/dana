@@ -1,3 +1,4 @@
+use num_traits::Inv;
 use crate::units::traits::*;
 
 
@@ -28,3 +29,12 @@ impl<U: Unit> std::fmt::Display for PerUnit<U> {
 }
 
 impl<U: Unit> UnitNonExp for PerUnit<U> {}
+
+
+impl<U: Unit> Inv for PerUnit<U> {
+    type Output = U;
+
+    fn inv(self) -> Self::Output {
+        self.0
+    }
+}

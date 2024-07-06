@@ -254,12 +254,13 @@ impl<U: Unit, V: Scalar> Quantity<U, V> {
 // impl<U: Unit, V: Scalar> num_traits:: for Quantity<U, V> {}
 
 impl<U: Unit, V: Scalar> Inv for Quantity<U, V> where
+    U: Inv, <U as Inv>::Output: Unit,
     V: Inv, <V as Inv>::Output: Scalar,
 {
-    type Output = Quantity<PerUnit<U>, <V as Inv>::Output>;
+    type Output = Quantity<<U as Inv>::Output, <V as Inv>::Output>;
 
     fn inv(self) -> Self::Output {
-        Quantity::new(PerUnit(self.unit), self.value.inv())
+        Quantity::new(self.unit.inv(), self.value.inv())
     }
 }
 

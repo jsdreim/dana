@@ -1,3 +1,4 @@
+use num_traits::Inv;
 use crate::units::traits::*;
 
 
@@ -65,3 +66,12 @@ impl<A: Unit, B: Unit> UnitBinary for UnitDiv<A, B> {
 //     }
 // }
 //endregion
+
+
+impl<A: Unit, B: Unit> Inv for UnitDiv<A, B> {
+    type Output = UnitDiv<B, A>;
+
+    fn inv(self) -> Self::Output {
+        UnitDiv::new(self.1, self.0)
+    }
+}

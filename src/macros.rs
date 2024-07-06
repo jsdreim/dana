@@ -171,6 +171,13 @@ macro_rules! impl_unit_concrete {
 }
 
 
+/// Basic implementation of [`Div`] and [`Mul`] between units using [`UnitDiv`]
+///     and [`UnitMul`].
+///
+/// [`Div`]: std::ops::Div
+/// [`Mul`]: std::ops::Mul
+/// [`UnitDiv`]: crate::units::compound::UnitDiv
+/// [`UnitMul`]: crate::units::compound::UnitMul
 macro_rules! impl_unit_ops {
     ($unit:ident $(<$($tv:ident: $t0:ident $(+ $t1:ident)*),+>)?) => {
         /*/// Unit multiplication by scalar.
@@ -208,6 +215,28 @@ macro_rules! impl_unit_ops {
     };
     ($($unit:ident $(<$($tv:ident: $t0:ident $(+ $t1:ident)*),+>)?),+$(,)?) => {
         $(impl_unit_ops!($unit $(<$($tv: $t0 $(+ $t1)*),+>)?);)+
+    };
+}
+
+
+/// Basic implementation of [`Inv`] using [`PerUnit`].
+///
+/// [`Inv`]: num_traits::Inv
+/// [`PerUnit`]: crate::units::PerUnit
+macro_rules! impl_unit_inv {
+    ($unit:ident $(<$($tv:ident: $t0:ident $(+ $t1:ident)*),+>)?) => {
+        impl$(<$($tv: $t0 $(+ $t1)*),+>)?
+        ::num_traits::Inv for $unit$(<$($tv),+>)?
+        {
+            type Output = $crate::units::compound::PerUnit<$unit$(<$($tv),+>)?>;
+
+            fn inv(self) -> Self::Output {
+                $crate::units::compound::PerUnit(self)
+            }
+        }
+    };
+    ($($unit:ident $(<$($tv:ident: $t0:ident $(+ $t1:ident)*),+>)?),+$(,)?) => {
+        $(impl_unit_inv!($unit $(<$($tv: $t0 $(+ $t1)*),+>)?);)+
     };
 }
 

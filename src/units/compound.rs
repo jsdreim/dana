@@ -16,18 +16,25 @@ pub use unit_pow_3::UnitCubed;
 pub use unit_pow_n::UnitPow;
 
 
-impl_unit_ops!(PerUnit<U: Unit>);
-impl_unit_ops!(UnitDiv<A: Unit, B: Unit>);
-impl_unit_ops!(UnitMul<A: Unit, B: Unit>);
-
-impl_unit_ops!(UnitSquared<U: Unit>);
-impl_unit_pow!(UnitSquared<U: Unit>);
-
-impl_unit_ops!(UnitCubed<U: Unit>);
-impl_unit_pow!(UnitCubed<U: Unit>);
-
-// use unit_pow_n::Exp;
-// impl_unit_ops!(UnitPow<U: Unit, P: Exp>);
+impl_unit_ops!(
+    PerUnit<U: Unit>,
+    UnitDiv<A: Unit, B: Unit>,
+    UnitMul<A: Unit, B: Unit>,
+    UnitSquared<U: Unit>,
+    UnitCubed<U: Unit>,
+    UnitPow<U: Unit>,
+);
+impl_unit_inv!(
+    UnitMul<A: Unit, B: Unit>,
+    UnitSquared<U: Unit>,
+    UnitCubed<U: Unit>,
+    UnitPow<U: Unit>,
+);
+impl_unit_pow!(
+    UnitSquared<U: Unit>,
+    UnitCubed<U: Unit>,
+    // UnitPow<U: Unit>,
+);
 
 
 //region Simplify: Reciprocals.
