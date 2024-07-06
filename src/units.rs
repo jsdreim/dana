@@ -27,7 +27,7 @@ pub type GravParam = utype!(Distance^3 / Time^2);
 #[macro_export]
 macro_rules! utype_from_symbol {
     //  Concrete.
-    (l) => { $crate::units::concrete::Distance };
+    (l) => { $crate::units::concrete::Length };
     (m) => { $crate::units::concrete::Mass };
     (t) => { $crate::units::concrete::Time };
 

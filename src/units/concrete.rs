@@ -23,6 +23,8 @@ concrete_types!(
     time::Time,
 );
 
+pub type Length = Distance;
+
 
 #[macro_export]
 macro_rules! unit_from_symbol {
@@ -32,21 +34,21 @@ macro_rules! unit_from_symbol {
         $t
     }};
 
-    (@mm) => { $crate::units::Distance::Millimeter };
-    (@cm) => { $crate::units::Distance::Centimeter };
-    (@m) => { $crate::units::Distance::Meter };
-    (@km) => { $crate::units::Distance::Kilometer };
+    (@mm) => { $crate::units::concrete::Length::Millimeter };
+    (@cm) => { $crate::units::concrete::Length::Centimeter };
+    (@m) => { $crate::units::concrete::Length::Meter };
+    (@km) => { $crate::units::concrete::Length::Kilometer };
 
-    (@J) => { $crate::units::Energy::Joule };
-    (@kJ) => { $crate::units::Energy::Kilojoule };
+    (@J) => { $crate::units::concrete::Energy::Joule };
+    (@kJ) => { $crate::units::concrete::Energy::Kilojoule };
 
-    (@N) => { $crate::units::Force::Newton };
-    (@kN) => { $crate::units::Force::Kilonewton };
+    (@N) => { $crate::units::concrete::Force::Newton };
+    (@kN) => { $crate::units::concrete::Force::Kilonewton };
 
-    (@g) => { $crate::units::Mass::Gram };
-    (@kg) => { $crate::units::Mass::Kilogram };
+    (@g) => { $crate::units::concrete::Mass::Gram };
+    (@kg) => { $crate::units::concrete::Mass::Kilogram };
 
-    (@s) => { $crate::units::Time::Second };
+    (@s) => { $crate::units::concrete::Time::Second };
 
     (@$t:tt) => { $t };
     ($t:tt) => { $t };
