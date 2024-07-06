@@ -84,6 +84,12 @@ pub trait ConvertFrom<U: Unit>: Unit {
     }
 }
 
+impl<U: Unit> ConvertFrom<U> for U {
+    fn conversion_factor_from(&self, unit: U) -> f64 {
+        unit.scale_factor(*self)
+    }
+}
+
 
 impl<U: Unit, V: ConvertFrom<U>> ConvertInto<V> for U {
     fn conversion_factor_into(&self, unit: V) -> f64 {

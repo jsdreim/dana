@@ -14,6 +14,18 @@ pub struct Quantity<U: Unit, V: Scalar = ScalarDefault> {
     pub unit: U,
 }
 
+impl<U: Unit, V: Scalar, W: Unit, X: Scalar + 'static> PartialEq<Quantity<W, X>>
+for Quantity<U, V> where
+    W: ConvertInto<U>,
+    V: PartialEq<X>,
+    X: Clone,
+{
+    fn eq(&self, other: &Quantity<W, X>) -> bool {
+        let comp = other.clone().convert_to(self.unit);
+        self.value.eq(&comp.value)
+    }
+}
+
 impl<U: Unit, V: Scalar> Quantity<U, V> {
     pub const fn new(unit: U, value: V) -> Self {
         Self { value, unit }

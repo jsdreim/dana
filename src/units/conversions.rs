@@ -1,7 +1,9 @@
 use crate::{constants::*, units::{*, traits::*}};
 
 
-macro_rules! define_relationship {
+/// Implement conversion (both ways) between two [`Unit`] types, which can be
+///     defined in mathematical form.
+macro_rules! impl_conversion {
     ($left:tt = $($right:tt)*) => {
         impl ConvertFrom<$crate::utype!($($right)*)> for $crate::utype!($left) {
             fn conversion_factor_from(&self, unit: $crate::utype!($($right)*)) -> f64 {
@@ -17,18 +19,36 @@ macro_rules! define_relationship {
     };
 }
 
+/// Given a simple three-term relationship, implement two-way conversions for
+///     each of the possible permutations.
+macro_rules! impl_relationship {
+    ($a:ident = $b:ident * $c:ident) => {
+        impl_conversion!($a = $b * $c); // A=BC
+        impl_conversion!($a = $c * $b); // A=CB
+        impl_conversion!($b = $a / $c); // B=A/C
+        impl_conversion!($c = $a / $b); // C=A/B
+        impl_conversion!(($b^-1) = $c / $a); // 1/B = C/A
+        impl_conversion!(($c^-1) = $b / $a); // 1/C = B/A
+    };
+    ($a:ident = $b:ident / $c:ident) => {
+        impl_conversion!($a = $b / $c); // A=B/C
+        impl_conversion!($c = $b / $a); // C=B/A
+        impl_conversion!($b = $a * $c); // B=AC
+        impl_conversion!($b = $c * $a); // B=CA
+        impl_conversion!(($a^-1) = $c / $b); // 1/A = C/B
+        impl_conversion!(($c^-1) = $a / $b); // 1/C = A/B
+    };
+    ($($a:ident = $b:ident $op:tt $c:ident;)+) => {
+        $(impl_relationship!($a = $b $op $c);)+
+    };
+}
 
-//  F=ma
-define_relationship!(Force = Mass * Accel); // F=ma
-define_relationship!(Force = Accel * Mass); // F=am
-define_relationship!(Mass = Force / Accel); // m=F/a
-define_relationship!(Accel = Force / Mass); // a=F/m
-define_relationship!((Mass^-1) = Accel / Force); // 1/m = a/F
-define_relationship!((Accel^-1) = Mass / Force); // 1/a = m/F
-
-
-// define_relationship!(Energy = Force * Distance);
-// define_relationship!(Energy = Distance * Force);
+impl_relationship! {
+    Force = Mass * Accel; // F=ma
+    Power = Energy / Time; // P=E/t
+    Power = Current * Voltage; // P=IV
+    Voltage = Current * Resistance; // V=IR
+}
 
 
 impl ConvertFrom<Mass> for Energy {
@@ -43,25 +63,44 @@ impl ConvertFrom<Energy> for Mass {
     }
 }
 
+#[cfg(test)]
+mod tests {
+    use crate::Quantity;
+    use super::*;
 
-#[test]
-fn test_e_mc2() {
-    let kg = quantity!(1.0 kg);
-    let e = kg.convert_to(Energy::Joule);
+    #[test]
+    fn test_e_mc2() {
+        let m: Quantity<Mass> = quantity!(1.0 kg);
+        let e: Quantity<Energy> = quantity!(m as J);
+        assert_eq!(e.value_as(Energy::KiloJoule).floor(), 89_875_517_873_681.0);
+    }
 
-    assert!((89.8e15..89.9e15).contains(&e.value));
-}
+    #[test]
+    fn test_f_ma() {
+        let m: Quantity<Mass> = quantity!(2.0 kg);
+        let a: Quantity<Accel> = quantity!(3.0 km/s/s);
 
+        let f: Quantity<Force> = quantity!((m * a) as _);
+        assert_eq!(f, quantity!(6.0 kN));
+    }
 
-#[test]
-fn test_f_ma() {
-    let m: qtype!(Mass) = quantity!(2.0 g);
-    let a: qtype!(Accel) = quantity!(3.0 km/s/s);
-    let f: qtype!(Force) = quantity!((m * a) as kN);
+    #[test]
+    fn test_electrical() {
+        //  3V3 across a 150Ω resistor.
+        let v: Quantity<Voltage> = quantity!(3.3 V);
+        let r: Quantity<Resistance> = quantity!(150.0 Ω);
 
-    assert_eq!(
-        f.value_as(unit!(N)),
-        m.value_as(unit!(kg)) * a.value_as(unit!(m/s/s))
-    );
-    assert_eq!(f.value_as(unit!(N)), 6.0);
+        //  Should measure 22mA of current through the resistor.
+        let i: Quantity<Current> = quantity!((v / r) as A);
+        assert_eq!(i, quantity!(22.0 mA));
+
+        //  Resistor should be dissipating 72.6mW as heat.
+        let p: Quantity<Power> = quantity!((i * v) as W);
+        assert_eq!(p, quantity!(72.6 mW));
+
+        //  After 5 minutes, should have dissipated 21.78J in total.
+        let t: Quantity<Time> = quantity!(300.0 s);
+        let e: Quantity<Energy> = quantity!((p * t) as J);
+        assert_eq!(e, quantity!(21.78 J));
+    }
 }
