@@ -33,10 +33,10 @@ macro_rules! utype_from_symbol {
 
     (F) => { $crate::units::concrete::Force };
     (E) => { $crate::units::concrete::Energy };
-    // (P) => { $crate::units::concrete::Power };
-    // (I) => { $crate::units::concrete::Current };
-    // (V) => { $crate::units::concrete::Voltage };
-    // (R) => { $crate::units::concrete::Resistance };
+    (P) => { $crate::units::concrete::Power };
+    (I) => { $crate::units::concrete::Current };
+    (V) => { $crate::units::concrete::Voltage };
+    (R) => { $crate::units::concrete::Resistance };
 
     //  Compound.
     (v) => { $crate::units::Speed };
