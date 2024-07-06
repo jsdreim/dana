@@ -2,11 +2,11 @@ use crate::{Quantity, Scalar};
 
 pub mod associative;
 pub mod commutative;
-pub mod conversion;
+pub mod transform;
 
 pub use associative::*;
 pub use commutative::*;
-pub use conversion::*;
+pub use transform::*;
 
 
 pub trait Unit: Copy + Default + std::fmt::Display + PartialEq {
