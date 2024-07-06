@@ -1,5 +1,5 @@
 use std::ops::{Add, Div, Mul, Sub};
-use num_traits::{Inv, Zero};
+use num_traits::{Inv, Pow, real::Real, Zero};
 use crate::{Scalar, units::{compound::*, traits::*}};
 
 
@@ -61,6 +61,82 @@ impl<U: Unit, V: Scalar> Quantity<U, V> {
         self.value * V::from_f64(factor).unwrap()
     }
 }
+
+
+//region Methods for mathematical operations.
+impl<U: Unit, V: Scalar> Quantity<U, V> {
+    //region Positive exponents.
+    pub fn squared(self) -> Quantity<<U as CanSquare>::Output, <V as Mul<V>>::Output> where
+        U: CanSquare,
+        V: Mul<V> + Clone,
+    {
+        Quantity {
+            value: self.value.clone() * self.value,
+            unit: self.unit.squared(),
+        }
+    }
+
+    pub fn cubed(self) -> Quantity<<U as CanCube>::Output, <V as Mul<V>>::Output> where
+        U: CanCube,
+        V: Mul<V> + Clone,
+    {
+        Quantity {
+            value: self.value.clone() * self.value.clone() * self.value,
+            unit: self.unit.cubed(),
+        }
+    }
+
+    pub fn pow<E>(self, exp: E) -> Quantity<<U as CanPow<E>>::Output, <V as Pow<E>>::Output> where
+        E: unit_pow_n::Exp,
+        U: CanPow<E>,
+        V: Pow<E>,
+        <V as Pow<E>>::Output: Scalar,
+    {
+        Quantity {
+            value: self.value.pow(exp),
+            unit: self.unit.pow(exp),
+        }
+    }
+    //endregion
+
+    //region Negative exponents.
+    pub fn sqrt(self) -> Quantity<<U as CanSquareRoot>::Output, V> where
+        U: CanSquareRoot,
+        V: Real,
+    {
+        Quantity {
+            value: self.value.sqrt(),
+            unit: self.unit.sqrt(),
+        }
+    }
+
+    pub fn cbrt(self) -> Quantity<<U as CanCubeRoot>::Output, V> where
+        U: CanCubeRoot,
+        V: Real,
+    {
+        Quantity {
+            value: self.value.cbrt(),
+            unit: self.unit.cbrt(),
+        }
+    }
+
+    pub fn root<D>(self, degree: D) -> Quantity<
+        <U as CanRoot<D>>::Output,
+        <V as Pow<<D as Inv>::Output>>::Output,
+    > where
+        D: unit_pow_n::Exp + Inv,
+        U: CanRoot<D>,
+        V: Pow<<D as Inv>::Output>,
+        <V as Pow<<D as Inv>::Output>>::Output: Scalar,
+    {
+        Quantity {
+            value: self.value.pow(degree.inv()),
+            unit: self.unit.root(degree),
+        }
+    }
+    //endregion
+}
+//endregion
 
 
 //region Methods for unit operations.
