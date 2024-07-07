@@ -30,6 +30,7 @@ macro_rules! utype_from_symbol {
     (l) => { $crate::units::concrete::Length };
     (m) => { $crate::units::concrete::Mass };
     (t) => { $crate::units::concrete::Time };
+    (f) => { $crate::units::concrete::Frequency };
 
     (F) => { $crate::units::concrete::Force };
     (E) => { $crate::units::concrete::Energy };

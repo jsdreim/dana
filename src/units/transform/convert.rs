@@ -22,21 +22,25 @@ macro_rules! impl_conversion {
 /// Given a simple three-term relationship, implement two-way conversions for
 ///     each of the possible permutations.
 macro_rules! impl_relationship {
+    ($a:ident = 1 / $b:ident) => {
+        impl_conversion!($a = 1 / $b); // A=1/B
+        impl_conversion!($b = 1 / $a); // B=1/A
+    };
     ($a:ident = $b:ident * $c:ident) => {
         impl_conversion!($a = $b * $c); // A=BC
         impl_conversion!($a = $c * $b); // A=CB
         impl_conversion!($b = $a / $c); // B=A/C
         impl_conversion!($c = $a / $b); // C=A/B
-        impl_conversion!(($b^-1) = $c / $a); // 1/B = C/A
-        impl_conversion!(($c^-1) = $b / $a); // 1/C = B/A
+        impl_conversion!((1/$b) = $c / $a); // 1/B = C/A
+        impl_conversion!((1/$c) = $b / $a); // 1/C = B/A
     };
     ($a:ident = $b:ident / $c:ident) => {
         impl_conversion!($a = $b / $c); // A=B/C
         impl_conversion!($c = $b / $a); // C=B/A
         impl_conversion!($b = $a * $c); // B=AC
         impl_conversion!($b = $c * $a); // B=CA
-        impl_conversion!(($a^-1) = $c / $b); // 1/A = C/B
-        impl_conversion!(($c^-1) = $a / $b); // 1/C = A/B
+        impl_conversion!((1/$a) = $c / $b); // 1/A = C/B
+        impl_conversion!((1/$c) = $a / $b); // 1/C = A/B
     };
     ($($a:ident = $b:ident $op:tt $c:ident;)+) => {
         $(impl_relationship!($a = $b $op $c);)+
@@ -44,10 +48,13 @@ macro_rules! impl_relationship {
 }
 
 impl_relationship! {
+    Frequency = 1 / Time; // f=1/t
     Force = Mass * Accel; // F=ma
     Power = Energy / Time; // P=E/t
     Power = Current * Voltage; // P=IV
     Voltage = Current * Resistance; // V=IR
+
+    Power = Energy * Frequency; // P = E/t = E(1/t) = Ef
 }
 
 

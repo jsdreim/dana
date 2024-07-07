@@ -20,6 +20,7 @@ concrete_types!(
     distance::Distance,
     mass::Mass,
     time::Time,
+    frequency::Frequency,
 
     force::Force,
     energy::Energy,
@@ -54,6 +55,11 @@ macro_rules! unit_from_symbol {
     (@s) => { $crate::units::concrete::Time::Second };
     // (@M) => { $crate::units::concrete::Time::Minute };
     (@h) => { $crate::units::concrete::Time::Hour };
+
+    (@mHz) => { $crate::units::concrete::Time::MilliHertz };
+    (@Hz) => { $crate::units::concrete::Time::Hertz };
+    (@kHz) => { $crate::units::concrete::Time::KiloHertz };
+    (@MHz) => { $crate::units::concrete::Time::MegaHertz };
 
     (@N) => { $crate::units::concrete::Force::Newton };
     (@kN) => { $crate::units::concrete::Force::KiloNewton };
