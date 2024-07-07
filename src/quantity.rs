@@ -60,6 +60,10 @@ impl<U: Unit, V: Scalar> Quantity<U, V> {
         let factor = self.unit.scale_factor(unit);
         self.value * V::from_f64(factor).unwrap()
     }
+
+    pub fn value_as_base(self) -> V {
+        self.value_as(U::default())
+    }
 }
 
 

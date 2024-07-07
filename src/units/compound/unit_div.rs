@@ -46,26 +46,31 @@ impl<A: Unit, B: Unit> UnitBinary for UnitDiv<A, B> {
 }
 
 
+impl<A: CanSquare, B: CanSquare> CanSquare for UnitDiv<A, B> {
+    type Output = UnitDiv<A::Output, B::Output>;
+
+    fn squared(self) -> Self::Output {
+        UnitDiv(self.0.squared(), self.1.squared())
+    }
+}
+
+
 //region Commutative Property.
-// // impl<A: Unit, B: Unit> Commutative for UnitDiv<A, B> {
-// //     type Commuted = UnitDiv<B, A>;
-// // }
-//
-// impl<A: Commutative, B: Unit> CommutativeLeft for UnitDiv<A, B> {
-//     type WithLeftCommuted = UnitDiv<A::Commuted, B>;
-//
-//     fn commute_left(&self) -> Self::WithLeftCommuted {
-//         UnitDiv(self.0.commute(), self.1)
-//     }
-// }
-//
-// impl<A: Unit, B: Commutative> CommutativeRight for UnitDiv<A, B> {
-//     type WithRightCommuted = UnitDiv<A, B::Commuted>;
-//
-//     fn commute_right(&self) -> Self::WithRightCommuted {
-//         UnitDiv(self.0, self.1.commute())
-//     }
-// }
+impl<A: Commutative, B: Unit> CommutativeLeft for UnitDiv<A, B> {
+    type WithLeftCommuted = UnitDiv<A::Commuted, B>;
+
+    fn commute_left(&self) -> Self::WithLeftCommuted {
+        UnitDiv(self.0.commute(), self.1)
+    }
+}
+
+impl<A: Unit, B: Commutative> CommutativeRight for UnitDiv<A, B> {
+    type WithRightCommuted = UnitDiv<A, B::Commuted>;
+
+    fn commute_right(&self) -> Self::WithRightCommuted {
+        UnitDiv(self.0, self.1.commute())
+    }
+}
 //endregion
 
 

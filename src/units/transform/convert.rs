@@ -4,24 +4,28 @@ use crate::{constants::*, units::{*, traits::*}};
 /// Implement conversion (both ways) between two [`Unit`] types, which can be
 ///     defined in mathematical form.
 macro_rules! impl_conversion {
-    ($left:tt = $($right:tt)*) => {
-        impl ConvertFrom<$crate::utype!($($right)*)> for $crate::utype!($left) {
-            fn conversion_factor_from(&self, unit: $crate::utype!($($right)*)) -> f64 {
-                unit.scale() / self.scale()
+    ($left:tt = $right:tt $(* const $coeff:expr)?) => {
+        impl ConvertFrom<$crate::utype!($right)> for $crate::utype!($left) {
+            fn conversion_factor_from(&self, unit: $crate::utype!($right)) -> f64 {
+                unit.scale() / self.scale() $(* $coeff.value_as_base())?
             }
         }
 
-        impl ConvertFrom<$crate::utype!($left)> for $crate::utype!($($right)*) {
+        impl ConvertFrom<$crate::utype!($left)> for $crate::utype!($right) {
             fn conversion_factor_from(&self, unit: $crate::utype!($left)) -> f64 {
-                unit.scale() / self.scale()
+                unit.scale() / self.scale() $(/ $coeff.value_as_base())?
             }
         }
     };
+    ($left:tt = $($right:tt)*) => { impl_conversion!($left = ($($right)*)); };
 }
 
 /// Given a simple three-term relationship, implement two-way conversions for
 ///     each of the possible permutations.
 macro_rules! impl_relationship {
+    ($a:ident = $b:tt * const $coeff:expr) => {
+        impl_conversion!($a = $b * const $coeff);
+    };
     ($a:ident = 1 / $b:ident) => {
         impl_conversion!($a = 1 / $b); // A=1/B
         impl_conversion!($b = 1 / $a); // B=1/A
@@ -42,8 +46,8 @@ macro_rules! impl_relationship {
         impl_conversion!((1/$a) = $c / $b); // 1/A = C/B
         impl_conversion!((1/$c) = $a / $b); // 1/C = A/B
     };
-    ($($a:ident = $b:ident $op:tt $c:ident;)+) => {
-        $(impl_relationship!($a = $b $op $c);)+
+    ($($a:ident = $b:tt $op:tt $c:tt $($coeff:expr)?;)+) => {
+        $(impl_relationship!($a = $b $op $c $($coeff)?);)+
     };
 }
 
@@ -55,19 +59,7 @@ impl_relationship! {
     Voltage = Current * Resistance; // V=IR
 
     Power = Energy * Frequency; // P = E/t = E(1/t) = Ef
-}
-
-
-impl ConvertFrom<Mass> for Energy {
-    fn conversion_factor_from(&self, unit: Mass) -> f64 {
-        (unit.scale() / self.scale()) * (C.value * C.value)
-    }
-}
-
-impl ConvertFrom<Energy> for Mass {
-    fn conversion_factor_from(&self, unit: Energy) -> f64 {
-        (unit.scale() / self.scale()) / (C.value * C.value)
-    }
+    Energy = Mass * const C.squared(); // E=mc²
 }
 
 #[cfg(test)]

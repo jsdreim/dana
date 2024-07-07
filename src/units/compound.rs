@@ -30,6 +30,8 @@ impl_unit_inv!(
     UnitPow<U: Unit>,
 );
 impl_unit_pow!(
+    // UnitDiv<A: Unit, B: Unit>,
+    UnitMul<A: Unit, B: Unit>,
     UnitSquared<U: Unit>,
     UnitCubed<U: Unit>,
     // UnitPow<U: Unit>,
