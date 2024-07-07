@@ -86,8 +86,6 @@ pub trait ConvertFrom<U: Unit>: Unit {
     }
 }
 
-impl<U: Unit, W: Unit + Simplify<U>> ConvertFrom<W> for U {}
-
 
 pub trait ConvertInto<U: Unit>: Unit {
     /// Given another unit, return the multiplication factor needed to convert
@@ -137,12 +135,6 @@ pub trait CancelRight: UnitBinary {
 
 pub trait Simplify<U: Unit>: Unit {
     fn simplify<S: Scalar>(self) -> Conversion<U, S>;
-}
-
-impl<U: Unit> Simplify<U> for U {
-    fn simplify<S: Scalar>(self) -> Conversion<U, S> {
-        Conversion::units(self)
-    }
 }
 
 pub trait SimplifyLeft<U: Unit>: UnitBinary {

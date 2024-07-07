@@ -28,6 +28,9 @@ impl<U: Unit> std::fmt::Display for UnitCubed<U> {
     }
 }
 
+impl<U1: ConvertInto<U2>, U2: Unit> ConvertFrom<UnitCubed<U1>> for UnitCubed<U2> {}
+
+
 impl<U: Unit> CanCubeRoot for UnitCubed<U> {
     type Output = U;
     fn cbrt(self) -> Self::Output { self.0 }

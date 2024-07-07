@@ -54,10 +54,15 @@ pub trait UnitConcrete: Unit {
     fn symbol(&self) -> &'static str;
 }
 
+/// Concrete units by definition have an exponent of 1.
+impl<U: UnitConcrete> UnitNonExp for U {}
+
+/// Any concrete unit can be freely converted to another of its own type.
+impl<U: UnitConcrete> ConvertFrom<U> for U {}
+
 
 //region Exponential traits.
 pub trait UnitNonExp: Unit {}
-impl<U: UnitConcrete> UnitNonExp for U {}
 
 //region Positive exponents.
 pub trait CanSquare: Unit {

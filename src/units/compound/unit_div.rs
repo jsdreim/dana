@@ -32,6 +32,12 @@ impl<A: Unit, B: Unit> std::fmt::Display for UnitDiv<A, B> {
 }
 
 
+impl<A1, B1, A2, B2> ConvertFrom<UnitDiv<A1, B1>> for UnitDiv<A2, B2> where
+    A1: ConvertInto<A2>,
+    B1: ConvertInto<B2>,
+    A2: Unit, B2: Unit,
+{}
+
 impl<A: Unit, B: Unit> UnitCompound for UnitDiv<A, B> {}
 impl<A: Unit, B: Unit> UnitNonExp for UnitDiv<A, B> {}
 

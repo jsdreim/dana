@@ -28,13 +28,13 @@ impl<U: Unit> std::fmt::Display for PerUnit<U> {
     }
 }
 
+
+impl<U1: ConvertInto<U2>, U2: Unit> ConvertFrom<PerUnit<U1>> for PerUnit<U2> {}
+
 // impl<U: Unit> UnitNonExp for PerUnit<U> {}
 
 
 impl<U: Unit> Inv for PerUnit<U> {
     type Output = U;
-
-    fn inv(self) -> Self::Output {
-        self.0
-    }
+    fn inv(self) -> Self::Output { self.0 }
 }

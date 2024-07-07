@@ -3,7 +3,7 @@ use crate::{constants::*, quantity::Quantity, units::*};
 
 impl Quantity<Mass> {
     pub fn grav_param(self) -> Quantity<GravParam> {
-        (self * G).convert()
+        (self * G).simplify()
     }
 }
 

@@ -28,6 +28,9 @@ impl<U: Unit> std::fmt::Display for UnitSquared<U> {
     }
 }
 
+impl<U1: ConvertInto<U2>, U2: Unit> ConvertFrom<UnitSquared<U1>> for UnitSquared<U2> {}
+
+
 impl<U: Unit> CanSquareRoot for UnitSquared<U> {
     type Output = U;
     fn sqrt(self) -> Self::Output { self.0 }

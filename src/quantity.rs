@@ -334,7 +334,9 @@ for Quantity<U, V> where
     }
 }
 
-impl<U: Unit, V: Scalar + Eq + 'static> Eq for Quantity<U, V> {}
+impl<U: Unit, V: Scalar + Eq + 'static> Eq for Quantity<U, V> where
+    Quantity<U, V>: PartialEq,
+{}
 //endregion
 
 //region Ordering.
@@ -350,7 +352,10 @@ for Quantity<U, V> where
     }
 }
 
-impl<U: Unit, V: Scalar + Ord + 'static> Ord for Quantity<U, V> {
+impl<U: Unit, V: Scalar + Ord + 'static> Ord for Quantity<U, V> where
+    U: ConvertInto<U>,
+    Quantity<U, V>: PartialOrd,
+{
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
         let comp = other.clone().convert_to(self.unit);
         self.value.cmp(&comp.value)

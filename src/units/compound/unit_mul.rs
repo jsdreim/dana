@@ -26,6 +26,12 @@ impl<A: Unit, B: Unit> std::fmt::Display for UnitMul<A, B> {
 }
 
 
+impl<A1, B1, A2, B2> ConvertFrom<UnitMul<A1, B1>> for UnitMul<A2, B2> where
+    A1: ConvertInto<A2>,
+    B1: ConvertInto<B2>,
+    A2: Unit, B2: Unit,
+{}
+
 impl<A: Unit, B: Unit> UnitCompound for UnitMul<A, B> {}
 impl<A: Unit, B: Unit> UnitNonExp for UnitMul<A, B> {}
 
