@@ -14,18 +14,6 @@ pub struct Quantity<U: Unit, V: Scalar = ScalarDefault> {
     pub unit: U,
 }
 
-impl<U: Unit, V: Scalar, W: Unit, X: Scalar + 'static> PartialEq<Quantity<W, X>>
-for Quantity<U, V> where
-    W: ConvertInto<U>,
-    V: PartialEq<X>,
-    X: Clone,
-{
-    fn eq(&self, other: &Quantity<W, X>) -> bool {
-        let comp = other.clone().convert_to(self.unit);
-        self.value.eq(&comp.value)
-    }
-}
-
 impl<U: Unit, V: Scalar> Quantity<U, V> {
     pub const fn new(unit: U, value: V) -> Self {
         Self { value, unit }
@@ -330,6 +318,45 @@ impl<U: Unit, V: Scalar> Quantity<U, V> {
         }
     }
 }
+//endregion
+
+//region Comparison between quantities.
+//region Equivalence.
+impl<U: Unit, V: Scalar, W: Unit, X: Scalar + 'static> PartialEq<Quantity<W, X>>
+for Quantity<U, V> where
+    W: ConvertInto<U>,
+    V: PartialEq<X>,
+    X: Clone,
+{
+    fn eq(&self, other: &Quantity<W, X>) -> bool {
+        let comp = other.clone().convert_to(self.unit);
+        self.value.eq(&comp.value)
+    }
+}
+
+impl<U: Unit, V: Scalar + Eq + 'static> Eq for Quantity<U, V> {}
+//endregion
+
+//region Ordering.
+impl<U: Unit, V: Scalar, W: Unit, X: Scalar + 'static> PartialOrd<Quantity<W, X>>
+for Quantity<U, V> where
+    W: ConvertInto<U>,
+    V: PartialOrd<X>,
+    X: Clone,
+{
+    fn partial_cmp(&self, other: &Quantity<W, X>) -> Option<std::cmp::Ordering> {
+        let comp = other.clone().convert_to(self.unit);
+        self.value.partial_cmp(&comp.value)
+    }
+}
+
+impl<U: Unit, V: Scalar + Ord + 'static> Ord for Quantity<U, V> {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        let comp = other.clone().convert_to(self.unit);
+        self.value.cmp(&comp.value)
+    }
+}
+//endregion
 //endregion
 //endregion
 
