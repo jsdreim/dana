@@ -1,5 +1,5 @@
 use std::ops::{Add, Div, Mul, Sub};
-use num_traits::{Inv, Pow, real::Real, Zero};
+use num_traits::{Float, Inv, Pow, real::Real, Zero};
 use crate::{Scalar, units::{compound::*, traits::*}};
 
 
@@ -323,6 +323,28 @@ impl<U: Unit, V: Scalar> Quantity<U, V> {
 
 
 //region Traits from `num_traits`.
+impl<U: Unit, V: Scalar + Float> Quantity<U, V> {
+    pub fn abs(self) -> Self {
+        Self::new(self.unit, self.value.abs())
+    }
+
+    pub fn ceil(self) -> Self {
+        Self::new(self.unit, self.value.ceil())
+    }
+
+    pub fn floor(self) -> Self {
+        Self::new(self.unit, self.value.floor())
+    }
+
+    pub fn round(self) -> Self {
+        Self::new(self.unit, self.value.round())
+    }
+
+    pub fn trunc(self) -> Self {
+        Self::new(self.unit, self.value.trunc())
+    }
+}
+
 // impl<U: Unit, V: Scalar> num_traits:: for Quantity<U, V> {}
 
 impl<U: Unit, V: Scalar> Inv for Quantity<U, V> where
