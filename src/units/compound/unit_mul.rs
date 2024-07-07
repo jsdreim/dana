@@ -27,6 +27,7 @@ impl<A: Unit, B: Unit> std::fmt::Display for UnitMul<A, B> {
 
 
 impl<A: Unit, B: Unit> UnitCompound for UnitMul<A, B> {}
+impl<A: Unit, B: Unit> UnitNonExp for UnitMul<A, B> {}
 
 impl<A: Unit, B: Unit> UnitBinary for UnitMul<A, B> {
     type Left = A;

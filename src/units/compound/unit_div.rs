@@ -33,6 +33,7 @@ impl<A: Unit, B: Unit> std::fmt::Display for UnitDiv<A, B> {
 
 
 impl<A: Unit, B: Unit> UnitCompound for UnitDiv<A, B> {}
+impl<A: Unit, B: Unit> UnitNonExp for UnitDiv<A, B> {}
 
 impl<A: Unit, B: Unit> UnitBinary for UnitDiv<A, B> {
     type Left = A;

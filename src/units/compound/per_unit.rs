@@ -28,7 +28,7 @@ impl<U: Unit> std::fmt::Display for PerUnit<U> {
     }
 }
 
-impl<U: Unit> UnitNonExp for PerUnit<U> {}
+// impl<U: Unit> UnitNonExp for PerUnit<U> {}
 
 
 impl<U: Unit> Inv for PerUnit<U> {

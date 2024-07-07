@@ -22,6 +22,14 @@ macro_rules! utype {
     ($a:tt $(::$b:tt)* ^-$e:tt) => { $crate::units::PerUnit     <$crate::utype!($a $(::$b)* ^ $e)> };
     ($a:tt $(::$b:tt)* ^+$e:tt) => {                             $crate::utype!($a $(::$b)* ^ $e)  };
 
+    //  Inverted term.
+    (1 / $a:tt $(::$b:tt)* ^ $e:tt $($z:tt)*) => { $crate::unit!(
+        (@ $crate::units::PerUnit<$crate::utype!($a $(::$b)* ^ $e)>) $($z)*
+    )};
+    (1 / $a:tt $(::$b:tt)* $($z:tt)*) => { $crate::unit!(
+        (@ $crate::units::PerUnit<$crate::utype!($a $(::$b)*)>) $($z)*
+    )};
+
     //  Div/mul where the second unit has an exponent.
     (
         $a1:tt $(::$b1:tt)* $(^ $e1:tt)? /
@@ -91,6 +99,14 @@ macro_rules! unit {
     ($a:tt $(::$b:tt)* ^-$e:tt) => { $crate::units::PerUnit     ($crate::unit!($a $(::$b)* ^ $e)) };
     ($a:tt $(::$b:tt)* ^+$e:tt) => {                             $crate::unit!($a $(::$b)* ^ $e)  };
 
+    //  Inverted term.
+    (1 / $a:tt $(::$b:tt)* ^ $e:tt $($z:tt)*) => { $crate::unit!(
+        (@ $crate::units::PerUnit($crate::unit!($a $(::$b)* ^ $e))) $($z)*
+    )};
+    (1 / $a:tt $(::$b:tt)* $($z:tt)*) => { $crate::unit!(
+        (@ $crate::units::PerUnit($crate::unit!($a $(::$b)*))) $($z)*
+    )};
+
     //  Div/mul where the second unit has an exponent.
     (
         $a1:tt $(::$b1:tt)* $(^ $e1:tt)? /
@@ -136,6 +152,81 @@ macro_rules! unit {
     )};
 }
 
+// #[macro_export]
+macro_rules! unit_pat {
+    //  Internal: Unpack a group directly.
+    ((@ $($t:tt)+)) => { $($t)+ };
+
+    //  Unpack and interpret a group.
+    (($($t:tt)+)) => { unit_pat!($($t)+) };
+    ({$($t:tt)+}) => { unit_pat!($($t)+) };
+
+    //  Pass through a single token.
+    ($t:tt) => { $t };
+
+    //  Exponents.
+    ($a:tt ^ 0)     => { compile_error!("Cannot define unit of power zero.") };
+    ($a:tt ^ 1)     => {                             unit_pat!($a)  };
+    ($a:tt ^ 2)     => { $crate::units::UnitSquared (unit_pat!($a)) };
+    ($a:tt ^ 3)     => { $crate::units::UnitCubed   (unit_pat!($a)) };
+    ($a:tt ^ $e:tt) => { $crate::units::UnitPow     (unit_pat!($a), $e) };
+    //  Signed exponents.
+    ($a:tt ^-$e:tt) => { $crate::units::PerUnit     (unit_pat!($a ^ $e)) };
+    ($a:tt ^+$e:tt) => {                             unit_pat!($a ^ $e)  };
+
+    //  Inverted term.
+    (1 / $a:tt ^ $e:tt $($z:tt)*) => { unit_pat!(
+        (@ $crate::units::PerUnit(unit_pat!($a ^ $e))) $($z)*
+    )};
+    (1 / $a:tt $($z:tt)*) => { unit_pat!(
+        (@ $crate::units::PerUnit(unit_pat!($a))) $($z)*
+    )};
+
+    //  Div/mul where the second unit has an exponent.
+    (
+        $a1:tt $(^ $e1:tt)? /
+        $a2:tt   ^ $e2:tt   $($z:tt)*
+    ) => { unit_pat!(
+        (@ $crate::units::UnitDiv(
+            unit_pat!($a1 $(^ $e1)?),
+            unit_pat!($a2 ^ $e2),
+        ))
+        $($z)*
+    )};
+    (
+        $a1:tt $(^ $e1:tt)? *
+        $a2:tt   ^ $e2:tt   $($z:tt)*
+    ) => { unit_pat!(
+        (@ $crate::units::UnitMul(
+            unit_pat!($a1 $(^ $e1)?),
+            unit_pat!($a2 ^ $e2),
+        ))
+        $($z)*
+    )};
+
+    //  Div/mul where the second unit has no exponent.
+    (
+        $a1:tt $(^ $e1:tt)? /
+        $a2:tt              $($z:tt)*
+    ) => { unit_pat!(
+        (@ $crate::units::UnitDiv(
+            unit_pat!($a1 $(^ $e1)?),
+            unit_pat!($a2),
+        ))
+        $($z)*
+    )};
+    (
+        $a1:tt $(^ $e1:tt)? *
+        $a2:tt              $($z:tt)*
+    ) => { unit_pat!(
+        (@ $crate::units::UnitMul(
+            unit_pat!($a1 $(^ $e1)?),
+            unit_pat!($a2),
+        ))
+        $($z)*
+    )};
+}
+
 
 #[macro_export]
 macro_rules! qtype {
@@ -148,6 +239,19 @@ macro_rules! quantity {
     ($qty:tt as _) => { $qty.convert(<_>::default()) };
     // ($qty:tt as *$ty:ty) => { $qty.convert(<$ty>::default()) };
     ($qty:tt as $($t:tt)*) => { $qty.convert($crate::unit!($($t)*)) };
+
+    ($val:tt / $($t:tt)*) => {
+        $crate::Quantity {
+            value: $val,
+            unit: $crate::units::compound::PerUnit($crate::unit!($($t)*)),
+        }
+    };
+    ($val:tt * $($t:tt)*) => {
+        $crate::Quantity {
+            value: $val,
+            unit: $crate::unit!($($t)*),
+        }
+    };
     ($val:tt $($t:tt)*) => {
         $crate::Quantity {
             value: $val,
