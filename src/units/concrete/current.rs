@@ -29,6 +29,8 @@ impl Unit for Current {
 }
 
 impl UnitConcrete for Current {
+    const BASE: Self = Self::Amp;
+
     fn symbol(&self) -> &'static str {
         match self {
             Self::MicroAmp => "μA",
@@ -40,8 +42,4 @@ impl UnitConcrete for Current {
             Self::TeraAmp => "TA",
         }
     }
-}
-
-impl Default for Current {
-    fn default() -> Self { Self::Amp }
 }

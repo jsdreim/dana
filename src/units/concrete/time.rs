@@ -23,6 +23,8 @@ impl Unit for Time {
 }
 
 impl UnitConcrete for Time {
+    const BASE: Self = Self::Second;
+
     fn symbol(&self) -> &'static str {
         match self {
             Self::Millisecond => "ms",
@@ -31,8 +33,4 @@ impl UnitConcrete for Time {
             Self::Hour => "h",
         }
     }
-}
-
-impl Default for Time {
-    fn default() -> Self { Self::Second }
 }

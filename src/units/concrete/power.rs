@@ -29,6 +29,8 @@ impl Unit for Power {
 }
 
 impl UnitConcrete for Power {
+    const BASE: Self = Self::Watt;
+
     fn symbol(&self) -> &'static str {
         match self {
             Self::MicroWatt => "μW",
@@ -40,8 +42,4 @@ impl UnitConcrete for Power {
             Self::TeraWatt => "TW",
         }
     }
-}
-
-impl Default for Power {
-    fn default() -> Self { Self::Watt }
 }

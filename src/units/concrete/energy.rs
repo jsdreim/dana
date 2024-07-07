@@ -33,6 +33,8 @@ impl Unit for Energy {
 }
 
 impl UnitConcrete for Energy {
+    const BASE: Self = Self::Joule;
+
     fn symbol(&self) -> &'static str {
         match self {
             Self::MicroJoule => "μJ",
@@ -44,8 +46,4 @@ impl UnitConcrete for Energy {
             Self::TeraJoule => "TJ",
         }
     }
-}
-
-impl Default for Energy {
-    fn default() -> Self { Self::Joule }
 }

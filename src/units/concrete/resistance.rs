@@ -29,6 +29,8 @@ impl Unit for Resistance {
 }
 
 impl UnitConcrete for Resistance {
+    const BASE: Self = Self::Ohm;
+
     fn symbol(&self) -> &'static str {
         match self {
             Self::MicroOhm => "μΩ",
@@ -40,8 +42,4 @@ impl UnitConcrete for Resistance {
             Self::TeraOhm => "TΩ",
         }
     }
-}
-
-impl Default for Resistance {
-    fn default() -> Self { Self::Ohm }
 }

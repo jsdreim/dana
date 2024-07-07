@@ -268,6 +268,13 @@ macro_rules! impl_unit_concrete {
                 <str as std::fmt::Display>::fmt(self.symbol(), f)
             }
         }
+
+        impl Default for $unit {
+            fn default() -> Self { Self::BASE }
+        }
+
+        //  TODO
+        // ::static_assertions::const_assert!($unit::BASE.scale() == 1.0);
     };
     ($($unit:ident),+$(,)?) => {
         $(impl_unit_concrete!($unit);)+

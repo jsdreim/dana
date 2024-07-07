@@ -29,6 +29,8 @@ impl Unit for Voltage {
 }
 
 impl UnitConcrete for Voltage {
+    const BASE: Self = Self::Volt;
+
     fn symbol(&self) -> &'static str {
         match self {
             Self::MicroVolt => "μV",
@@ -40,8 +42,4 @@ impl UnitConcrete for Voltage {
             Self::TeraVolt => "TV",
         }
     }
-}
-
-impl Default for Voltage {
-    fn default() -> Self { Self::Volt }
 }

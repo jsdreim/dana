@@ -23,6 +23,8 @@ impl Unit for Force {
 }
 
 impl UnitConcrete for Force {
+    const BASE: Self = Self::Newton;
+
     fn symbol(&self) -> &'static str {
         match self {
             Self::Newton => "N",
@@ -31,8 +33,4 @@ impl UnitConcrete for Force {
             Self::GigaNewton => "GN",
         }
     }
-}
-
-impl Default for Force {
-    fn default() -> Self { Self::Newton }
 }

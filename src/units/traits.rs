@@ -41,7 +41,16 @@ pub trait Unit: Copy + Default + std::fmt::Display + PartialEq {
 
 
 pub trait UnitCompound: Unit {}
+
+/// A "concrete" unit is irreducible, and typically corresponds directly to a
+///     physical property. It typically has multiple variants with different
+///     scales.
 pub trait UnitConcrete: Unit {
+    /// The SI base unit has a scale of 1.
+    const BASE: Self;
+
+    /// Return a textual representation of this unit. Usually a base symbol with
+    ///     an optional SI scaling prefix.
     fn symbol(&self) -> &'static str;
 }
 

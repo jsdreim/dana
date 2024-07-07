@@ -23,6 +23,8 @@ impl Unit for Distance {
 }
 
 impl UnitConcrete for Distance {
+    const BASE: Self = Self::Meter;
+
     fn symbol(&self) -> &'static str {
         match self {
             Self::Millimeter => "mm",
@@ -31,8 +33,4 @@ impl UnitConcrete for Distance {
             Self::Kilometer => "km",
         }
     }
-}
-
-impl Default for Distance {
-    fn default() -> Self { Self::Meter }
 }
