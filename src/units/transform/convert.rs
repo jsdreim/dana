@@ -28,17 +28,20 @@ macro_rules! impl_conversion {
 /// Given a simple three-term relationship, implement two-way conversions for
 ///     each of the possible permutations.
 macro_rules! impl_relationship {
+    ($($a:ident = $b:tt $($op:tt $c:tt $($coeff:expr)?)?;)+) => {
+        $(impl_relationship!($a = $b $($op $c $($coeff)?)?);)+
+    };
     //  Define one unit as equivalent to another multiplied by a constant.
     ($a:ident = $b:tt $($op:tt const $coeff:expr)?) => {
         impl_conversion!($a = $b $($op const $coeff)?);
     };
     //  Define two units as inversely proportional.
-    ($a:ident = 1 / $b:ident) => {
+    ($a:ident = 1 / $b:tt) => {
         impl_conversion!($a = 1 / $b); // A=1/B
         impl_conversion!($b = 1 / $a); // B=1/A
     };
     //  Define one unit as the product of two others.
-    ($a:ident = $b:ident * $c:ident) => {
+    ($a:ident = $b:tt * $c:tt) => {
         impl_conversion!($a = $b * $c); // A=BC
         impl_conversion!($a = $c * $b); // A=CB
         impl_conversion!($b = $a / $c); // B=A/C
@@ -47,7 +50,7 @@ macro_rules! impl_relationship {
         impl_conversion!((1/$c) = $b / $a); // 1/C = B/A
     };
     //  Define one unit as the quotient of two others.
-    ($a:ident = $b:ident / $c:ident) => {
+    ($a:ident = $b:tt / $c:tt) => {
         impl_conversion!($a = $b / $c); // A=B/C
         impl_conversion!($c = $b / $a); // C=B/A
         impl_conversion!($b = $a * $c); // B=AC
@@ -69,6 +72,10 @@ impl_relationship! {
 
     Power = Energy * Frequency; // P = E/t = E(1/t) = Ef
     Energy = Mass * const C.squared(); // E=mc²
+}
+
+impl_relationship! {
+    Force = (GravParam / Mass) * (Mass * Mass / Length^2);
 }
 
 

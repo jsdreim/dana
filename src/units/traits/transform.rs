@@ -76,7 +76,9 @@ impl<U: Unit, S: Scalar> Conversion<U, S> {
 pub trait ConvertFrom<U: Unit>: Unit {
     /// Given another unit, return the multiplication factor needed to convert
     ///     to this unit from the other unit.
-    fn conversion_factor_from(&self, unit: U) -> f64;
+    fn conversion_factor_from(&self, unit: U) -> f64 {
+        unit.scale() / self.scale()
+    }
 
     fn conversion_from<S: Scalar>(self, unit: U) -> Conversion<U, S> {
         let factor = self.conversion_factor_from(unit);
@@ -84,18 +86,7 @@ pub trait ConvertFrom<U: Unit>: Unit {
     }
 }
 
-impl<U: Unit> ConvertFrom<U> for U {
-    fn conversion_factor_from(&self, unit: U) -> f64 {
-        unit.scale_factor(*self)
-    }
-}
-
-
-impl<U: Unit, V: ConvertFrom<U>> ConvertInto<V> for U {
-    fn conversion_factor_into(&self, unit: V) -> f64 {
-        unit.conversion_factor_from(*self)
-    }
-}
+impl<U: Unit, W: Unit + Simplify<U>> ConvertFrom<W> for U {}
 
 
 pub trait ConvertInto<U: Unit>: Unit {
@@ -106,6 +97,12 @@ pub trait ConvertInto<U: Unit>: Unit {
     fn conversion_into<S: Scalar>(self, unit: U) -> Conversion<U, S> {
         let factor = self.conversion_factor_into(unit);
         Conversion::scale(unit, S::from_f64(factor).unwrap())
+    }
+}
+
+impl<U: Unit, V: ConvertFrom<U>> ConvertInto<V> for U {
+    fn conversion_factor_into(&self, unit: V) -> f64 {
+        unit.conversion_factor_from(*self)
     }
 }
 
@@ -140,6 +137,12 @@ pub trait CancelRight: UnitBinary {
 
 pub trait Simplify<U: Unit>: Unit {
     fn simplify<S: Scalar>(self) -> Conversion<U, S>;
+}
+
+impl<U: Unit> Simplify<U> for U {
+    fn simplify<S: Scalar>(self) -> Conversion<U, S> {
+        Conversion::units(self)
+    }
 }
 
 pub trait SimplifyLeft<U: Unit>: UnitBinary {

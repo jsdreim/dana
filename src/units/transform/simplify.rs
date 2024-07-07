@@ -2,7 +2,7 @@ use crate::units::{*, traits::*};
 
 
 macro_rules! impl_simplify {
-    //  Direct form: Automatic rearrangement with no effect on value.
+    //region Direct form: Automatic rearrangement with no effect on value.
     (
         $(where $($tvar:ident $(: $req:ident $(+ $reqs:ident)*)?),+;)?
 
@@ -21,7 +21,8 @@ macro_rules! impl_simplify {
             }
         }
     };
-    //  Simple form: Rearrangement of bindings with no effect on value.
+    //endregion
+    //region Simple form: Rearrangement of bindings with no effect on value.
     (
         $(where $($tvar:ident $(: $req:ident $(+ $reqs:ident)*)?),+;)?
 
@@ -40,7 +41,8 @@ macro_rules! impl_simplify {
             }
         }
     };
-    //  Function form: Allow arbitrary code to produce `Conversion`.
+    //endregion
+    //region Function form: Allow arbitrary code to produce `Conversion`.
     (
         // $(where $($tvar:ident $(: $req:ident $(+ $reqs:ident)*)?),+;)?
         $(where $($tvar:ident $(:
@@ -63,12 +65,14 @@ macro_rules! impl_simplify {
                 -> $crate::units::traits::Conversion<$crate::utype!($target), __S>
             {
                 // $($code)*
-                $code
+                let (unit, float) = $code;
+                let factor = __S::from_f64(float).unwrap();
+                Conversion::scale(unit, factor)
             }
         }
     };
-    //  Bound function form: Allow arbitrary code to produce `Conversion`, with
-    //      variables bound to a pattern.
+    //endregion
+    //region Bound function form: Arbitrary code with variables bound to a pattern.
     (
         // $(where $($tvar:ident $(: $req:ident $(+ $reqs:ident)*)?),+;)?
         $(where $($tvar:ident $(:
@@ -78,25 +82,24 @@ macro_rules! impl_simplify {
 
         for $from:tt -> $target:tt
         use $bind:tt in fn($sig:ident)
-        // {$($code:tt)*}
         $code:block
     ) => {
-        impl$(<$($tvar $(:
-        $req$(<$($p_req)*>)?
-        $(+ $reqs$(<$($p_reqs)*>)?)*
-        )?),+>)? Simplify<$crate::utype!($target)>
-        for $crate::utype!($from)
-        {
-            fn simplify<__S: $crate::scalar::Scalar>($sig)
-                -> $crate::units::traits::Conversion<$crate::utype!($target), __S>
-            {
+        impl_simplify!(
+            $(where $($tvar $(:
+            $req$([$($p_req)*])?
+            $(+ $reqs$([$($p_reqs)*])?)*
+            )?),+;)?
+
+            for $from -> $target
+            use fn($sig) {
                 let unit_pat!($bind): $crate::utype!($from) = $sig;
                 // $($code)*
                 $code
             }
-        }
+        );
     };
-    //  Method form: Automatic rearrangement, implemented as Quantity method.
+    //endregion
+    //region Method form: Automatic rearrangement, implemented as Quantity method.
     //  TODO: This should be its own macro.
     (
         $(where $($tvar:ident $(:
@@ -119,6 +122,7 @@ macro_rules! impl_simplify {
             }
         }
     };
+    //endregion
 }
 
 
@@ -208,56 +212,75 @@ impl_simplify! {
 impl_simplify! {
     where U: Unit;
     for (U * U) -> (U^2)
-    use (a * b) in fn(self) {
-        let want = a.scale();
-        let have = b.scale();
-        let factor = __S::from_f64(have / want).unwrap();
-        Conversion::scale(UnitSquared(a), factor)
-    }
+    use (a * b) in fn(self) { (UnitSquared(a), b.scale() / a.scale()) }
 }
 
 //  x² * x = x³
 impl_simplify! {
     where U: Unit;
     for (U^2 * U) -> (U^3)
-    use (a^2 * b) in fn(self) {
-        let want = a.scale();
-        let have = b.scale();
-        let factor = __S::from_f64(have / want).unwrap();
-        Conversion::scale(UnitCubed(a), factor)
-    }
+    use (a^2 * b) in fn(self) { (UnitCubed(a), b.scale() / a.scale()) }
 }
 
 //  x³ / x = x²
 impl_simplify! {
     where U: Unit;
     for (U^3 / U) -> (U^2)
-    use (a^3 / b) in fn(self) {
-        let want = a.scale();
-        let have = b.scale();
-        let factor = __S::from_f64(have / want).unwrap();
-        Conversion::scale(UnitSquared(a), factor)
-    }
+    use (a^3 / b) in fn(self) { (UnitSquared(a), a.scale() / b.scale()) }
 }
 
 //  x² / x = x¹
 impl_simplify! {
     where U: Unit;
     for (U^2 / U) -> U
-    use (a^2 / b) in fn(self) {
-        let want = a.scale();
-        let have = b.scale();
-        let factor = __S::from_f64(have / want).unwrap();
-        Conversion::scale(a, factor)
-    }
+    use (a^2 / b) in fn(self) { (a, a.scale() / b.scale()) }
 }
 //endregion
+
+
+//  (a/b)*b = a
+impl_simplify! {
+    where A: Unit, B: Unit;
+    for ((A/B ) * B ) -> (A)
+    use ((a/b1) * b2) in fn(self) { (a, b2.scale() / b1.scale()) }
+}
+impl_simplify! {
+    where A: Unit, B: Unit;
+    for (B  * (A/B )) -> (A)
+    use (b2 * (a/b1)) in fn(self) { (a, b2.scale() / b1.scale()) }
+}
+
+//  ab/b = a
+impl_simplify! {
+    where A: Unit, B: Unit;
+    for ((A*B ) / B ) -> (A)
+    use ((a*b1) / b2) in fn(self) { (a, b1.scale() / b2.scale()) }
+}
+/*//  Conflicting impl?
+impl_simplify! {
+    where A: Unit, B: Unit;
+    for ((B *A) / B ) -> (A)
+    use ((b1*a) / b2) in fn(self) { (a, b1.scale() / b2.scale()) }
+}*/
 
 
 #[cfg(test)]
 mod tests {
     use crate::Quantity;
     use super::*;
+
+    #[test]
+    fn test_cancel() {
+        let v: Quantity<Speed> = quantity!(2.0 mm/ms);
+        let t: Quantity<Time> = quantity!(3.0 min);
+        let d: Quantity<Length> = (v * t).simplify();
+        assert_eq!(d, quantity!(360.0 m));
+
+        let dt: qtype!(l * t) = quantity!(90.0 m*s);
+        let t: Quantity<Time> = quantity!(0.5 min);
+        let d: Quantity<Length> = (dt / t).simplify();
+        assert_eq!(d, quantity!(3.0 m));
+    }
 
     #[test]
     fn test_compounds() {
@@ -276,12 +299,12 @@ mod tests {
         let x1: Quantity<Distance> = quantity!(2.0 m);
 
         //  Multiply and then simplify to square.
-        let x1_x1:  qtype!(l * l)   = x1*x1.with_unit(Length::Millimeter);
-        let x2:     qtype!(l^2)     = x1_x1.simplify();
+        let x1mul:  qtype!(l * l)   = x1*x1.with_unit(Length::Millimeter);
+        let x2:     qtype!(l^2)     = x1mul.simplify();
 
         //  Multiply and then simplify to cube.
-        let x2_x1:  qtype!(l^2 * l) = x2*x1.with_unit(Length::Kilometer);
-        let x3:     qtype!(l^3)     = x2_x1.simplify();
+        let x2mul:  qtype!(l^2 * l) = x2*x1.with_unit(Length::Kilometer);
+        let x3:     qtype!(l^3)     = x2mul.simplify();
 
         //  Ensure the results match.
         assert_eq!(x2, x1.squared());
@@ -290,5 +313,19 @@ mod tests {
         //  Ensure the results are actually correct.
         assert_eq!(x2, quantity!(4.0 m^2));
         assert_eq!(x3, quantity!(8.0 m^3));
+
+        //  Climb back down.
+
+        //  Divide and then simplify back down to square.
+        let x3div:  qtype!(l^3 / l) = x3/x1.with_unit(Length::Millimeter);
+        let x2:     qtype!(l^2)     = x3div.simplify();
+
+        //  Divide and then simplify back down to square.
+        let x2div:  qtype!(l^2 / l) = x2/x1.with_unit(Length::Kilometer);
+        let x1:     qtype!(l^1)     = x2div.simplify();
+
+        //  Ensure the results are still correct.
+        assert_eq!(x2, quantity!(4.0 m^2));
+        assert_eq!(x1, quantity!(2.0 m^1));
     }
 }

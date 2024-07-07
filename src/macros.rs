@@ -230,7 +230,7 @@ macro_rules! unit_pat {
 
 #[macro_export]
 macro_rules! qtype {
-    ($ty:ty: $($t:tt)*) => {$crate::Quantity<$crate::utype!($($t)*), $ty>};
+    (<$ty:ty> $($t:tt)*) => {$crate::Quantity<$crate::utype!($($t)*), $ty>};
     ($($t:tt)*) => {$crate::Quantity<$crate::utype!($($t)*)>};
 }
 
