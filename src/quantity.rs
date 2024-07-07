@@ -21,7 +21,7 @@ for Quantity<U, V> where
     X: Clone,
 {
     fn eq(&self, other: &Quantity<W, X>) -> bool {
-        let comp = other.clone().convert(self.unit);
+        let comp = other.clone().convert_to(self.unit);
         self.value.eq(&comp.value)
     }
 }
@@ -146,9 +146,17 @@ impl<U: Unit, V: Scalar> Quantity<U, V> {
 //region Methods for unit operations.
 /// Unit conversion.
 impl<U: Unit, V: Scalar + 'static> Quantity<U, V> {
-    /// Perform trait-based unit conversion. This kind of conversion can cross
-    ///     between [`Unit`] types.
-    pub fn convert<W: Unit>(self, unit: W) -> Quantity<W, V> where
+    /// Perform trait-based unit conversion to the default of a unit type. This
+    ///     kind of conversion can cross between [`Unit`] types.
+    pub fn convert<W: Unit>(self) -> Quantity<W, V> where
+        U: ConvertInto<W>,
+    {
+        self.convert_to(W::default())
+    }
+
+    /// Perform trait-based unit conversion to a specific unit. This kind of
+    ///     conversion can cross between [`Unit`] types.
+    pub fn convert_to<W: Unit>(self, unit: W) -> Quantity<W, V> where
         U: ConvertInto<W>,
     {
         self.unit.conversion_into(unit).quantity(self.value)

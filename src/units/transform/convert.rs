@@ -71,6 +71,7 @@ impl_relationship! {
     Energy = Mass * const C.squared(); // E=mc²
 }
 
+
 #[cfg(test)]
 mod tests {
     use crate::Quantity;
@@ -79,7 +80,7 @@ mod tests {
     #[test]
     fn test_e_mc2() {
         let m: Quantity<Mass> = quantity!(1.0 kg);
-        let e: Quantity<Energy> = quantity!(m as J);
+        let e: Quantity<Energy> = quantity!(m in J);
         assert_eq!(e.value_as(Energy::KiloJoule).floor(), 89_875_517_873_681.0);
     }
 
@@ -99,16 +100,16 @@ mod tests {
         let r: Quantity<Resistance> = quantity!(150.0 Ω);
 
         //  Should measure 22mA of current through the resistor.
-        let i: Quantity<Current> = quantity!((v / r) as A);
+        let i: Quantity<Current> = quantity!((v / r) in A);
         assert_eq!(i, quantity!(22.0 mA));
 
         //  Resistor should be dissipating 72.6mW as heat.
-        let p: Quantity<Power> = quantity!((i * v) as W);
+        let p: Quantity<Power> = quantity!((i * v) in W);
         assert_eq!(p, quantity!(72.6 mW));
 
         //  After 5 minutes, should have dissipated 21.78J in total.
         let t: Quantity<Time> = quantity!(300.0 s);
-        let e: Quantity<Energy> = quantity!((p * t) as J);
+        let e: Quantity<Energy> = quantity!((p * t) in J);
         assert_eq!(e, quantity!(21.78 J));
     }
 }

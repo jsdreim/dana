@@ -35,7 +35,7 @@ pub trait Unit: Copy + Default + std::fmt::Display + PartialEq {
         U: ConvertInto<Self>,
         V: Scalar + 'static,
     {
-        qty.convert(self)
+        qty.convert_to(self)
     }
 }
 
