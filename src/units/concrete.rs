@@ -53,7 +53,7 @@ macro_rules! unit_from_symbol {
 
     (@ms) => { $crate::units::concrete::Time::Millisecond };
     (@s) => { $crate::units::concrete::Time::Second };
-    // (@M) => { $crate::units::concrete::Time::Minute };
+    (@min) => { $crate::units::concrete::Time::Minute };
     (@h) => { $crate::units::concrete::Time::Hour };
 
     (@mHz) => { $crate::units::concrete::Time::MilliHertz };
