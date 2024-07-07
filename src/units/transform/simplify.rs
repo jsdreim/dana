@@ -271,32 +271,32 @@ mod tests {
 
     #[test]
     fn test_cancel() {
-        let v: Quantity<Speed> = quantity!(2.0 mm/ms);
-        let t: Quantity<Time> = quantity!(3.0 min);
+        let v: Quantity<Speed> = qty!(2.0 mm/ms);
+        let t: Quantity<Time> = qty!(3.0 min);
         let d: Quantity<Length> = (v * t).simplify();
-        assert_eq!(d, quantity!(360.0 m));
+        assert_eq!(d, qty!(360.0 m));
 
-        let dt: qtype!(l * t) = quantity!(90.0 m*s);
-        let t: Quantity<Time> = quantity!(0.5 min);
+        let dt: qtype!(l * t) = qty!(90.0 m*s);
+        let t: Quantity<Time> = qty!(0.5 min);
         let d: Quantity<Length> = (dt / t).simplify();
-        assert_eq!(d, quantity!(3.0 m));
+        assert_eq!(d, qty!(3.0 m));
     }
 
     #[test]
     fn test_compounds() {
-        let l = quantity!(5.0 m);
-        let t = quantity!(2.0/s);
+        let l = qty!(5.0 m);
+        let t = qty!(2.0/s);
 
         let q: qtype!(l * (1/t)) = l * t;
         let v: qtype!(l / t) = q.simplify();
 
-        assert_eq!(v, quantity!(10.0 m/s));
+        assert_eq!(v, qty!(10.0 m/s));
     }
 
     #[test]
     fn test_powers() {
         //  Start with basic length.
-        let x1: Quantity<Distance> = quantity!(2.0 m);
+        let x1: Quantity<Distance> = qty!(2.0 m);
 
         //  Multiply and then simplify to square.
         let x1mul:  qtype!(l * l)   = x1*x1.with_unit(Length::Millimeter);
@@ -311,8 +311,8 @@ mod tests {
         assert_eq!(x3, x1.cubed());
 
         //  Ensure the results are actually correct.
-        assert_eq!(x2, quantity!(4.0 m^2));
-        assert_eq!(x3, quantity!(8.0 m^3));
+        assert_eq!(x2, qty!(4.0 m^2));
+        assert_eq!(x3, qty!(8.0 m^3));
 
         //  Climb back down.
 
@@ -325,7 +325,7 @@ mod tests {
         let x1:     qtype!(l^1)     = x2div.simplify();
 
         //  Ensure the results are still correct.
-        assert_eq!(x2, quantity!(4.0 m^2));
-        assert_eq!(x1, quantity!(2.0 m^1));
+        assert_eq!(x2, qty!(4.0 m^2));
+        assert_eq!(x1, qty!(2.0 m^1));
     }
 }

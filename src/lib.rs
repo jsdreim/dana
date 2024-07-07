@@ -48,9 +48,9 @@ mod tests {
         let _: utype!(l^-2.0) = u.pow(2.0).inv();
 
 
-        //  Use that unit for a quantity, and ensure `quantity!` correctly
+        //  Use that unit for a quantity, and ensure the `qty!` macro correctly
         //      produces one.
-        let q: Quantity<Length> = quantity!(2.0 u);
+        let q: Quantity<Length> = qty!(2.0 u);
         assert_eq!(q, q.inv().inv());
 
         //  Confirm that `qtype!` produces types that agree.

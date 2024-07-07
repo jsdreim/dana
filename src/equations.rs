@@ -30,14 +30,14 @@ mod tests {
 
     #[test]
     fn test_gravity() {
-        let m1 = quantity!(5.0 kg);
-        let m2 = quantity!(5.0 kg);
-        let d = quantity!(20.0 mm);
+        let m1 = qty!(5.0 kg);
+        let m2 = qty!(5.0 kg);
+        let d = qty!(20.0 mm);
         let f = gravity(m1, m2, d);
 
         assert_eq!(
             format!("{:.3e}", f),
-            format!("{:.3e}", quantity!(4.171e-6 N)),
+            format!("{:.3e}", qty!(4.171e-6 N)),
         );
     }
 }

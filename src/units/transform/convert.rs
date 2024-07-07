@@ -86,37 +86,37 @@ mod tests {
 
     #[test]
     fn test_e_mc2() {
-        let m: Quantity<Mass> = quantity!(1.0 kg);
-        let e: Quantity<Energy> = quantity!(m in J);
+        let m: Quantity<Mass> = qty!(1.0 kg);
+        let e: Quantity<Energy> = qty!(m in J);
         assert_eq!(e.value_as(Energy::KiloJoule).floor(), 89_875_517_873_681.0);
     }
 
     #[test]
     fn test_f_ma() {
-        let m: Quantity<Mass> = quantity!(2.0 kg);
-        let a: Quantity<Accel> = quantity!(3.0 km/s/s);
+        let m: Quantity<Mass> = qty!(2.0 kg);
+        let a: Quantity<Accel> = qty!(3.0 km/s/s);
 
-        let f: Quantity<Force> = quantity!((m * a) as _);
-        assert_eq!(f, quantity!(6.0 kN));
+        let f: Quantity<Force> = qty!((m * a) as _);
+        assert_eq!(f, qty!(6.0 kN));
     }
 
     #[test]
     fn test_electrical() {
         //  3V3 across a 150Ω resistor.
-        let v: Quantity<Voltage> = quantity!(3.3 V);
-        let r: Quantity<Resistance> = quantity!(150.0 Ω);
+        let v: Quantity<Voltage> = qty!(3.3 V);
+        let r: Quantity<Resistance> = qty!(150.0 Ω);
 
         //  Should measure 22mA of current through the resistor.
-        let i: Quantity<Current> = quantity!((v / r) in A);
-        assert_eq!(i, quantity!(22.0 mA));
+        let i: Quantity<Current> = qty!((v / r) in A);
+        assert_eq!(i, qty!(22.0 mA));
 
         //  Resistor should be dissipating 72.6mW as heat.
-        let p: Quantity<Power> = quantity!((i * v) in W);
-        assert_eq!(p, quantity!(72.6 mW));
+        let p: Quantity<Power> = qty!((i * v) in W);
+        assert_eq!(p, qty!(72.6 mW));
 
         //  After 5 minutes, should have dissipated 21.78J in total.
-        let t: Quantity<Time> = quantity!(300.0 s);
-        let e: Quantity<Energy> = quantity!((p * t) in J);
-        assert_eq!(e, quantity!(21.78 J));
+        let t: Quantity<Time> = qty!(300.0 s);
+        let e: Quantity<Energy> = qty!((p * t) in J);
+        assert_eq!(e, qty!(21.78 J));
     }
 }

@@ -235,7 +235,7 @@ macro_rules! qtype {
 }
 
 #[macro_export]
-macro_rules! quantity {
+macro_rules! qty {
     //  Convert a quantity to the default of an inferred unit type.
     ($qty:tt as _)         => { $qty.convert() };
     ($qty:tt in _)         => { $qty.convert() };
