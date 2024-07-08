@@ -25,14 +25,20 @@ macro_rules! define_symbols {
     ($($vis:vis mod $module:ident for type $unit:tt $(as $($uname:ident),+)? {
         $(const $alias:ident $(: $atype:tt)? = $val:tt);*   $(;)?
     })*) => {
-        $($vis use self::$module::*;
-
-        $vis mod $module {
+        $($vis mod $module {
             #[allow(unused_imports)]
             use crate::units::concrete::*;
             $($(pub type $uname = super::$unit;)+)?
             $(define_symbols!(@ super::$unit; $alias $(: $atype)? = $val);)*
         })*
+    };
+
+    //  Define type modules, and then import everything from all of them.
+    (use; $($vis:vis mod $module:ident for type $u:tt $(as $($n:ident),+)? {$($b:tt)*})*) => {
+        $(
+        $vis use self::$module::*;
+        define_symbols!($vis mod $module for type $u $(as $($n),+)? {$($b)*});
+        )*
     };
 
     //  Define a group module, containing symbols from other modules.
@@ -43,6 +49,15 @@ macro_rules! define_symbols {
     //  Internal: Definitions for consts.
     (@ $utype:ty; $alias:ident            = $variant:ident) => {
         pub const $alias: $utype = <$utype>::$variant;
+    };
+    (@ $utype:ty; $alias:ident            = [$($unit:tt)*]) => {
+        pub const $alias: $utype = {
+            use super::*;
+            $crate::unit!($($unit)*)
+        };
+    };
+    (@ $utype:ty; $alias:ident            = $value:expr) => {
+        pub const $alias: $utype = $value;
     };
     (@ $utype:ty; $alias:ident: $atype:tt = $($unit:tt)*) => {
         pub const $alias: $crate::utype!($atype) = {
@@ -64,11 +79,27 @@ pub mod common {
 
 
 define_symbols!(pub mod basic(length, mass, time, speed, accel));
-define_symbols!(pub mod physics(basic, energy, frequency, force, momentum));
-define_symbols!(pub mod electricity(power, current, voltage, resistance));
+define_symbols!(pub mod geometric(length, area, volume));
+define_symbols!(pub mod physical(basic, energy, frequency, force, momentum));
+define_symbols!(pub mod electrical(power, current, voltage, resistance));
 
 
 define_symbols! {
+    pub mod area for type Area as A {}
+    pub mod volume for type Volume as V {}
+    pub mod density for type Density as D {}
+    pub mod pressure for type Pressure as P {
+        const  Pa = [ N / m^2];
+        const kPa = [kN / m^2];
+        const MPa = [MN / m^2];
+        const GPa = [GN / m^2];
+    }
+}
+
+
+define_symbols! {
+    use;
+
     pub mod speed for type Speed as v {
         const kph: (Length / Time) = (km/h);
     }

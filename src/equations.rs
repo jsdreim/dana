@@ -1,4 +1,4 @@
-use crate::{constants::*, quantity::Quantity, units::{*, symbols::physics::*}};
+use crate::{constants::*, quantity::Quantity, units::{*, symbols::physical::*}};
 
 
 impl Quantity<Mass> {
