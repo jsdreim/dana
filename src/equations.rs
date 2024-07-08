@@ -40,4 +40,16 @@ mod tests {
             format!("{:.3e}", qty!(4.171e-6 N)),
         );
     }
+
+    #[test]
+    fn test_gravity_earth() {
+        let m_stone: Quantity<Mass> = qty![90.0 kg];
+        let m_earth: Quantity<Mass> = qty![5.9722e24 kg];
+        let r_earth: Quantity<Length> = qty![6.3781e6 m];
+
+        let f: Quantity<Force> = gravity(m_stone, m_earth, r_earth);
+        let a: Quantity<Accel> = qty![(f / m_stone) as _];
+
+        assert!((GFORCE - a).abs() < qty![1.0 cm/s/s]);
+    }
 }
