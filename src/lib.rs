@@ -2,6 +2,7 @@
 mod macros;
 
 pub mod constants;
+pub mod equations;
 pub mod quantity;
 pub mod scalar;
 pub mod units;
