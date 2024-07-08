@@ -56,10 +56,10 @@ macro_rules! unit_from_symbol {
     (@min) => { $crate::units::concrete::Time::Minute };
     (@h) => { $crate::units::concrete::Time::Hour };
 
-    (@mHz) => { $crate::units::concrete::Time::MilliHertz };
-    (@Hz) => { $crate::units::concrete::Time::Hertz };
-    (@kHz) => { $crate::units::concrete::Time::KiloHertz };
-    (@MHz) => { $crate::units::concrete::Time::MegaHertz };
+    (@mHz) => { $crate::units::concrete::Frequency::MilliHertz };
+    (@Hz) => { $crate::units::concrete::Frequency::Hertz };
+    (@kHz) => { $crate::units::concrete::Frequency::KiloHertz };
+    (@MHz) => { $crate::units::concrete::Frequency::MegaHertz };
 
     (@N) => { $crate::units::concrete::Force::Newton };
     (@kN) => { $crate::units::concrete::Force::KiloNewton };
