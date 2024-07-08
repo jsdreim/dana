@@ -81,7 +81,7 @@ impl_relationship! {
 
 #[cfg(test)]
 mod tests {
-    use crate::Quantity;
+    use crate::{Quantity, units::symbols::*};
     use super::*;
 
     #[test]
@@ -93,11 +93,11 @@ mod tests {
 
     #[test]
     fn test_f_ma() {
-        let m: Quantity<Mass> = qty![2.0 kg];
-        let a: Quantity<Accel> = qty![3.0 km/s/s];
+        let mass: Quantity<Mass> = qty![2.0 kg];
+        let accel: Quantity<Accel> = qty![3.0 km/s/s];
 
-        let f: Quantity<Force> = qty![(m * a) as _];
-        assert_eq!(qty![*f in kN], 6.0);
+        let force: Quantity<Force> = qty![(mass * accel) as _];
+        assert_eq!(qty![*force in kN], 6.0);
     }
 
     #[test]

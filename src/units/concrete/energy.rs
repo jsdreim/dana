@@ -12,10 +12,6 @@ pub enum Energy {
     TeraJoule,
 }
 
-impl Energy {
-    pub const KWH: utype!(P*t) = unit!(kW*h);
-}
-
 impl Unit for Energy {
     // type ScaleType = f64;
 

@@ -15,13 +15,13 @@ pub use units::Unit;
 #[cfg(test)]
 mod tests {
     use num_traits::Inv;
-    use crate::{Quantity, units::{*, traits::*}};
+    use crate::{Quantity, units::{*, symbols::basic::*, traits::*}};
 
     #[test]
     pub fn test_macros() {
         //  Start with a basic length unit, and ensure `unit!` correctly
         //      produces one.
-        let u: Length = unit!(m);
+        let u: Length = m;
         assert_eq!(u, u.inv().inv());
 
         //  Confirm that `utype!` produces types that agree.
@@ -81,11 +81,11 @@ mod tests {
 
     #[test]
     fn test_scale() {
-        let dist = Distance::Millimeter.quantity(50.0);
+        let dist = Distance::MilliMeter.quantity(50.0);
 
-        let mm = dist.with_unit(Distance::Millimeter).value;
-        let cm = dist.with_unit(Distance::Centimeter).value;
+        let as_mm = dist.with_unit(Distance::MilliMeter).value;
+        let as_cm = dist.with_unit(Distance::CentiMeter).value;
 
-        dbg!(mm, cm);
+        assert_eq!(as_mm, as_cm * 10.0);
     }
 }

@@ -3,10 +3,10 @@ use crate::units::{Unit, UnitConcrete};
 
 #[derive(Clone, Copy, Debug, PartialEq, PartialOrd, /*Eq, Ord*/)]
 pub enum Distance {
-    Millimeter,
-    Centimeter,
+    MilliMeter,
+    CentiMeter,
     Meter,
-    Kilometer,
+    KiloMeter,
 }
 
 impl Unit for Distance {
@@ -14,10 +14,10 @@ impl Unit for Distance {
 
     fn scale(&self) -> f64 {
         match self {
-            Self::Millimeter => 1e-3,
-            Self::Centimeter => 1e-2,
+            Self::MilliMeter => 1e-3,
+            Self::CentiMeter => 1e-2,
             Self::Meter => 1e0,
-            Self::Kilometer => 1e+3,
+            Self::KiloMeter => 1e+3,
         }
     }
 }
@@ -27,10 +27,10 @@ impl UnitConcrete for Distance {
 
     fn symbol(&self) -> &'static str {
         match self {
-            Self::Millimeter => "mm",
-            Self::Centimeter => "cm",
+            Self::MilliMeter => "mm",
+            Self::CentiMeter => "cm",
             Self::Meter => "m",
-            Self::Kilometer => "km",
+            Self::KiloMeter => "km",
         }
     }
 }

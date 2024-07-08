@@ -1,4 +1,4 @@
-use crate::units::*;
+use crate::units::{*, symbols::*};
 
 
 /// Speed of light travelling through a perfect vacuum.
@@ -16,7 +16,7 @@ pub const C: qtype!(Speed) = qty!(299_792_458.0 m/s);
 ///
 /// [m]: Distance::Meter
 /// [s]: Time::Second
-/// [kg]: Mass::Kilogram
+/// [kg]: Mass::KiloGram
 pub const G: qtype!(GravParam / Mass) = qty!(6.6743e-11 m^3/s^2/kg);
 
 

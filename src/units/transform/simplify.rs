@@ -266,7 +266,7 @@ impl_simplify! {
 
 #[cfg(test)]
 mod tests {
-    use crate::Quantity;
+    use crate::{Quantity, units::symbols::basic::*};
     use super::*;
 
     #[test]
@@ -299,11 +299,11 @@ mod tests {
         let x1: Quantity<Distance> = qty!(2.0 m);
 
         //  Multiply and then simplify to square.
-        let x1mul:  qtype!(l * l)   = x1*x1.with_unit(Length::Millimeter);
+        let x1mul:  qtype!(l * l)   = x1*x1.with_unit(Length::MilliMeter);
         let x2:     qtype!(l^2)     = x1mul.simplify();
 
         //  Multiply and then simplify to cube.
-        let x2mul:  qtype!(l^2 * l) = x2*x1.with_unit(Length::Kilometer);
+        let x2mul:  qtype!(l^2 * l) = x2*x1.with_unit(Length::KiloMeter);
         let x3:     qtype!(l^3)     = x2mul.simplify();
 
         //  Ensure the results match.
@@ -317,11 +317,11 @@ mod tests {
         //  Climb back down.
 
         //  Divide and then simplify back down to square.
-        let x3div:  qtype!(l^3 / l) = x3/x1.with_unit(Length::Millimeter);
+        let x3div:  qtype!(l^3 / l) = x3/x1.with_unit(Length::MilliMeter);
         let x2:     qtype!(l^2)     = x3div.simplify();
 
         //  Divide and then simplify back down to square.
-        let x2div:  qtype!(l^2 / l) = x2/x1.with_unit(Length::Kilometer);
+        let x2div:  qtype!(l^2 / l) = x2/x1.with_unit(Length::KiloMeter);
         let x1:     qtype!(l^1)     = x2div.simplify();
 
         //  Ensure the results are still correct.

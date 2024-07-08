@@ -7,8 +7,6 @@ macro_rules! utype {
     (($($t:tt)+)) => { $crate::utype!($($t)+) };
     ({$($t:tt)+}) => { $crate::utype!($($t)+) };
 
-    //  Try to interpret a single token as a unit type symbol.
-    ($u:tt) => { $crate::utype_from_symbol!($u) };
     //  Pass through a single path.
     ($p:path) => { $p };
 
@@ -84,8 +82,6 @@ macro_rules! unit {
     (($($t:tt)+)) => { $crate::unit!($($t)+) };
     ({$($t:tt)+}) => { $crate::unit!($($t)+) };
 
-    //  Try to interpret a single token as a unit symbol.
-    ($u:tt) => { $crate::unit_from_symbol!($u) };
     //  Pass through a single path.
     ($p:path) => { $p };
 
