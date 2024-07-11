@@ -36,7 +36,11 @@ impl<A1, B1, A2, B2> ConvertFrom<UnitDiv<A1, B1>> for UnitDiv<A2, B2> where
     A1: ConvertInto<A2>,
     B1: ConvertInto<B2>,
     A2: Unit, B2: Unit,
-{}
+{
+    fn conversion_factor_from(&self, unit: UnitDiv<A1, B1>) -> f64 {
+        unit.0.conversion_factor_into(self.0) / unit.1.conversion_factor_into(self.1)
+    }
+}
 
 impl<A: Unit, B: Unit> UnitCompound for UnitDiv<A, B> {}
 impl<A: Unit, B: Unit> UnitNonExp for UnitDiv<A, B> {}

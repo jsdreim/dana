@@ -29,7 +29,11 @@ impl<U: Unit> std::fmt::Display for PerUnit<U> {
 }
 
 
-impl<U1: ConvertInto<U2>, U2: Unit> ConvertFrom<PerUnit<U1>> for PerUnit<U2> {}
+impl<U1: ConvertInto<U2>, U2: Unit> ConvertFrom<PerUnit<U1>> for PerUnit<U2> {
+    fn conversion_factor_from(&self, unit: PerUnit<U1>) -> f64 {
+        1.0 / unit.0.conversion_factor_into(self.0)
+    }
+}
 
 // impl<U: Unit> UnitNonExp for PerUnit<U> {}
 
