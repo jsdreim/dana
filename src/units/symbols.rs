@@ -25,7 +25,8 @@ macro_rules! define_symbols {
     ($($vis:vis mod $module:ident for type $unit:tt $(as $($uname:ident),+)? {
         $(const $alias:ident $(: $atype:tt)? = $val:tt);*   $(;)?
     })*) => {
-        $($vis mod $module {
+        $($vis use self::$module::*;
+        $vis mod $module {
             #[allow(unused_imports)]
             use crate::units::concrete::*;
             $($(pub type $uname = super::$unit;)+)?
@@ -79,26 +80,26 @@ pub mod common {
 
 
 define_symbols!(pub mod basic(length, mass, time, speed, accel));
-define_symbols!(pub mod geometric(length, area, volume));
+// define_symbols!(pub mod geometric(length, area, volume));
 define_symbols!(pub mod physical(basic, energy, frequency, force, momentum));
 define_symbols!(pub mod electrical(power, current, voltage, resistance));
 
 
-define_symbols! {
-    pub mod area for type Area as A {}
-    pub mod volume for type Volume as V {}
-    pub mod density for type Density as D {}
-    pub mod pressure for type Pressure as P {
-        const  Pa = [ N / m^2];
-        const kPa = [kN / m^2];
-        const MPa = [MN / m^2];
-        const GPa = [GN / m^2];
-    }
-}
+// define_symbols! {
+//     pub mod area for type Area as A {}
+//     pub mod volume for type Volume as V {}
+//     pub mod density for type Density as D {}
+//     pub mod pressure for type Pressure as P {
+//         const  Pa = [ N / m^2];
+//         const kPa = [kN / m^2];
+//         const MPa = [MN / m^2];
+//         const GPa = [GN / m^2];
+//     }
+// }
 
 
 define_symbols! {
-    use;
+    // use;
 
     pub mod speed for type Speed as v {
         const kph: (Length / Time) = (km/h);
