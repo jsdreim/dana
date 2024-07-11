@@ -17,6 +17,8 @@ macro_rules! concrete_types {
 }
 
 concrete_types!(
+    // one::One,
+
     distance::Distance,
     mass::Mass,
     time::Time,
