@@ -153,6 +153,58 @@ macro_rules! impl_simplify {
 }
 
 
+/*conv_macros::impl_reorg! {
+    where U: Unit;
+
+    // impl U^-3 {}
+
+    impl U^-2 {
+        as (1/U)^2;
+    }
+
+    impl U^-1 {}
+
+    // impl U^ 0 {}
+
+    impl U^+1 {
+        as 1/(1/U);
+
+        // as U^2 / U;
+        // as U^3 / U^2;
+    }
+
+    // impl U^+2 {
+    //     as U * U;
+    //     as U^3 / U;
+    // }
+    //
+    // impl U^+3 {
+    //     as (U*U) * U;
+    //     as U * (U*U);
+    //     as U * U^2;
+    //     as U^2 * U;
+    //     // as U^4 / U;
+    // }
+
+    // impl U^+4 {}
+}*/
+
+
+/*conv_macros::impl_reorg! {
+    where A: Unit, B: Unit;
+
+    // impl A * B {
+    //     // as B * A;
+    //     as A / B^-1;
+    // }
+    impl A / B {
+        as A * B^-1;
+        // as B^-1 * A;
+    }
+    // impl A^3 / B^2 {}
+}*/
+
+
 //  1/(1/x) = x
 impl_simplify! {
     where U: Unit;
