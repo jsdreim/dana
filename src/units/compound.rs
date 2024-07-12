@@ -6,6 +6,7 @@ pub mod unit_mul;
 pub mod unit_pow_2;
 pub mod unit_pow_3;
 pub mod unit_pow_n;
+pub mod unit_pow_n_const_2;
 
 pub use per_unit::PerUnit;
 pub use unit_div::UnitDiv;
