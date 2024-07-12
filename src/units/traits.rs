@@ -64,7 +64,7 @@ impl<U: UnitConcrete> ConvertFrom<U> for U {}
 //region Exponential traits.
 pub trait UnitNonExp: Unit {}
 
-//region Positive exponents.
+//region Positive prime exponents.
 pub trait CanSquare: Unit {
     type Output: Unit;
     fn squared(self) -> Self::Output;
@@ -74,6 +74,23 @@ pub trait CanCube: Unit {
     type Output: Unit;
     fn cubed(self) -> Self::Output;
 }
+
+//region Composite exponents.
+pub trait CanPow4: Unit {
+    type Output: Unit;
+    fn pow_4(self) -> Self::Output;
+}
+
+impl<U: CanSquare> CanPow4 for U where
+    U::Output: CanSquare,
+{
+    type Output = <U::Output as CanSquare>::Output;
+
+    fn pow_4(self) -> Self::Output {
+        self.squared().squared()
+    }
+}
+//endregion
 
 pub trait CanPow<P: super::compound::unit_pow_n::Exp>: Unit {
     type Output: Unit;
@@ -91,6 +108,23 @@ pub trait CanCubeRoot: Unit {
     type Output: Unit;
     fn cbrt(self) -> Self::Output;
 }
+
+//region Composite roots.
+pub trait CanRoot4: Unit {
+    type Output: Unit;
+    fn root_4(self) -> Self::Output;
+}
+
+impl<U: CanSquareRoot> CanRoot4 for U where
+    U::Output: CanSquareRoot,
+{
+    type Output = <U::Output as CanSquareRoot>::Output;
+
+    fn root_4(self) -> Self::Output {
+        self.sqrt().sqrt()
+    }
+}
+//endregion
 
 pub trait CanRoot<R: super::compound::unit_pow_n::Exp>: Unit {
     type Output: Unit;
