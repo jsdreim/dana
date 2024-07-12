@@ -2,11 +2,10 @@ use crate::units::{*, traits::*};
 
 
 macro_rules! impl_simplify {
-    //region Direct form: Automatic rearrangement with no effect on value.
-    (
+    //region Internal: Automatic rearrangement (single implementation).
+    (@
         $(where $($tvar:ident $(: $req:ident $(+ $reqs:ident)*)?),+;)?
-
-        let $from:tt = $target:tt;
+        impl $from:tt => $target:tt;
     ) => {
         impl$(<$($tvar $(: $req $(+ $reqs)*)?),+>)?
         Simplify<$crate::utype!($target)>
@@ -20,6 +19,32 @@ macro_rules! impl_simplify {
                 Conversion::units(unit_pat!($target))
             }
         }
+    };
+    //endregion
+    //region Direct form: Automatic rearrangement with no effect on value.
+    (
+        $(where $($tvar:ident $(: $req:ident $(+ $reqs:ident)*)?),+;)?
+        impl $from:tt -> $target:tt;
+    ) => {
+        impl_simplify!(@
+            $(where $($tvar$(:$req$(+$reqs)*)?),+;)?
+            impl $from => $target;
+        );
+    };
+    //endregion
+    //region Two-way direct form: Automatic rearrangement with no effect on value.
+    (
+        $(where $($tvar:ident $(: $req:ident $(+ $reqs:ident)*)?),+;)?
+        impl $from:tt <-> $target:tt;
+    ) => {
+        impl_simplify!(@
+            $(where $($tvar$(:$req$(+$reqs)*)?),+;)?
+            impl $from => $target;
+        );
+        impl_simplify!(@
+            $(where $($tvar$(:$req$(+$reqs)*)?),+;)?
+            impl $target => $from;
+        );
     };
     //endregion
     //region Simple form: Rearrangement of bindings with no effect on value.
@@ -99,19 +124,20 @@ macro_rules! impl_simplify {
         );
     };
     //endregion
-    //region Method form: Automatic rearrangement, implemented as Quantity method.
-    //  TODO: This should be its own macro.
+    //region Method form: Automatic rearrangements, implemented as Quantity methods.
     (
         $(where $($tvar:ident $(:
         $req:ident$([$($p_req:tt)*])?
         $(+ $reqs:ident$([$($p_reqs:tt)*])?)*
         )?),+;)?
 
-        impl $from:tt -> $target:tt
-        as $vis:vis fn $function:ident();
+        impl $from:tt {
+            $($vis:vis fn $function:ident() -> $target:tt;)*
+        }
     ) => {
-        impl<__V: $crate::scalar::Scalar $($(, $tvar $(: $req $(+ $reqs)*)?)+)?>
+        impl<__V: $crate::scalar::Scalar + 'static $($(, $tvar $(: $req $(+ $reqs)*)?)+)?>
         $crate::quantity::Quantity<$crate::utype!($from), __V> {
+            $(
             $vis fn $function(self) -> $crate::quantity::Quantity<$crate::utype!($target), __V> {
                 #[allow(non_snake_case)]
                 let unit_pat!($from): $crate::utype!($from) = self.unit;
@@ -120,6 +146,7 @@ macro_rules! impl_simplify {
                     unit: unit_pat!($target),
                 }
             }
+            )*
         }
     };
     //endregion
@@ -129,65 +156,96 @@ macro_rules! impl_simplify {
 //  1/(1/x) = x
 impl_simplify! {
     where U: Unit;
-    let (1/(1/U)) = U;
+    impl (1/(1/U)) <-> U;
 }
 
 //  1/(a/b) = b/a
 impl_simplify! {
     where A: Unit, B: Unit;
-    let (1/(A/B)) = (B/A);
+    impl (1/(A/B)) <-> (B/A);
 }
 
 //region Single fractions.
 //  a * (1/b) = a/b
 impl_simplify! {
     where A: UnitNonExp, B: Unit;
-    let (A * (1/B)) = (A/B);
+    impl (A * (1/B)) <-> (A/B);
 }
 impl_simplify! {
     where A: UnitNonExp, B: Unit;
-    let ((1/B) * A) = (A/B);
+    impl ((1/B) * A) <-> (A/B);
 }
+impl_simplify! {
+    where A: UnitNonExp, B: Unit;
+    impl (A / (1/B)) <-> (A*B);
+}
+// impl_simplify! {
+//     where A: UnitNonExp, B: Unit;
+//     impl (A / (1/B)) <-> (B*A);
+// }
 
 //  a / (b/c) = ac/b
 impl_simplify! {
     where A: Unit, B: Unit, C: Unit;
-    let (A/(B/C)) = ((A*C)/B);
+    impl (A / (B/C)) <-> ((A*C) / B);
 }
 
 //  a / (b/c) = a * (c/b)
 impl_simplify! {
     where A: Unit, B: Unit, C: Unit;
-    let (A / (B/C)) = (A * (C/B));
+    impl (A / (B/C)) <-> (A * (C/B));
 }
 
-//  a * (b/c) = a / (c/b)
+
+//  a / b² = a/b/b
 impl_simplify! {
-    where A: Unit, B: Unit, C: Unit;
-    let (A * (B/C)) = (A / (C/B));
+    where A: Unit, B: Unit;
+    impl (A / B^2) -> (A/B/B);
 }
+//  a/b/b = a / b²
+impl_simplify! {
+    where A: Unit, B: Unit;
+    for (A/B /B ) -> (A / B^2)
+    use (a/b1/b2) in fn(self) { (UnitDiv(a, UnitSquared(b1)), b2.scale_factor(b1)) }
+}
+
 
 //  TODO: Move elsewhere, probably.
-// //  a / (b/c) = a * (c/b)
-// impl_simplify! {
-//     where A: Unit, B: Unit, C: Unit;
-//     impl (A / (B/C)) -> (A * (C/B))
-//     as pub fn invert_right();
-// }
-//
-// //  a * (b/c) = a / (c/b)
-// impl_simplify! {
-//     where A: Unit, B: Unit, C: Unit;
-//     impl (A * (B/C)) -> (A / (C/B))
-//     as pub fn invert_right();
-// }
+impl_simplify! {
+    where A: Unit, B: Unit, C: Unit;
+    impl ((A/B) * C) {
+        //  (a/b) * c = c / (b/a)
+        pub fn invert_left() -> (C / (B/A));
+    }
+}
+impl_simplify! {
+    where A: Unit, B: Unit, C: Unit;
+    impl (A * (B/C)) {
+        //  a * (b/c) = a / (c/b)
+        pub fn invert_right() -> (A / (C/B));
+    }
+}
 //endregion
 
 //region Pairs of fractions.
 //  (1/a) * (1/b) = 1/ab
 impl_simplify! {
     where A: Unit, B: Unit;
-    let ((1/A) * (1/B)) = (1/(A*B));
+    impl ((1/A) * (1/B)) <-> (1/(A*B));
+}
+
+//  (a/b) * (1/b) = a/b²
+impl_simplify! {
+    where A: Unit, B: Unit;
+    for ((A/B ) * (1/B )) -> (A/B^2)
+    use ((a/b1) * (1/b2)) in fn(self) { (UnitDiv(a, UnitSquared(b1)), b2.scale_factor(b1)) }
+}
+
+//  (a/b) / (1/b) = a
+impl_simplify! {
+    where A: Unit, B: Unit;
+    for ((A/B ) / (1/B )) -> A
+    use ((a/b1) / (1/b2)) in fn(self) { (a, b2.scale_factor(b1)) }
 }
 
 //  (a/c) * (b/d) = ab/cd
@@ -195,7 +253,7 @@ impl_simplify! {
     where
     A: Unit, B: Unit,
     C: Unit, D: Unit;
-    let ((A/C) * (B/D)) = ((A*B) / (C*D));
+    impl ((A/C) * (B/D)) <-> ((A*B) / (C*D));
 }
 
 //  (a/c) / (b/d) = ad/cb
@@ -203,7 +261,7 @@ impl_simplify! {
     where
     A: Unit, B: Unit, // a b    ad
     C: Unit, D: Unit; // c d    cb
-    let ((A/C) / (B/D)) = ((A*D) / (C*B));
+    impl ((A/C) / (B/D)) <-> ((A*D) / (C*B));
 }
 //endregion
 

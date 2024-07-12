@@ -244,6 +244,10 @@ macro_rules! qty {
     [$qty:tt as $($t:tt)*] => { $crate::qty![$qty].convert::<$crate::utype!($($t)*)>() };
     //  Convert a quantity to a specified unit.
     [$qty:tt in $($t:tt)*] => { $crate::qty![$qty].convert_to($crate::unit!($($t)*))   };
+
+    //  Reorganize the units of a quantity.
+    [$qty:tt -> $($t:tt)*] => { $crate::qty![$qty].simplify::<$crate::utype!($($t)*)>() };
+    // [$qty:tt -> $($t:tt)*] => { $crate::qty![$qty].convert_to($crate::unit!($($t)*))   };
     //endregion
 
     //region Creation of new quantities.

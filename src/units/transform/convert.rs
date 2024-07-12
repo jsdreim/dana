@@ -89,6 +89,30 @@ mod tests {
         let mass: Quantity<Mass> = qty![1.0 kg];
 
         assert_eq!(qty![*[mass as Energy] in kJ].floor(), 89_875_517_873_681.0);
+
+        let rate = mass.div_unit(s);
+
+        assert_eq!(qty![*[rate in kJ/s] in kW].floor(), 89_875_517_873_681.0);
+    }
+
+    #[test]
+    fn test_ratios() {
+        // let v = qty![5.0 m/s];
+
+        let f = qty![1.0 kHz];
+        let v = qty![C in m/s];
+
+        let v_f = v / qty![f as 1/t];
+
+        let fv = qty![v_f -> l];
+
+        // let fv: qtype!((l/t) / (1/t)) = v / qty![f as 1/t];
+        // let fv: qtype!((l/t) * t) = fv.simplify();
+        // let fv: qtype!(l) = fv.simplify();
+
+        assert_eq!(fv, f.wavelength(C));
+
+        // dbg!(qty![(f/v) in m]);
     }
 
     #[test]

@@ -150,21 +150,21 @@ impl<U: Unit, V: Scalar + 'static> Quantity<U, V> {
         self.unit.conversion_into(unit).quantity(self.value)
     }
 
-    pub fn convert_left_to<W: Unit>(self, unit: W)
-        -> Quantity<U::WithLeftConverted, V> where
-        U: ConvertLeft<W>,
-        U::Left: ConvertInto<W>,
-    {
-        self.unit.convert_left(unit).quantity(self.value)
-    }
-
-    pub fn convert_right_to<W: Unit>(self, unit: W)
-        -> Quantity<U::WithRightConverted, V> where
-        U: ConvertRight<W>,
-        U::Right: ConvertInto<W>,
-    {
-        self.unit.convert_right(unit).quantity(self.value)
-    }
+    // pub fn convert_left_to<W: Unit>(self, unit: W)
+    //     -> Quantity<U::WithLeftConverted, V> where
+    //     U: ConvertLeft<W>,
+    //     U::Left: ConvertInto<W>,
+    // {
+    //     self.unit.convert_left(unit).quantity(self.value)
+    // }
+    //
+    // pub fn convert_right_to<W: Unit>(self, unit: W)
+    //     -> Quantity<U::WithRightConverted, V> where
+    //     U: ConvertRight<W>,
+    //     U::Right: ConvertInto<W>,
+    // {
+    //     self.unit.convert_right(unit).quantity(self.value)
+    // }
 
     /// Simplify redundant units.
     pub fn simplify<W: Unit>(self) -> Quantity<W, V> where
