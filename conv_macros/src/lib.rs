@@ -1,11 +1,13 @@
 mod macro_qty;
 mod macro_reorg;
+mod macro_scale;
 mod unit_def;
 
 use proc_macro::TokenStream;
 use quote::ToTokens;
 use macro_qty::MacroQty;
 use macro_reorg::Reorg;
+use macro_scale::MacroScale;
 use unit_def::UnitDef;
 
 
@@ -18,6 +20,15 @@ pub fn impl_reorg(stream: TokenStream) -> TokenStream {
     // eprintln!("{}", data.to_token_stream());
     // eprintln!("\n");
 
+    data.into_token_stream().into()
+}
+
+
+#[proc_macro]
+pub fn impl_scale(stream: TokenStream) -> TokenStream {
+    let data = syn::parse_macro_input!(stream as MacroScale);
+
+    // eprintln!("  {}", data.to_token_stream());
     data.into_token_stream().into()
 }
 

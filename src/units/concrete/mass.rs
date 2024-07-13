@@ -1,4 +1,4 @@
-use crate::units::{Unit, UnitConcrete};
+use crate::units::{/*si,*/ Unit, UnitConcrete};
 
 
 #[derive(Clone, Copy, Debug, PartialEq, PartialOrd, /*Eq, Ord*/)]
@@ -34,3 +34,19 @@ impl UnitConcrete for Mass {
         }
     }
 }
+
+
+//  TODO: Which way should this be handled?
+
+// impl si::SiMicro for Mass { const MICRO: Self = Self::MilliGram; }
+// impl si::SiMilli for Mass { const MILLI: Self = Self::Gram; }
+// impl si::SiKilo for Mass { const KILO: Self = Self::MetricTon; }
+
+// impl si::SiMilli for Mass {
+//     const MILLI: Self = Self::MilliGram;
+//     const SCALE: f64 = 1e-6;
+// }
+// impl si::SiKilo for Mass {
+//     const KILO: Self = Self::KiloGram;
+//     const SCALE: f64 = 1e0;
+// }

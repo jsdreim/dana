@@ -33,3 +33,19 @@ concrete_types!(
 );
 
 pub type Length = Distance;
+
+
+conv_macros::impl_scale! {
+    for Length impl (Milli, Kilo) Meter;
+    // for Mass impl (Milli, Kilo) Gram;
+    for Time impl (Milli) Second;
+    for Frequency impl (Micro, Milli, Kilo, Mega, Giga, Tera) Hertz;
+
+    for Force impl (Kilo, Mega, Giga) Newton;
+    for Energy impl (Micro, Milli, Kilo, Mega, Giga, Tera) Joule;
+
+    for Power impl (Micro, Milli, Kilo, Mega, Giga, Tera) Watt;
+    for Current impl (Micro, Milli, Kilo, Mega, Giga, Tera) Amp;
+    for Voltage impl (Micro, Milli, Kilo, Mega, Giga, Tera) Volt;
+    for Resistance impl (Micro, Milli, Kilo, Mega, Giga, Tera) Ohm;
+}
