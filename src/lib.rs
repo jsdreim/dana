@@ -102,10 +102,10 @@ mod tests {
 
     #[test]
     fn test_scale() {
-        let dist = Distance::MilliMeter.quantity(50.0);
+        let dist = Length::MilliMeter.quantity(50.0);
 
-        let as_mm = dist.with_unit(Distance::MilliMeter).value;
-        let as_cm = dist.with_unit(Distance::CentiMeter).value;
+        let as_mm = dist.with_unit(Length::MilliMeter).value;
+        let as_cm = dist.with_unit(Length::CentiMeter).value;
 
         assert_eq!(as_mm, as_cm * 10.0);
     }

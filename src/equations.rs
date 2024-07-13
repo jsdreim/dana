@@ -11,13 +11,13 @@ impl Quantity<Mass> {
 pub fn gravity(
     mass_1: Quantity<Mass>,
     mass_2: Quantity<Mass>,
-    distance: Quantity<Distance>,
+    dist: Quantity<Length>,
 ) -> Quantity<Force> {
     //  F = G(M₁M₂ / r²)
 
     let force: qtype!((l^3/t^2/m) * (m*m/l^2)) = G * (
         (mass_1 * mass_2)
-        / distance.squared()
+        / dist.squared()
     );
 
     force.convert()

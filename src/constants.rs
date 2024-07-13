@@ -5,7 +5,7 @@ use crate::units::{*, symbols::*};
 ///
 /// Unit: [m]/[s]
 ///
-/// [m]: Distance::Meter
+/// [m]: Length::Meter
 /// [s]: Time::Second
 pub const C: qtype!(Speed) = qty!(299_792_458.0 m/s);
 
@@ -14,7 +14,7 @@ pub const C: qtype!(Speed) = qty!(299_792_458.0 m/s);
 ///
 /// Unit: ([m]³/[s]²)/[kg]
 ///
-/// [m]: Distance::Meter
+/// [m]: Length::Meter
 /// [s]: Time::Second
 /// [kg]: Mass::KiloGram
 pub const G: qtype!(GravParam / Mass) = qty!(6.6743e-11 m^3/s^2/kg);
@@ -24,7 +24,7 @@ pub const G: qtype!(GravParam / Mass) = qty!(6.6743e-11 m^3/s^2/kg);
 ///
 /// Unit: [m]/[s]/[s]
 ///
-/// [m]: Distance::Meter
+/// [m]: Length::Meter
 /// [s]: Time::Second
 pub const GFORCE: qtype!(Accel) = qty!(9.80665 m/s/s);
 

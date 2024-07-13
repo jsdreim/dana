@@ -2,14 +2,14 @@ use crate::units::{Unit, UnitConcrete};
 
 
 #[derive(Clone, Copy, Debug, PartialEq, PartialOrd, /*Eq, Ord*/)]
-pub enum Distance {
+pub enum Length {
     MilliMeter,
     CentiMeter,
     Meter,
     KiloMeter,
 }
 
-impl Unit for Distance {
+impl Unit for Length {
     // type ScaleType = f64;
 
     fn scale(&self) -> f64 {
@@ -22,7 +22,7 @@ impl Unit for Distance {
     }
 }
 
-impl UnitConcrete for Distance {
+impl UnitConcrete for Length {
     const BASE: Self = Self::Meter;
 
     fn symbol(&self) -> &'static str {

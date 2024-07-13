@@ -406,7 +406,7 @@ mod tests {
     #[test]
     fn test_powers() {
         //  Start with basic length.
-        let x1: Quantity<Distance> = qty!(2.0 m);
+        let x1: Quantity<Length> = qty!(2.0 m);
 
         //  Multiply and then simplify to square.
         let x1mul:  qtype!(l * l)   = x1*x1.with_unit(Length::MilliMeter);

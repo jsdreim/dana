@@ -19,7 +19,7 @@ macro_rules! concrete_types {
 concrete_types!(
     // one::One,
 
-    distance::Distance,
+    length::Length,
     mass::Mass,
     time::Time,
     frequency::Frequency,
@@ -32,7 +32,7 @@ concrete_types!(
     resistance::Resistance,
 );
 
-pub type Length = Distance;
+pub type Distance = Length;
 
 
 conv_macros::impl_scale! {
