@@ -1,10 +1,13 @@
-use crate::{constants::*, quantity::Quantity, units::{*, symbols::physical::*}};
+use crate::{
+    constants::*,
+    Quantity,
+    Scalar,
+    units::{*, symbols::physical::*},
+};
 
 
-impl Quantity<Mass> {
-    pub fn grav_param(self) -> Quantity<GravParam> {
-        (self * G).simplify()
-    }
+pub fn gravitational_parameter(mass: Quantity<Mass>) -> Quantity<GravParam> {
+    (mass * G).simplify()
 }
 
 
@@ -21,6 +24,32 @@ pub fn gravity(
     );
 
     force.convert()
+}
+
+
+pub fn photon_energy(freq: Quantity<Frequency>) -> Quantity<Energy> {
+    (freq * H).simplify()
+}
+
+
+pub fn photon_frequency(energy: Quantity<Energy>) -> Quantity<Frequency> {
+    (energy / H).simplify()
+}
+
+
+pub fn frequency_to_wavelength<V: Scalar + 'static>(
+    freq: Quantity<Frequency, V>,
+    speed: Quantity<Speed, V>,
+) -> Quantity<Length, V> {
+    conv_macros::qty![speed / [freq as 1/Time] -> Length]
+}
+
+
+pub fn wavelength_to_frequency<V: Scalar + 'static>(
+    length: Quantity<Length, V>,
+    speed: Quantity<Speed, V>,
+) -> Quantity<Frequency, V> {
+    conv_macros::qty![speed / length -> 1/Time as Frequency]
 }
 
 
@@ -51,5 +80,28 @@ mod tests {
         let a: Quantity<Accel> = qty![(f / m_stone) as _];
 
         assert!((GFORCE - a).abs() < qty![1.0 cm/s/s]);
+    }
+
+    #[test]
+    fn test_photon() {
+        fn test(wave: Quantity<L>, energy_expected: Quantity<E>) {
+            //  Check the two stages of conversion separately.
+            let freq = wavelength_to_frequency(wave, C);
+            let energy = photon_energy(freq);
+
+            //  Confirm that the functions are symmetric.
+            assert_eq!(wave, frequency_to_wavelength(freq, C));
+            assert_eq!(freq, photon_frequency(energy));
+
+            //  Confirm that the results are correct.
+            assert_eq!(
+                format!("{:.3e}", energy),
+                format!("{:.3e}", energy_expected),
+            );
+        }
+
+        test(qty![685.0 nm], qty![1.810 eV]);
+        test(qty![535.0 nm], qty![2.317 eV]);
+        test(qty![440.0 nm], qty![2.818 eV]);
     }
 }

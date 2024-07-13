@@ -29,6 +29,15 @@ pub const G: qtype!(GravParam / Mass) = qty!(6.6743e-11 m^3/s^2/kg);
 pub const GFORCE: qtype!(Accel) = qty!(9.80665 m/s/s);
 
 
+/// Planck constant; Used to find the energy of a photon.
+///
+/// Unit: [eV]/[Hz]
+///
+/// [eV]: Energy::ElectronVolt
+/// [Hz]: Frequency::Hertz
+pub const H: qtype!(Energy / Frequency) = qty![4.135_667_696_e-15 eV/Hz];
+
+
 #[test]
 fn test_constants() {
     assert_eq!(format!("{C:.3e}"), "2.998e8 m/s");

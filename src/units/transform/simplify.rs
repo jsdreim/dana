@@ -261,6 +261,19 @@ impl_simplify! {
     use (a/b1/b2) in fn(self) { (UnitDiv(a, UnitSquared(b1)), b2.scale_factor(b1)) }
 }
 
+impl_simplify! {
+    where A: UnitNonExp, B: Unit;
+    for ((A /B) / A ) -> (1/B)
+    use ((a1/b) / a2) in fn(self) { (PerUnit(b), a1.scale_factor(a2)) }
+}
+
+//  a / (a/b) = b
+impl_simplify! {
+    where A: Unit, B: Unit;
+    for (A /(A /B)) -> B
+    use (a1/(a2/b)) in fn(self) { (b, a2.scale_factor(a1)) }
+}
+
 
 //  TODO: Move elsewhere, probably.
 impl_simplify! {

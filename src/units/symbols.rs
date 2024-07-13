@@ -109,6 +109,8 @@ define_symbols! {
     pub mod momentum for type Momentum as p {}
 
     pub mod length for type Length as l, L {
+        const nm = NanoMeter;
+        const um = MicroMeter;
         const mm = MilliMeter;
         const cm = CentiMeter;
         const  m = Meter;
@@ -147,6 +149,8 @@ define_symbols! {
     }
 
     pub mod energy for type Energy as E {
+        const eV = ElectronVolt;
+
         const uJ = MicroJoule;
         const mJ = MilliJoule;
         const  J = Joule;

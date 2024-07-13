@@ -110,7 +110,7 @@ mod tests {
         // let fv: qtype!((l/t) * t) = fv.simplify();
         // let fv: qtype!(l) = fv.simplify();
 
-        assert_eq!(fv, f.wavelength(C));
+        assert_eq!(fv, crate::equations::frequency_to_wavelength(f, v));
 
         // dbg!(qty![(f/v) in m]);
     }

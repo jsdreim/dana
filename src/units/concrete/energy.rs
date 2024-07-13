@@ -3,6 +3,7 @@ use crate::units::{Unit, UnitConcrete};
 
 #[derive(Clone, Copy, Debug, PartialEq, PartialOrd, /*Eq, Ord*/)]
 pub enum Energy {
+    ElectronVolt,
     MicroJoule,
     MilliJoule,
     Joule,
@@ -17,6 +18,7 @@ impl Unit for Energy {
 
     fn scale(&self) -> f64 {
         match self {
+            Self::ElectronVolt => 1.602_176_634_e-19,
             Self::MicroJoule => 1e-6,
             Self::MilliJoule => 1e-3,
             Self::Joule => 1e0,
@@ -33,6 +35,7 @@ impl UnitConcrete for Energy {
 
     fn symbol(&self) -> &'static str {
         match self {
+            Self::ElectronVolt => "eV",
             Self::MicroJoule => "μJ",
             Self::MilliJoule => "mJ",
             Self::Joule => "J",

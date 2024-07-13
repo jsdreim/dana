@@ -43,17 +43,3 @@ impl UnitConcrete for Frequency {
         }
     }
 }
-
-
-impl<V: crate::Scalar + 'static> crate::Quantity<Frequency, V> {
-    pub fn wavelength(self, speed: crate::Quantity<crate::units::Speed, V>)
-        -> crate::Quantity<crate::units::Length, V>
-    {
-        use crate::units::symbols::*;
-
-        (speed / self)
-            .convert::<utype!((l/t) / (1/t))>()
-            .simplify::<utype!((l/t) * t)>()
-            .simplify::<l>()
-    }
-}
