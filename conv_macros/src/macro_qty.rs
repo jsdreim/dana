@@ -54,6 +54,8 @@ pub enum Op {
     Convert,
     ConvertType(UnitDef),
     ConvertUnit(UnitDef),
+    Simplify,
+    SimplifyType(UnitDef),
     Binary {
         op: TokenTree,
         rhs: TokenTree,
@@ -74,6 +76,12 @@ impl Parse for Op {
             } else {
                 Ok(Self::ConvertUnit(input.parse()?))
             }
+        } else if input.parse::<Token![->]>().is_ok() {
+            if input.parse::<Token![_]>().is_ok() {
+                Ok(Self::Simplify)
+            } else {
+                Ok(Self::SimplifyType(input.parse()?))
+            }
         } else {
             Ok(Self::Binary {
                 op: input.parse()?,
@@ -93,6 +101,7 @@ pub enum MacroQty {
     },
     /// Retrieve the scalar value of a quantity.
     Deref(Box<Self>),
+
     /// Convert a quantity to the default of an inferred unit type.
     Convert {
         qty: Box<Self>,
@@ -107,6 +116,17 @@ pub enum MacroQty {
         qty: Box<Self>,
         unit: UnitDef,
     },
+
+    /// Simplify a quantity to an inferred unit type.
+    Simplify {
+        qty: Box<Self>,
+    },
+    /// Simplify a quantity to a specified unit type.
+    SimplifyType {
+        qty: Box<Self>,
+        utype: UnitDef,
+    },
+
     /// Perform a binary operation between quantities.
     Operation {
         op: TokenTree,
@@ -134,6 +154,14 @@ impl MacroQty {
         Self::ConvertUnit { qty: self.into(), unit }
     }
 
+    fn simplify(self) -> Self {
+        Self::Simplify { qty: self.into() }
+    }
+
+    fn simplify_type(self, utype: UnitDef) -> Self {
+        Self::SimplifyType { qty: self.into(), utype }
+    }
+
     fn op(self, op: TokenTree, rhs: Self) -> Self {
         Self::Operation { op, lhs: self.into(), rhs: rhs.into() }
     }
@@ -159,10 +187,12 @@ impl Parse for MacroQty {
 
         for op in ops {
             qty = match op {
-                Op::Convert            => qty.convert(),
-                Op::ConvertType(utype) => qty.convert_type(utype),
-                Op::ConvertUnit(unit)  => qty.convert_unit(unit),
-                Op::Binary { op, rhs } => qty.op(op, syn::parse2(rhs.into_token_stream())?),
+                Op::Convert             => qty.convert(),
+                Op::ConvertType(utype)  => qty.convert_type(utype),
+                Op::ConvertUnit(unit)   => qty.convert_unit(unit),
+                Op::Simplify            => qty.simplify(),
+                Op::SimplifyType(utype) => qty.simplify_type(utype),
+                Op::Binary { op, rhs }  => qty.op(op, syn::parse2(rhs.into_token_stream())?),
             }
         }
 
@@ -201,6 +231,13 @@ impl ToTokens for MacroQty {
             Self::ConvertUnit { qty, unit } => {
                 let unit = unit.as_value();
                 tokens.extend(quote!(#qty.convert_to(#unit)));
+            }
+            Self::Simplify { qty } => {
+                tokens.extend(quote!(#qty.simplify()));
+            }
+            Self::SimplifyType { qty, utype } => {
+                let utype = utype.as_type();
+                tokens.extend(quote!(#qty.simplify::<#utype>()));
             }
             Self::Operation { op, lhs, rhs } => {
                 tokens.extend(quote!((#lhs #op #rhs)));
