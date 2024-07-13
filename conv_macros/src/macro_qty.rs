@@ -1,0 +1,211 @@
+use proc_macro2::{TokenStream, TokenTree};
+use quote::{quote, ToTokens};
+use syn::{
+    bracketed,
+    parse::{Parse, ParseStream},
+    Result,
+    Token,
+};
+use crate::unit_def::*;
+
+
+pub enum QtyBase {
+    New {
+        value: proc_macro2::Literal,
+        unit: UnitDef,
+    },
+    Pass(TokenTree),
+}
+
+impl Parse for QtyBase {
+    fn parse(input: ParseStream) -> Result<Self> {
+        if let Ok(value) = input.parse() {
+            //  Definition of a new quantity.
+
+            let unit: UnitDef = if input.parse::<Token![/]>().is_ok() {
+                UnitDef::Inv(Box::new(input.parse()?))
+            } else if input.parse::<Token![*]>().is_ok() {
+                input.parse()?
+            } else {
+                input.parse()?
+            };
+
+            Ok(Self::New { value, unit })
+        } else {
+            //  Usage of an existing quantity.
+            Ok(Self::Pass(input.parse()?))
+        }
+    }
+}
+
+
+struct Recursion(MacroQty);
+
+impl Parse for Recursion {
+    fn parse(input: ParseStream) -> Result<Self> {
+        let inner;
+        bracketed!(inner in input);
+        Ok(Self(inner.parse()?))
+    }
+}
+
+
+pub enum Op {
+    Convert,
+    ConvertType(UnitDef),
+    ConvertUnit(UnitDef),
+    Binary {
+        op: TokenTree,
+        rhs: TokenTree,
+    },
+}
+
+impl Parse for Op {
+    fn parse(input: ParseStream) -> Result<Self> {
+        if input.parse::<Token![as]>().is_ok() {
+            if input.parse::<Token![_]>().is_ok() {
+                Ok(Self::Convert)
+            } else {
+                Ok(Self::ConvertType(input.parse()?))
+            }
+        } else if input.parse::<Token![in]>().is_ok() {
+            if input.parse::<Token![_]>().is_ok() {
+                Ok(Self::Convert)
+            } else {
+                Ok(Self::ConvertUnit(input.parse()?))
+            }
+        } else {
+            Ok(Self::Binary {
+                op: input.parse()?,
+                rhs: input.parse()?,
+            })
+        }
+    }
+}
+
+
+#[derive(Debug)]
+pub enum MacroQty {
+    /// Define a new quantity.
+    New {
+        value: proc_macro2::Literal,
+        unit: UnitDef,
+    },
+    /// Retrieve the scalar value of a quantity.
+    Deref(Box<Self>),
+    /// Convert a quantity to the default of an inferred unit type.
+    Convert {
+        qty: Box<Self>,
+    },
+    /// Convert a quantity to the default of a specified unit type.
+    ConvertType {
+        qty: Box<Self>,
+        utype: UnitDef,
+    },
+    /// Convert a quantity to a specified unit.
+    ConvertUnit {
+        qty: Box<Self>,
+        unit: UnitDef,
+    },
+    /// Perform a binary operation between quantities.
+    Operation {
+        op: TokenTree,
+        lhs: Box<Self>,
+        rhs: Box<Self>,
+    },
+    /// Passthrough.
+    Pass(TokenStream),
+}
+
+impl MacroQty {
+    fn deref(self) -> Self {
+        Self::Deref(self.into())
+    }
+
+    fn convert(self) -> Self {
+        Self::Convert { qty: self.into() }
+    }
+
+    fn convert_type(self, utype: UnitDef) -> Self {
+        Self::ConvertType { qty: self.into(), utype }
+    }
+
+    fn convert_unit(self, unit: UnitDef) -> Self {
+        Self::ConvertUnit { qty: self.into(), unit }
+    }
+
+    fn op(self, op: TokenTree, rhs: Self) -> Self {
+        Self::Operation { op, lhs: self.into(), rhs: rhs.into() }
+    }
+}
+
+impl Parse for MacroQty {
+    fn parse(input: ParseStream) -> Result<Self> {
+        let deref: bool = input.parse::<Token![*]>().is_ok();
+        let base: QtyBase = input.parse()?;
+        let mut ops: Vec<Op> = Vec::new();
+
+        while let Ok(op) = input.parse() {
+            ops.push(op);
+        }
+
+        let mut qty: Self = match base {
+            QtyBase::New { value, unit } => Self::New { value, unit },
+            QtyBase::Pass(tt) => match syn::parse2(tt.to_token_stream()) {
+                Ok(Recursion(qty)) => qty,
+                Err(_) => Self::Pass(tt.into_token_stream()),
+            }
+        };
+
+        for op in ops {
+            qty = match op {
+                Op::Convert            => qty.convert(),
+                Op::ConvertType(utype) => qty.convert_type(utype),
+                Op::ConvertUnit(unit)  => qty.convert_unit(unit),
+                Op::Binary { op, rhs } => qty.op(op, syn::parse2(rhs.into_token_stream())?),
+            }
+        }
+
+        if deref {
+            Ok(qty.deref())
+        } else {
+            Ok(qty)
+        }
+    }
+}
+
+impl ToTokens for MacroQty {
+    fn to_tokens(&self, tokens: &mut TokenStream) {
+        match self {
+            Self::New { value, unit } => {
+                let unit = unit.as_value();
+
+                tokens.extend(quote! {
+                    // $crate::
+                    Quantity {
+                        value: #value,
+                        unit: #unit,
+                    }
+                });
+            }
+            Self::Deref(qty) => {
+                tokens.extend(quote!((#qty.value)));
+            }
+            Self::Convert { qty } => {
+                tokens.extend(quote!(#qty.convert()));
+            }
+            Self::ConvertType { qty, utype } => {
+                let utype = utype.as_type();
+                tokens.extend(quote!(#qty.convert::<#utype>()));
+            }
+            Self::ConvertUnit { qty, unit } => {
+                let unit = unit.as_value();
+                tokens.extend(quote!(#qty.convert_to(#unit)));
+            }
+            Self::Operation { op, lhs, rhs } => {
+                tokens.extend(quote!((#lhs #op #rhs)));
+            }
+            Self::Pass(ts) => ts.to_tokens(tokens),
+        }
+    }
+}

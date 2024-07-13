@@ -80,6 +80,27 @@ mod tests {
     }
 
     #[test]
+    fn test_proc_macro_qty() {
+        use conv_macros::qty as qty2;
+        use crate::units::symbols::{electrical::*, physical::*};
+
+        let v: Quantity<Voltage> = qty2![3.3 V];
+        let r: Quantity<Resistance> = qty2![150.0 Ω];
+        let i: Quantity<Current> = qty2![v/r as _];
+
+        assert_eq!(22.0, qty2![*     i              in mA]);
+        assert_eq!(22.0, qty2![*     v  /        r  in mA]);
+        assert_eq!(22.0, qty2![*     v  / [150.0 Ω] in mA]);
+        assert_eq!(22.0, qty2![*[3.3 V] /        r  in mA]);
+        assert_eq!(22.0, qty2![*[3.3 V] / [150.0 Ω] in mA]);
+
+        assert_eq!(
+            qty2![*[[9.80665 N] / (crate::constants::GFORCE)] as M in kJ].floor(),
+            89_875_517_873_681.0,
+        );
+    }
+
+    #[test]
     fn test_scale() {
         let dist = Distance::MilliMeter.quantity(50.0);
 
