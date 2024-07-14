@@ -107,3 +107,25 @@ def_exp! {
     type E15 = 15;
     type E16 = 16;
 }
+
+
+/// Struct used to implement a very cool hack ([`crate::Quantity::pow`]).
+pub struct Num<const N: i32>;
+
+pub trait ExpImplemented { type Exp: Exp; }
+
+impl ExpImplemented for Num<2> { type Exp = E2; }
+impl ExpImplemented for Num<3> { type Exp = E3; }
+impl ExpImplemented for Num<4> { type Exp = E4; }
+impl ExpImplemented for Num<5> { type Exp = E5; }
+impl ExpImplemented for Num<6> { type Exp = E6; }
+impl ExpImplemented for Num<7> { type Exp = E7; }
+impl ExpImplemented for Num<8> { type Exp = E8; }
+impl ExpImplemented for Num<9> { type Exp = E9; }
+impl ExpImplemented for Num<10> { type Exp = E10; }
+impl ExpImplemented for Num<11> { type Exp = E11; }
+impl ExpImplemented for Num<12> { type Exp = E12; }
+impl ExpImplemented for Num<13> { type Exp = E13; }
+impl ExpImplemented for Num<14> { type Exp = E14; }
+impl ExpImplemented for Num<15> { type Exp = E15; }
+impl ExpImplemented for Num<16> { type Exp = E16; }

@@ -1,5 +1,5 @@
 use std::ops::{Add, Div, Mul, Sub};
-use num_traits::{Float, Inv, real::Real, Zero};
+use num_traits::{Float, Inv, Pow, real::Real, Zero};
 use crate::{Scalar, units::{compound::*, traits::*}};
 
 
@@ -124,20 +124,25 @@ impl<U: Unit, V: Scalar> Quantity<U, V> {
         }
     }
 
-    /*pub fn pow<E>(self, exp: E) -> Quantity<<U as CanPow<E>>::Output, <V as Pow<E>>::Output> where
-        E: unit_pow_n::Exp,
-        U: CanPow<E>,
-        V: Pow<E>,
-        <V as Pow<E>>::Output: Scalar,
+    pub fn pow<const E: i32>(self) -> Quantity<
+        <U as CanPow<<exp::Num<E> as exp::ExpImplemented>::Exp>>::Output,
+        <V as Pow<V>>::Output,
+    > where
+        exp::Num<E>: exp::ExpImplemented,
+        U: CanPow<<exp::Num<E> as exp::ExpImplemented>::Exp>,
+        V: Pow<V>,
+        <V as Pow<V>>::Output: Scalar,
     {
+        let exponent: i32 = <exp::Num<E> as exp::ExpImplemented>::Exp::VALUE;
+
         Quantity {
-            value: self.value.pow(exp),
-            unit: self.unit.pow(exp),
+            value: self.value.pow(V::from_i32(exponent).unwrap()),
+            unit: self.unit.pow(),
         }
-    }*/
+    }
     //endregion
 
-    //region Negative exponents.
+    //region Roots.
     pub fn sqrt(self) -> Quantity<<U as CanSquareRoot>::Output, V> where
         U: CanSquareRoot,
         V: Real,
@@ -158,20 +163,22 @@ impl<U: Unit, V: Scalar> Quantity<U, V> {
         }
     }
 
-    /*pub fn root<D>(self, degree: D) -> Quantity<
-        <U as CanRoot<D>>::Output,
-        <V as Pow<<D as Inv>::Output>>::Output,
+    pub fn root<const D: i32>(self) -> Quantity<
+        <U as CanRoot<<exp::Num<D> as exp::ExpImplemented>::Exp>>::Output,
+        <V as Pow<<V as Inv>::Output>>::Output,
     > where
-        D: unit_pow_n::Exp + Inv,
-        U: CanRoot<D>,
-        V: Pow<<D as Inv>::Output>,
-        <V as Pow<<D as Inv>::Output>>::Output: Scalar,
+        exp::Num<D>: exp::ExpImplemented,
+        U: CanRoot<<exp::Num<D> as exp::ExpImplemented>::Exp>,
+        V: Inv + Pow<<V as Inv>::Output>,
+        <V as Pow<<V as Inv>::Output>>::Output: Scalar,
     {
+        let degree: i32 = <exp::Num<D> as exp::ExpImplemented>::Exp::VALUE;
+
         Quantity {
-            value: self.value.pow(degree.inv()),
-            unit: self.unit.root(degree),
+            value: self.value.pow(V::from_i32(degree).unwrap().inv()),
+            unit: self.unit.root(),
         }
-    }*/
+    }
     //endregion
 }
 //endregion
