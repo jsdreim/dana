@@ -1,4 +1,4 @@
-use proc_macro2::TokenStream;
+use proc_macro2::{TokenStream, TokenTree};
 use quote::{quote, ToTokens};
 use syn::{
     parenthesized,
@@ -8,7 +8,68 @@ use syn::{
 };
 
 
-type Inner = syn::Ident;
+#[derive(Debug)]
+pub enum UnitIdent {
+    /// One identifier.
+    Ident(syn::Ident),
+    /// One token, followed by a sequence of field identifiers.
+    Field(TokenTree, Vec<syn::Ident>),
+    /// One token, followed by a sequence of path identifiers.
+    Path(TokenTree, Vec<syn::Ident>),
+}
+
+impl Parse for UnitIdent {
+    fn parse(input: ParseStream) -> Result<Self> {
+        let mut idents = Vec::new();
+
+        if input.peek2(Token![::]) {
+            let first = input.parse()?;
+
+            while input.parse::<Token![::]>().is_ok() {
+                idents.push(input.parse()?);
+            }
+
+            Ok(Self::Path(first, idents))
+        } else if input.peek2(Token![.]) {
+            let first = input.parse()?;
+
+            while input.parse::<Token![.]>().is_ok() {
+                idents.push(input.parse()?);
+            }
+
+            Ok(Self::Field(first, idents))
+        } else {
+            Ok(Self::Ident(input.parse()?))
+        }
+    }
+}
+
+impl ToTokens for UnitIdent {
+    fn to_tokens(&self, tokens: &mut TokenStream) {
+        match self {
+            Self::Ident(ident) => ident.to_tokens(tokens),
+            Self::Field(first, path) => {
+                first.to_tokens(tokens);
+
+                for ident in path {
+                    quote!(.).to_tokens(tokens);
+                    ident.to_tokens(tokens);
+                }
+            }
+            Self::Path(first, path) => {
+                first.to_tokens(tokens);
+
+                for ident in path {
+                    quote!(::).to_tokens(tokens);
+                    ident.to_tokens(tokens);
+                }
+            }
+        }
+    }
+}
+
+
+type Inner = UnitIdent;
 
 
 #[derive(Debug)]
