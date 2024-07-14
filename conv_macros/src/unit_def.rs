@@ -238,20 +238,20 @@ impl<U: Parse + ToTokens> UnitDef<U> {
             Self::Div(left, right) => {
                 let ts_l = left.as_type();
                 let ts_r = right.as_type();
-                quote!(UnitDiv<#ts_l, #ts_r>)
+                quote!(::dimensional::units::UnitDiv<#ts_l, #ts_r>)
             }
             Self::Mul(left, right) => {
                 let ts_l = left.as_type();
                 let ts_r = right.as_type();
-                quote!(UnitMul<#ts_l, #ts_r>)
+                quote!(::dimensional::units::UnitMul<#ts_l, #ts_r>)
             }
             Self::Inv(unit) => {
                 let ts = unit.as_type();
-                quote!(PerUnit<#ts>)
+                quote!(::dimensional::units::PerUnit<#ts>)
             }
             Self::Pow(base, exp) => {
                 let ts = base.as_type();
-                quote!(UnitPow<#ts, crate::units::exp::#exp>)
+                quote!(::dimensional::units::UnitPow<#ts, ::dimensional::units::exp::#exp>)
             }
         }
     }
@@ -263,20 +263,20 @@ impl<U: Parse + ToTokens> UnitDef<U> {
             Self::Div(left, right) => {
                 let ts_l = left.as_value();
                 let ts_r = right.as_value();
-                quote!(UnitDiv(#ts_l, #ts_r))
+                quote!(::dimensional::units::UnitDiv(#ts_l, #ts_r))
             }
             Self::Mul(left, right) => {
                 let ts_l = left.as_value();
                 let ts_r = right.as_value();
-                quote!(UnitMul(#ts_l, #ts_r))
+                quote!(::dimensional::units::UnitMul(#ts_l, #ts_r))
             }
             Self::Inv(unit) => {
                 let ts = unit.as_value();
-                quote!(PerUnit(#ts))
+                quote!(::dimensional::units::PerUnit(#ts))
             }
             Self::Pow(base, exp) => {
                 let ts = base.as_value();
-                quote!(UnitPow::<_, crate::units::exp::#exp>::new(#ts))
+                quote!(::dimensional::units::UnitPow::<_, ::dimensional::units::exp::#exp>::new(#ts))
             }
         }
     }

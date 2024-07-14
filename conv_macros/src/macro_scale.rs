@@ -26,7 +26,7 @@ impl ToTokens for ImplScale {
             let unit_var = syn::Ident::new(&format!("{id_str}{ubase}"), ubase.span());
 
             tokens.extend(quote! {
-                impl crate::units::si::#id_trait for #utype {
+                impl ::dimensional::units::si::#id_trait for #utype {
                     const #id_const: Self = Self::#unit_var;
                 }
             });

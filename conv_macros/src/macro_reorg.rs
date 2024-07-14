@@ -66,11 +66,13 @@ impl<U: Parse + ToTokens> ToTokens for ImplReorg<'_, U> {
         }
 
         tokens.extend(quote! {
-            Simplify<#type_into> for #type_from {
-                fn simplify<__S: crate::Scalar>(self) -> Conversion<#type_into, __S> {
+            ::dimensional::units::traits::transform::Simplify<#type_into> for #type_from {
+                fn simplify<__S: crate::Scalar>(self)
+                    -> ::dimensional::units::traits::transform::Conversion<#type_into, __S>
+                {
                     #[allow(non_snake_case)]
                     let #bind_from = self;
-                    Conversion::units(#unit_into)
+                    ::dimensional::units::traits::transform::Conversion::units(#unit_into)
                 }
             }
         });

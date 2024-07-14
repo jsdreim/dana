@@ -5,7 +5,7 @@ pub mod simplify;
 
 #[cfg(test)]
 mod tests {
-    use crate::{Quantity, units::{*, symbols::*}};
+    use crate::units::symbols::*;
 
     #[test]
     fn test_xform() {

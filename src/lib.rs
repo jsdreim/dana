@@ -1,3 +1,5 @@
+extern crate self as dimensional;
+
 #[macro_use]
 mod macros;
 

@@ -211,8 +211,7 @@ impl ToTokens for MacroQty {
                 let unit = unit.as_value();
 
                 tokens.extend(quote! {
-                    // $crate::
-                    Quantity {
+                    ::dimensional::Quantity {
                         value: #value,
                         unit: #unit,
                     }
