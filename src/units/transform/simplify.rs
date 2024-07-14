@@ -258,7 +258,7 @@ impl_simplify! {
 impl_simplify! {
     where A: Unit, B: Unit;
     for (A/B /B ) -> (A / B^2)
-    use (a/b1/b2) in fn(self) { (UnitDiv(a, UnitSquared(b1)), b2.scale_factor(b1)) }
+    use (a/b1/b2) in fn(self) { (UnitDiv(a, UnitSquared::new(b1)), b2.scale_factor(b1)) }
 }
 
 impl_simplify! {
@@ -303,7 +303,7 @@ impl_simplify! {
 impl_simplify! {
     where A: Unit, B: Unit;
     for ((A/B ) * (1/B )) -> (A/B^2)
-    use ((a/b1) * (1/b2)) in fn(self) { (UnitDiv(a, UnitSquared(b1)), b2.scale_factor(b1)) }
+    use ((a/b1) * (1/b2)) in fn(self) { (UnitDiv(a, UnitSquared::new(b1)), b2.scale_factor(b1)) }
 }
 
 //  (a/b) / (1/b) = a
@@ -335,21 +335,21 @@ impl_simplify! {
 impl_simplify! {
     where U: Unit;
     for (U * U) -> (U^2)
-    use (a * b) in fn(self) { (UnitSquared(a), b.scale() / a.scale()) }
+    use (a * b) in fn(self) { (UnitSquared::new(a), b.scale() / a.scale()) }
 }
 
 //  x² * x = x³
 impl_simplify! {
     where U: Unit;
     for (U^2 * U) -> (U^3)
-    use (a^2 * b) in fn(self) { (UnitCubed(a), b.scale() / a.scale()) }
+    use (a^2 * b) in fn(self) { (UnitCubed::new(a), b.scale() / a.scale()) }
 }
 
 //  x³ / x = x²
 impl_simplify! {
     where U: Unit;
     for (U^3 / U) -> (U^2)
-    use (a^3 / b) in fn(self) { (UnitSquared(a), a.scale() / b.scale()) }
+    use (a^3 / b) in fn(self) { (UnitSquared::new(a), a.scale() / b.scale()) }
 }
 
 //  x² / x = x¹

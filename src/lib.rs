@@ -31,22 +31,22 @@ mod tests {
         let _: utype!(l^ 1) = u;
         let _: utype!(l^ 2) = u.squared();
         let _: utype!(l^ 3) = u.cubed();
-        let _: utype!(l^ 4) = u.pow(4.0);
-        let _: utype!(l^ 2.0) = u.pow(2.0);
+        // let _: utype!(l^ 4) = u.pow(4.0);
+        // let _: utype!(l^ 2.0) = u.pow(2.0);
 
         //  Check explicitly-positive exponents.
         let _: utype!(l^+1) = u;
         let _: utype!(l^+2) = u.squared();
         let _: utype!(l^+3) = u.cubed();
-        let _: utype!(l^+4) = u.pow(4.0);
-        let _: utype!(l^+2.0) = u.pow(2.0);
+        // let _: utype!(l^+4) = u.pow(4.0);
+        // let _: utype!(l^+2.0) = u.pow(2.0);
 
         //  Check explicitly-negative exponents.
         let _: utype!(l^-1) = u.inv();
         let _: utype!(l^-2) = u.squared().inv();
         let _: utype!(l^-3) = u.cubed().inv();
-        let _: utype!(l^-4) = u.pow(4.0).inv();
-        let _: utype!(l^-2.0) = u.pow(2.0).inv();
+        // let _: utype!(l^-4) = u.pow(4.0).inv();
+        // let _: utype!(l^-2.0) = u.pow(2.0).inv();
 
 
         //  Use that unit for a quantity, and ensure the `qty!` macro correctly
@@ -61,22 +61,25 @@ mod tests {
         let _: qtype!(l^ 1) = q;
         let _: qtype!(l^ 2) = q.squared();
         let _: qtype!(l^ 3) = q.cubed();
-        let _: qtype!(l^ 4) = q.pow(4.0);
-        let _: qtype!(l^ 2.0) = q.pow(2.0);
+        let _: qtype!(l^ 4) = q.squared().squared();
+        // let _: qtype!(l^ 4) = q.pow(4.0);
+        // let _: qtype!(l^ 2.0) = q.pow(2.0);
 
         //  Check explicitly-positive exponents.
         let _: qtype!(l^+1) = q;
         let _: qtype!(l^+2) = q.squared();
         let _: qtype!(l^+3) = q.cubed();
-        let _: qtype!(l^+4) = q.pow(4.0);
-        let _: qtype!(l^+2.0) = q.pow(2.0);
+        let _: qtype!(l^+4) = q.squared().squared();
+        // let _: qtype!(l^+4) = q.pow(4.0);
+        // let _: qtype!(l^+2.0) = q.pow(2.0);
 
         //  Check explicitly-negative exponents.
         let _: qtype!(l^-1) = q.inv();
         let _: qtype!(l^-2) = q.squared().inv();
         let _: qtype!(l^-3) = q.cubed().inv();
-        let _: qtype!(l^-4) = q.pow(4.0).inv();
-        let _: qtype!(l^-2.0) = q.pow(2.0).inv();
+        let _: qtype!(l^-4) = q.squared().squared().inv();
+        // let _: qtype!(l^-4) = q.pow(4.0).inv();
+        // let _: qtype!(l^-2.0) = q.pow(2.0).inv();
     }
 
     #[test]

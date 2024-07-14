@@ -6,6 +6,15 @@ use crate::{scalar::Scalar, units::traits::*};
 use exp::*;
 
 
+pub type UnitPow2<U> = UnitPow<U, E2>;
+pub type UnitPow3<U> = UnitPow<U, E3>;
+pub type UnitPow4<U> = UnitPow<U, E4>;
+pub type UnitPow5<U> = UnitPow<U, E5>;
+
+pub type UnitSquared<U> = UnitPow2<U>;
+pub type UnitCubed<U> = UnitPow3<U>;
+
+
 /// A unit raised to an arbitrary power.
 #[derive(Clone, Copy, Debug, Default, //Deserialize, Serialize,
 Eq, PartialEq, Ord, PartialOrd)]
@@ -28,6 +37,8 @@ impl<U: Unit, E: Exp> std::fmt::Display for UnitPow<U, E> {
         write!(f, "{:#}^{}", self.0, E::VALUE)
     }
 }
+
+impl<U1: ConvertInto<U2>, U2: Unit, E: Exp> ConvertFrom<UnitPow<U1, E>> for UnitPow<U2, E> {}
 
 
 //region Exponential traits.

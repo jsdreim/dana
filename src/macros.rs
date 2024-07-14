@@ -1,5 +1,25 @@
 #[macro_export]
 macro_rules! utype {
+    //  Internal: Exponents.
+    //  TODO: This cannot possibly be the best way to handle this.
+    (@@ 1) => { $crate::units::exp::E1 };
+    (@@ 2) => { $crate::units::exp::E2 };
+    (@@ 3) => { $crate::units::exp::E3 };
+    (@@ 4) => { $crate::units::exp::E4 };
+    (@@ 5) => { $crate::units::exp::E5 };
+    (@@ 6) => { $crate::units::exp::E6 };
+    (@@ 7) => { $crate::units::exp::E7 };
+    (@@ 8) => { $crate::units::exp::E8 };
+    (@@ 9) => { $crate::units::exp::E9 };
+    (@@ 10) => { $crate::units::exp::E10 };
+    (@@ 11) => { $crate::units::exp::E11 };
+    (@@ 12) => { $crate::units::exp::E12 };
+    (@@ 13) => { $crate::units::exp::E13 };
+    (@@ 14) => { $crate::units::exp::E14 };
+    (@@ 15) => { $crate::units::exp::E15 };
+    (@@ 16) => { $crate::units::exp::E16 };
+    (@@ $e:tt) => { compile_error!("Invalid unit exponent.") };
+
     //  Internal: Unpack a group directly.
     ((@ $($t:tt)+)) => { $($t)+ };
 
@@ -13,9 +33,12 @@ macro_rules! utype {
     //  Exponents.
     ($a:tt $(::$b:tt)* ^ 0)     => { compile_error!("Cannot define unit of power zero.")      };
     ($a:tt $(::$b:tt)* ^ 1)     => {                             $crate::utype!($a $(::$b)*)  };
-    ($a:tt $(::$b:tt)* ^ 2)     => { $crate::units::UnitSquared <$crate::utype!($a $(::$b)*)> };
-    ($a:tt $(::$b:tt)* ^ 3)     => { $crate::units::UnitCubed   <$crate::utype!($a $(::$b)*)> };
-    ($a:tt $(::$b:tt)* ^ $e:tt) => { $crate::units::UnitPow     <$crate::utype!($a $(::$b)*)> };
+    // ($a:tt $(::$b:tt)* ^ 2)     => { $crate::units::UnitSquared <$crate::utype!($a $(::$b)*)> };
+    // ($a:tt $(::$b:tt)* ^ 3)     => { $crate::units::UnitCubed   <$crate::utype!($a $(::$b)*)> };
+    // ($a:tt $(::$b:tt)* ^ $e:tt) => { $crate::units::UnitPow     <$crate::utype!($a $(::$b)*), _> };
+    ($a:tt $(::$b:tt)* ^ $e:tt) => {
+        $crate::units::UnitPow<$crate::utype!($a $(::$b)*), $crate::utype!(@@ $e)>
+    };
     //  Signed exponents.
     ($a:tt $(::$b:tt)* ^-$e:tt) => { $crate::units::PerUnit     <$crate::utype!($a $(::$b)* ^ $e)> };
     ($a:tt $(::$b:tt)* ^+$e:tt) => {                             $crate::utype!($a $(::$b)* ^ $e)  };
@@ -88,9 +111,12 @@ macro_rules! unit {
     //  Exponents.
     ($a:tt $(::$b:tt)* ^ 0)     => { compile_error!("Cannot define unit of power zero.")     };
     ($a:tt $(::$b:tt)* ^ 1)     => {                             $crate::unit!($a $(::$b)*)  };
-    ($a:tt $(::$b:tt)* ^ 2)     => { $crate::units::UnitSquared ($crate::unit!($a $(::$b)*)) };
-    ($a:tt $(::$b:tt)* ^ 3)     => { $crate::units::UnitCubed   ($crate::unit!($a $(::$b)*)) };
-    ($a:tt $(::$b:tt)* ^ $e:tt) => { $crate::units::UnitPow     ($crate::unit!($a $(::$b)*), $e) };
+    // ($a:tt $(::$b:tt)* ^ 2)     => { $crate::units::UnitSquared ($crate::unit!($a $(::$b)*)) };
+    // ($a:tt $(::$b:tt)* ^ 3)     => { $crate::units::UnitCubed   ($crate::unit!($a $(::$b)*)) };
+    // ($a:tt $(::$b:tt)* ^ $e:tt) => { $crate::units::UnitPow     ($crate::unit!($a $(::$b)*), $e) };
+    ($a:tt $(::$b:tt)* ^ $e:tt) => {
+        compile_error!("TODO")
+    };
     //  Signed exponents.
     ($a:tt $(::$b:tt)* ^-$e:tt) => { $crate::units::PerUnit     ($crate::unit!($a $(::$b)* ^ $e)) };
     ($a:tt $(::$b:tt)* ^+$e:tt) => {                             $crate::unit!($a $(::$b)* ^ $e)  };
@@ -162,10 +188,10 @@ macro_rules! unit_pat {
 
     //  Exponents.
     ($a:tt ^ 0)     => { compile_error!("Cannot define unit of power zero.") };
-    ($a:tt ^ 1)     => {                             unit_pat!($a)  };
-    ($a:tt ^ 2)     => { $crate::units::UnitSquared (unit_pat!($a)) };
-    ($a:tt ^ 3)     => { $crate::units::UnitCubed   (unit_pat!($a)) };
-    ($a:tt ^ $e:tt) => { $crate::units::UnitPow     (unit_pat!($a), $e) };
+    ($a:tt ^ 1)     => {                             unit_pat!($a)      };
+    // ($a:tt ^ 2)     => { $crate::units::UnitSquared (unit_pat!($a), ..) };
+    // ($a:tt ^ 3)     => { $crate::units::UnitCubed   (unit_pat!($a), ..) };
+    ($a:tt ^ $e:tt) => { $crate::units::UnitPow     (unit_pat!($a), ..) };
     //  Signed exponents.
     ($a:tt ^-$e:tt) => { $crate::units::PerUnit     (unit_pat!($a ^ $e)) };
     ($a:tt ^+$e:tt) => {                             unit_pat!($a ^ $e)  };
@@ -365,7 +391,7 @@ macro_rules! impl_unit_pow {
         for $unit$(<$($tv),+>)?
         {
             type Output = $crate::units::UnitSquared<Self>;
-            fn squared(self) -> Self::Output { Self::Output::new(self) }
+            fn squared(self) -> Self::Output { $crate::units::UnitSquared::new(self) }
         }
 
         impl$(<$($tv: $t0 $(+ $t1)*),+>)?
@@ -373,7 +399,7 @@ macro_rules! impl_unit_pow {
         for $unit$(<$($tv),+>)?
         {
             type Output = $crate::units::UnitCubed<Self>;
-            fn cubed(self) -> Self::Output { Self::Output::new(self) }
+            fn cubed(self) -> Self::Output { $crate::units::UnitCubed::new(self) }
         }
     };
     ($($unit:ident $(<$($tv:ident: $t0:ident $(+ $t1:ident)*),+>)?),+$(,)?) => {
@@ -381,18 +407,18 @@ macro_rules! impl_unit_pow {
     };
 }
 
-macro_rules! impl_unit_pow_n {
+/*macro_rules! impl_unit_pow_n {
     ($unit:ident $(<$($tv:ident: $t0:ident $(+ $t1:ident)*),+>)?) => {
         impl<_P: $crate::units::compound::unit_pow_n::Exp $($(, $tv: $t0 $(+ $t1)*)+)?>
         $crate::units::traits::CanPow<_P>
         for $unit$(<$($tv),+>)? where
             f64: ::num_traits::Pow<_P, Output=f64>,
         {
-            type Output = $crate::units::UnitPow<Self, _P>;
+            type Output = $crate::units::compound::unit_pow_n::UnitPow<Self, _P>;
             fn pow(self, exp: _P) -> Self::Output { Self::Output::new(self, exp) }
         }
     };
     ($($unit:ident $(<$($tv:ident: $t0:ident $(+ $t1:ident)*),+>)?),+$(,)?) => {
         $(impl_unit_pow_n!($unit $(<$($tv: $t0 $(+ $t1)*),+>)?);)+
     };
-}
+}*/

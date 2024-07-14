@@ -277,11 +277,11 @@ impl<U: Parse + ToTokens> UnitDef<U> {
             }
             Self::Pow2(base) => {
                 let ts = base.as_value();
-                quote!(UnitSquared(#ts))
+                quote!(UnitSquared::new(#ts))
             }
             Self::Pow3(base) => {
                 let ts = base.as_value();
-                quote!(UnitCubed(#ts))
+                quote!(UnitCubed::new(#ts))
             }
         }
     }

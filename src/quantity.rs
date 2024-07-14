@@ -1,5 +1,5 @@
 use std::ops::{Add, Div, Mul, Sub};
-use num_traits::{Float, Inv, Pow, real::Real, Zero};
+use num_traits::{Float, Inv, real::Real, Zero};
 use crate::{Scalar, units::{compound::*, traits::*}};
 
 
@@ -124,7 +124,7 @@ impl<U: Unit, V: Scalar> Quantity<U, V> {
         }
     }
 
-    pub fn pow<E>(self, exp: E) -> Quantity<<U as CanPow<E>>::Output, <V as Pow<E>>::Output> where
+    /*pub fn pow<E>(self, exp: E) -> Quantity<<U as CanPow<E>>::Output, <V as Pow<E>>::Output> where
         E: unit_pow_n::Exp,
         U: CanPow<E>,
         V: Pow<E>,
@@ -134,7 +134,7 @@ impl<U: Unit, V: Scalar> Quantity<U, V> {
             value: self.value.pow(exp),
             unit: self.unit.pow(exp),
         }
-    }
+    }*/
     //endregion
 
     //region Negative exponents.
@@ -158,7 +158,7 @@ impl<U: Unit, V: Scalar> Quantity<U, V> {
         }
     }
 
-    pub fn root<D>(self, degree: D) -> Quantity<
+    /*pub fn root<D>(self, degree: D) -> Quantity<
         <U as CanRoot<D>>::Output,
         <V as Pow<<D as Inv>::Output>>::Output,
     > where
@@ -171,7 +171,7 @@ impl<U: Unit, V: Scalar> Quantity<U, V> {
             value: self.value.pow(degree.inv()),
             unit: self.unit.root(degree),
         }
-    }
+    }*/
     //endregion
 }
 //endregion

@@ -98,10 +98,10 @@ impl<U: CanSquare> CanPow4 for U where
 }
 //endregion
 
-pub trait CanPow<P: super::compound::unit_pow_n::Exp>: Unit {
+/*pub trait CanPow<P: super::compound::unit_pow_n::Exp>: Unit {
     type Output: Unit;
     fn pow(self, exp: P) -> Self::Output;
-}
+}*/
 //endregion
 
 //region Roots.
@@ -132,10 +132,10 @@ impl<U: CanSquareRoot> CanRoot4 for U where
 }
 //endregion
 
-pub trait CanRoot<R: super::compound::unit_pow_n::Exp>: Unit {
+/*pub trait CanRoot<R: super::compound::unit_pow_n::Exp>: Unit {
     type Output: Unit;
     fn root(self, root: R) -> Self::Output;
-}
+}*/
 //endregion
 //endregion
 

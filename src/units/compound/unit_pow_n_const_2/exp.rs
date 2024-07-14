@@ -25,7 +25,7 @@ macro_rules! def_exp {
     ;
     )* } => {
         $(
-        #[derive(Clone, Copy, Default, PartialEq, Eq, PartialOrd, Ord)]
+        #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, PartialOrd, Ord)]
         pub struct $name;
         impl Exp for $name { const VALUE: i32 = $val; }
 
