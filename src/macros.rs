@@ -1,24 +1,7 @@
 #[macro_export]
 macro_rules! utype {
     //  Internal: Exponents.
-    //  TODO: This cannot possibly be the best way to handle this.
-    (@@ 1) => { $crate::units::exp::E1 };
-    (@@ 2) => { $crate::units::exp::E2 };
-    (@@ 3) => { $crate::units::exp::E3 };
-    (@@ 4) => { $crate::units::exp::E4 };
-    (@@ 5) => { $crate::units::exp::E5 };
-    (@@ 6) => { $crate::units::exp::E6 };
-    (@@ 7) => { $crate::units::exp::E7 };
-    (@@ 8) => { $crate::units::exp::E8 };
-    (@@ 9) => { $crate::units::exp::E9 };
-    (@@ 10) => { $crate::units::exp::E10 };
-    (@@ 11) => { $crate::units::exp::E11 };
-    (@@ 12) => { $crate::units::exp::E12 };
-    (@@ 13) => { $crate::units::exp::E13 };
-    (@@ 14) => { $crate::units::exp::E14 };
-    (@@ 15) => { $crate::units::exp::E15 };
-    (@@ 16) => { $crate::units::exp::E16 };
-    (@@ $e:tt) => { compile_error!("Invalid unit exponent.") };
+    (@@ $e:tt) => { $crate::units::exp::TypeFrac<$e, 1> };
 
     //  Internal: Unpack a group directly.
     ((@ $($t:tt)+)) => { $($t)+ };

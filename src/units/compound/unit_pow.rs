@@ -28,13 +28,13 @@ impl<U: Unit, E: Exp> Unit for UnitPow<U, E> {
     // type ScaleType = f64;
 
     fn scale(&self) -> f64 {
-        self.0.scale().powi(E::VALUE)
+        self.0.scale().powf(E::VALUE)
     }
 }
 
 impl<U: Unit + std::fmt::Debug, E: Exp> std::fmt::Debug for UnitPow<U, E> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "UnitPow({:?}, E{:?})", self.0, E::VALUE)
+        write!(f, "UnitPow({:?}, {:?})", self.0, E::VALUE)
     }
 }
 

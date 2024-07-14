@@ -1,6 +1,15 @@
 pub trait Exp: Copy + Default + Eq + Ord {
-    const VALUE: i32;
+    const VALUE: f64;
 }
+
+
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, PartialOrd, Ord)]
+pub struct TypeFrac<const A: i32, const B: i32>;
+
+impl<const A: i32, const B: i32> Exp for TypeFrac<A, B> {
+    const VALUE: f64 = A as f64 / B as f64;
+}
+
 
 pub trait CanMul2: Exp { type Mul2: Exp + CanDiv2<Div2=Self>; }
 pub trait CanDiv2: Exp { type Div2: Exp + CanMul2<Mul2=Self>; }
@@ -19,9 +28,8 @@ pub trait CanDiv6: Exp { type Div6: Exp + CanMul6<Mul6=Self>; }
 
 
 //region Generic division.
-pub trait CanDiv<E>: Exp { type Quotient: Exp; }
-
-impl<E: Exp> CanDiv<E1> for E { type Quotient = E; }
+pub trait CanDiv<E>: Exp          { type Quotient: Exp; }
+impl<E: Exp>     CanDiv<E1> for E { type Quotient = E; }
 impl<E: CanDiv2> CanDiv<E2> for E { type Quotient = E::Div2; }
 impl<E: CanDiv3> CanDiv<E3> for E { type Quotient = E::Div3; }
 impl<E: CanDiv4> CanDiv<E4> for E { type Quotient = E::Div4; }
@@ -31,15 +39,23 @@ impl<E: CanDiv6> CanDiv<E6> for E { type Quotient = E::Div6; }
 
 
 //region Generic multiplication.
-pub trait CanMul<E>: Exp { type Product: Exp; }
-
-impl<E: Exp> CanMul<E1> for E { type Product = E; }
+pub trait CanMul<E>: Exp          { type Product: Exp; }
+impl<E: Exp>     CanMul<E1> for E { type Product = E; }
 impl<E: CanMul2> CanMul<E2> for E { type Product = E::Mul2; }
 impl<E: CanMul3> CanMul<E3> for E { type Product = E::Mul3; }
 impl<E: CanMul4> CanMul<E4> for E { type Product = E::Mul4; }
 impl<E: CanMul5> CanMul<E5> for E { type Product = E::Mul5; }
 impl<E: CanMul6> CanMul<E6> for E { type Product = E::Mul6; }
 //endregion
+
+
+/// Struct used to implement a very cool hack ([`crate::Quantity::pow`]).
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, PartialOrd, Ord)]
+pub struct Num<const N: i32>;
+
+pub trait ExpImplemented { type Exp: Exp; }
+
+// impl<const N: i32> ExpImplemented for Num<N> { type Exp = TypeFrac<N, 1>; }
 
 
 macro_rules! def_exp {
@@ -49,13 +65,17 @@ macro_rules! def_exp {
     ;
     )* } => {
         $(
-        #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, PartialOrd, Ord)]
-        pub struct $name;
-        impl Exp for $name { const VALUE: i32 = $val; }
+        // #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, PartialOrd, Ord)]
+        // pub struct $name;
+        // impl Exp for $name { const VALUE: f64 = $val }
+
+        pub type $name = TypeFrac<$val, 1>;
 
         $($(
         def_exp!($name $op $fac = $mul);
         )*)?
+
+        impl ExpImplemented for Num<$val> { type Exp = $name; }
 
         impl std::fmt::Display for $name {
             fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -107,25 +127,3 @@ def_exp! {
     type E15 = 15;
     type E16 = 16;
 }
-
-
-/// Struct used to implement a very cool hack ([`crate::Quantity::pow`]).
-pub struct Num<const N: i32>;
-
-pub trait ExpImplemented { type Exp: Exp; }
-
-impl ExpImplemented for Num<2> { type Exp = E2; }
-impl ExpImplemented for Num<3> { type Exp = E3; }
-impl ExpImplemented for Num<4> { type Exp = E4; }
-impl ExpImplemented for Num<5> { type Exp = E5; }
-impl ExpImplemented for Num<6> { type Exp = E6; }
-impl ExpImplemented for Num<7> { type Exp = E7; }
-impl ExpImplemented for Num<8> { type Exp = E8; }
-impl ExpImplemented for Num<9> { type Exp = E9; }
-impl ExpImplemented for Num<10> { type Exp = E10; }
-impl ExpImplemented for Num<11> { type Exp = E11; }
-impl ExpImplemented for Num<12> { type Exp = E12; }
-impl ExpImplemented for Num<13> { type Exp = E13; }
-impl ExpImplemented for Num<14> { type Exp = E14; }
-impl ExpImplemented for Num<15> { type Exp = E15; }
-impl ExpImplemented for Num<16> { type Exp = E16; }

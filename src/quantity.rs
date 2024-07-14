@@ -133,10 +133,10 @@ impl<U: Unit, V: Scalar> Quantity<U, V> {
         V: Pow<V>,
         <V as Pow<V>>::Output: Scalar,
     {
-        let exponent: i32 = <exp::Num<E> as exp::ExpImplemented>::Exp::VALUE;
+        let exponent: f64 = <exp::Num<E> as exp::ExpImplemented>::Exp::VALUE;
 
         Quantity {
-            value: self.value.pow(V::from_i32(exponent).unwrap()),
+            value: self.value.pow(V::from_f64(exponent).unwrap()),
             unit: self.unit.pow(),
         }
     }
@@ -172,10 +172,10 @@ impl<U: Unit, V: Scalar> Quantity<U, V> {
         V: Inv + Pow<<V as Inv>::Output>,
         <V as Pow<<V as Inv>::Output>>::Output: Scalar,
     {
-        let degree: i32 = <exp::Num<D> as exp::ExpImplemented>::Exp::VALUE;
+        let degree: f64 = <exp::Num<D> as exp::ExpImplemented>::Exp::VALUE;
 
         Quantity {
-            value: self.value.pow(V::from_i32(degree).unwrap().inv()),
+            value: self.value.pow(V::from_f64(degree).unwrap().inv()),
             unit: self.unit.root(),
         }
     }
