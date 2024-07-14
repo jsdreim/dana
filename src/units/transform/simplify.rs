@@ -1,4 +1,4 @@
-use crate::units::{*, traits::*};
+use crate::{Scalar, units::{*, traits::*}};
 
 
 macro_rules! impl_simplify {
@@ -354,7 +354,7 @@ impl_simplify! {
 
 //  x² / x = x¹
 impl_simplify! {
-    where U: Unit;
+    where U: UnitNonExp; // TODO
     for (U^2 / U) -> U
     use (a^2 / b) in fn(self) { (a, a.scale() / b.scale()) }
 }
@@ -385,6 +385,58 @@ impl_simplify! {
     for ((B *A) / B ) -> (A)
     use ((b1*a) / b2) in fn(self) { (a, b1.scale() / b2.scale()) }
 }*/
+
+
+//region Distribution of powers in binary operations.
+//region aⁿ * bⁿ == (a*b)ⁿ
+impl<A: UnitExp, B: UnitExp, E: Exp>
+Simplify<UnitPow<UnitMul<A::Output, B::Output>, E>>
+for UnitMul<A, B> where
+    A: CanRoot<E>,
+    B: CanRoot<E>,
+{
+    fn simplify<S: Scalar>(self) -> Conversion<UnitPow<UnitMul<A::Output, B::Output>, E>, S> {
+        Conversion::units(UnitPow::new(UnitMul::new(self.0.root(), self.1.root())))
+    }
+}
+
+impl<A: Unit, B: Unit, E: Exp>
+Simplify<UnitMul<A::Output, B::Output>>
+for UnitPow<UnitMul<A, B>, E> where
+    A: CanPow<E>,
+    B: CanPow<E>,
+{
+    fn simplify<S: Scalar>(self) -> Conversion<UnitMul<A::Output, B::Output>, S> {
+        Conversion::units(UnitMul::new(self.0.0.pow(), self.0.1.pow()))
+    }
+}
+//endregion
+
+
+//region aⁿ / bⁿ == (a/b)ⁿ
+impl<A: UnitExp, B: UnitExp, E: Exp>
+Simplify<UnitPow<UnitDiv<A::Output, B::Output>, E>>
+for UnitDiv<A, B> where
+    A: CanRoot<E>,
+    B: CanRoot<E>,
+{
+    fn simplify<S: Scalar>(self) -> Conversion<UnitPow<UnitDiv<A::Output, B::Output>, E>, S> {
+        Conversion::units(UnitPow::new(UnitDiv::new(self.0.root(), self.1.root())))
+    }
+}
+
+impl<A: Unit, B: Unit, E: Exp>
+Simplify<UnitDiv<A::Output, B::Output>>
+for UnitPow<UnitDiv<A, B>, E> where
+    A: CanPow<E>,
+    B: CanPow<E>,
+{
+    fn simplify<S: Scalar>(self) -> Conversion<UnitDiv<A::Output, B::Output>, S> {
+        Conversion::units(UnitDiv::new(self.0.0.pow(), self.0.1.pow()))
+    }
+}
+//endregion
+//endregion
 
 
 #[cfg(test)]

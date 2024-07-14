@@ -33,9 +33,6 @@ macro_rules! utype {
     //  Exponents.
     ($a:tt $(::$b:tt)* ^ 0)     => { compile_error!("Cannot define unit of power zero.")      };
     ($a:tt $(::$b:tt)* ^ 1)     => {                             $crate::utype!($a $(::$b)*)  };
-    // ($a:tt $(::$b:tt)* ^ 2)     => { $crate::units::UnitSquared <$crate::utype!($a $(::$b)*)> };
-    // ($a:tt $(::$b:tt)* ^ 3)     => { $crate::units::UnitCubed   <$crate::utype!($a $(::$b)*)> };
-    // ($a:tt $(::$b:tt)* ^ $e:tt) => { $crate::units::UnitPow     <$crate::utype!($a $(::$b)*), _> };
     ($a:tt $(::$b:tt)* ^ $e:tt) => {
         $crate::units::UnitPow<$crate::utype!($a $(::$b)*), $crate::utype!(@@ $e)>
     };
@@ -111,11 +108,8 @@ macro_rules! unit {
     //  Exponents.
     ($a:tt $(::$b:tt)* ^ 0)     => { compile_error!("Cannot define unit of power zero.")     };
     ($a:tt $(::$b:tt)* ^ 1)     => {                             $crate::unit!($a $(::$b)*)  };
-    // ($a:tt $(::$b:tt)* ^ 2)     => { $crate::units::UnitSquared ($crate::unit!($a $(::$b)*)) };
-    // ($a:tt $(::$b:tt)* ^ 3)     => { $crate::units::UnitCubed   ($crate::unit!($a $(::$b)*)) };
-    // ($a:tt $(::$b:tt)* ^ $e:tt) => { $crate::units::UnitPow     ($crate::unit!($a $(::$b)*), $e) };
     ($a:tt $(::$b:tt)* ^ $e:tt) => {
-        compile_error!("TODO")
+        $crate::units::UnitPow::<_, $crate::utype!(@@ $e)>::new($crate::unit!($a $(::$b)*))
     };
     //  Signed exponents.
     ($a:tt $(::$b:tt)* ^-$e:tt) => { $crate::units::PerUnit     ($crate::unit!($a $(::$b)* ^ $e)) };
@@ -386,39 +380,23 @@ macro_rules! impl_unit_inv {
 
 macro_rules! impl_unit_pow {
     ($unit:ident $(<$($tv:ident: $t0:ident $(+ $t1:ident)*),+>)?) => {
-        impl$(<$($tv: $t0 $(+ $t1)*),+>)?
-        $crate::units::traits::CanSquare
+        impl<__E: $crate::units::Exp $($(, $tv: $t0 $(+ $t1)*)+)?>
+        $crate::units::traits::CanPow<__E>
         for $unit$(<$($tv),+>)?
         {
-            type Output = $crate::units::UnitSquared<Self>;
-            fn squared(self) -> Self::Output { $crate::units::UnitSquared::new(self) }
+            type Output = $crate::units::UnitPow<Self, __E>;
+            fn pow(self) -> Self::Output { $crate::units::UnitPow::new(self) }
         }
 
-        impl$(<$($tv: $t0 $(+ $t1)*),+>)?
-        $crate::units::traits::CanCube
-        for $unit$(<$($tv),+>)?
-        {
-            type Output = $crate::units::UnitCubed<Self>;
-            fn cubed(self) -> Self::Output { $crate::units::UnitCubed::new(self) }
-        }
+        // impl<__D: $crate::units::Exp $($(, $tv: $t0 $(+ $t1)*)+)?>
+        // $crate::units::traits::CanRoot<__D>
+        // for $unit$(<$($tv),+>)?
+        // {
+        //     type Output = $crate::units::UnitRoot<Self, __D>;
+        //     fn root(self) -> Self::Output { $crate::units::UnitRoot::new(self) }
+        // }
     };
     ($($unit:ident $(<$($tv:ident: $t0:ident $(+ $t1:ident)*),+>)?),+$(,)?) => {
         $(impl_unit_pow!($unit $(<$($tv: $t0 $(+ $t1)*),+>)?);)+
     };
 }
-
-/*macro_rules! impl_unit_pow_n {
-    ($unit:ident $(<$($tv:ident: $t0:ident $(+ $t1:ident)*),+>)?) => {
-        impl<_P: $crate::units::compound::unit_pow_n::Exp $($(, $tv: $t0 $(+ $t1)*)+)?>
-        $crate::units::traits::CanPow<_P>
-        for $unit$(<$($tv),+>)? where
-            f64: ::num_traits::Pow<_P, Output=f64>,
-        {
-            type Output = $crate::units::compound::unit_pow_n::UnitPow<Self, _P>;
-            fn pow(self, exp: _P) -> Self::Output { Self::Output::new(self, exp) }
-        }
-    };
-    ($($unit:ident $(<$($tv:ident: $t0:ident $(+ $t1:ident)*),+>)?),+$(,)?) => {
-        $(impl_unit_pow_n!($unit $(<$($tv: $t0 $(+ $t1)*),+>)?);)+
-    };
-}*/

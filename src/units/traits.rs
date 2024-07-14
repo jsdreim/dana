@@ -68,46 +68,53 @@ pub trait UnitScale: Unit {
 
 
 //region Exponential traits.
+pub trait UnitExp: Unit {}
 pub trait UnitNonExp: Unit {}
 
-//region Positive prime exponents.
+//region Positive exponents.
+/// Trait for a type that can be raised to a power.
+pub trait CanPow<E>: Unit {
+    type Output: Unit;
+    fn pow(self) -> Self::Output;
+}
+
+/// Trait for a type that can be raised to the second power.
 pub trait CanSquare: Unit {
     type Output: Unit;
     fn squared(self) -> Self::Output;
 }
 
+impl<U: CanPow<super::exp::E2>> CanSquare for U {
+    type Output = U::Output;
+    fn squared(self) -> Self::Output { self.pow() }
+}
+
+/// Trait for a type that can be raised to the third power.
 pub trait CanCube: Unit {
     type Output: Unit;
     fn cubed(self) -> Self::Output;
 }
 
-//region Composite exponents.
-pub trait CanPow4: Unit {
-    type Output: Unit;
-    fn pow_4(self) -> Self::Output;
+impl<U: CanPow<super::exp::E3>> CanCube for U {
+    type Output = U::Output;
+    fn cubed(self) -> Self::Output { self.pow() }
 }
-
-impl<U: CanSquare> CanPow4 for U where
-    U::Output: CanSquare,
-{
-    type Output = <U::Output as CanSquare>::Output;
-
-    fn pow_4(self) -> Self::Output {
-        self.squared().squared()
-    }
-}
-//endregion
-
-/*pub trait CanPow<P: super::compound::unit_pow_n::Exp>: Unit {
-    type Output: Unit;
-    fn pow(self, exp: P) -> Self::Output;
-}*/
 //endregion
 
 //region Roots.
+pub trait CanRoot<E>: Unit {
+    type Output: Unit;
+    fn root(self) -> Self::Output;
+}
+
 pub trait CanSquareRoot: Unit {
     type Output: Unit;
     fn sqrt(self) -> Self::Output;
+}
+
+impl<U: CanRoot<super::exp::E2>> CanSquareRoot for U {
+    type Output = U::Output;
+    fn sqrt(self) -> Self::Output { self.root() }
 }
 
 pub trait CanCubeRoot: Unit {
@@ -115,27 +122,10 @@ pub trait CanCubeRoot: Unit {
     fn cbrt(self) -> Self::Output;
 }
 
-//region Composite roots.
-pub trait CanRoot4: Unit {
-    type Output: Unit;
-    fn root_4(self) -> Self::Output;
+impl<U: CanRoot<super::exp::E3>> CanCubeRoot for U {
+    type Output = U::Output;
+    fn cbrt(self) -> Self::Output { self.root() }
 }
-
-impl<U: CanSquareRoot> CanRoot4 for U where
-    U::Output: CanSquareRoot,
-{
-    type Output = <U::Output as CanSquareRoot>::Output;
-
-    fn root_4(self) -> Self::Output {
-        self.sqrt().sqrt()
-    }
-}
-//endregion
-
-/*pub trait CanRoot<R: super::compound::unit_pow_n::Exp>: Unit {
-    type Output: Unit;
-    fn root(self, root: R) -> Self::Output;
-}*/
 //endregion
 //endregion
 

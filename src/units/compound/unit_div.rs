@@ -56,15 +56,6 @@ impl<A: Unit, B: Unit> UnitBinary for UnitDiv<A, B> {
 }
 
 
-impl<A: CanSquare, B: CanSquare> CanSquare for UnitDiv<A, B> {
-    type Output = UnitDiv<A::Output, B::Output>;
-
-    fn squared(self) -> Self::Output {
-        UnitDiv(self.0.squared(), self.1.squared())
-    }
-}
-
-
 //region Commutative Property.
 impl<A: Commutative, B: Unit> CommutativeLeft for UnitDiv<A, B> {
     type WithLeftCommuted = UnitDiv<A::Commuted, B>;

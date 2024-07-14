@@ -18,6 +18,30 @@ pub trait CanMul6: Exp { type Mul6: Exp + CanDiv6<Div6=Self>; }
 pub trait CanDiv6: Exp { type Div6: Exp + CanMul6<Mul6=Self>; }
 
 
+//region Generic division.
+pub trait CanDiv<E>: Exp { type Quotient: Exp; }
+
+impl<E: Exp> CanDiv<E1> for E { type Quotient = E; }
+impl<E: CanDiv2> CanDiv<E2> for E { type Quotient = E::Div2; }
+impl<E: CanDiv3> CanDiv<E3> for E { type Quotient = E::Div3; }
+impl<E: CanDiv4> CanDiv<E4> for E { type Quotient = E::Div4; }
+impl<E: CanDiv5> CanDiv<E5> for E { type Quotient = E::Div5; }
+impl<E: CanDiv6> CanDiv<E6> for E { type Quotient = E::Div6; }
+//endregion
+
+
+//region Generic multiplication.
+pub trait CanMul<E>: Exp { type Product: Exp; }
+
+impl<E: Exp> CanMul<E1> for E { type Product = E; }
+impl<E: CanMul2> CanMul<E2> for E { type Product = E::Mul2; }
+impl<E: CanMul3> CanMul<E3> for E { type Product = E::Mul3; }
+impl<E: CanMul4> CanMul<E4> for E { type Product = E::Mul4; }
+impl<E: CanMul5> CanMul<E5> for E { type Product = E::Mul5; }
+impl<E: CanMul6> CanMul<E6> for E { type Product = E::Mul6; }
+//endregion
+
+
 macro_rules! def_exp {
     { $(
     type $name:ident = $val:literal

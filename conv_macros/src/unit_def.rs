@@ -142,17 +142,23 @@ impl<U: Parse + ToTokens> UnitExp<U> {
         let unit = match self.exp {
             None => base,
             Some(exp) => match (self.neg, exp.to_string().as_str()) {
-                (true,  "3") => UnitDef::Inv(Box::new(UnitDef::Pow3(Box::new(base)))),
-                (true,  "2") => UnitDef::Inv(Box::new(UnitDef::Pow2(Box::new(base)))),
-                (true,  "1") => UnitDef::Inv(Box::new(base)),
                 (false, "0") => todo!("zero exponent"),
-                (false, "1") => base,
-                (false, "2") => UnitDef::Pow2(Box::new(base)),
-                (false, "3") => UnitDef::Pow3(Box::new(base)),
 
-                _ => {
-                    return Err(syn::Error::new(exp.span(), "Invalid exponent"));
-                }
+                (false, "1") => base,
+                (true,  "1") => UnitDef::Inv(Box::new(base)),
+
+                (false, _) => UnitDef::Pow(
+                    Box::new(base),
+                    syn::Ident::new(&format!("E{exp}"), exp.span()),
+                ),
+                (true,  _) => UnitDef::Inv(Box::new(UnitDef::Pow(
+                    Box::new(base),
+                    syn::Ident::new(&format!("E{exp}"), exp.span()),
+                ))),
+
+                // _ => {
+                //     return Err(syn::Error::new(exp.span(), "Invalid exponent"));
+                // }
             }
         };
 
@@ -183,10 +189,7 @@ pub enum UnitDef<U: Parse + ToTokens = Inner> {
     Div(Box<UnitDef<U>>, Box<UnitDef<U>>),
     Mul(Box<UnitDef<U>>, Box<UnitDef<U>>),
     Inv(Box<UnitDef<U>>),
-    Pow2(Box<UnitDef<U>>),
-    Pow3(Box<UnitDef<U>>),
-    // Pow4(Box<UnitDef<U>>),
-    // Pow(Box<UnitDef<U>>, i32),
+    Pow(Box<UnitDef<U>>, syn::Ident),
 }
 
 impl<U: Parse + ToTokens> Parse for UnitDef<U> {
@@ -246,13 +249,9 @@ impl<U: Parse + ToTokens> UnitDef<U> {
                 let ts = unit.as_type();
                 quote!(PerUnit<#ts>)
             }
-            Self::Pow2(base) => {
+            Self::Pow(base, exp) => {
                 let ts = base.as_type();
-                quote!(UnitSquared<#ts>)
-            }
-            Self::Pow3(base) => {
-                let ts = base.as_type();
-                quote!(UnitCubed<#ts>)
+                quote!(UnitPow<#ts, crate::units::exp::#exp>)
             }
         }
     }
@@ -275,13 +274,9 @@ impl<U: Parse + ToTokens> UnitDef<U> {
                 let ts = unit.as_value();
                 quote!(PerUnit(#ts))
             }
-            Self::Pow2(base) => {
+            Self::Pow(base, exp) => {
                 let ts = base.as_value();
-                quote!(UnitSquared::new(#ts))
-            }
-            Self::Pow3(base) => {
-                let ts = base.as_value();
-                quote!(UnitCubed::new(#ts))
+                quote!(UnitPow::<_, crate::units::exp::#exp>::new(#ts))
             }
         }
     }
