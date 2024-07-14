@@ -8,8 +8,8 @@ edition = "2021"
 num-prime = "0.4.4"
 num-traits = "0.2.19"
 
-[dependencies.conv_macros]
-path = "conv_macros"
+[dependencies.dim_macros]
+path = "dim_macros"
 
 [dependencies.serde]
 version = "1.0.203"

@@ -11,7 +11,6 @@ macro_rules! concrete_types {
         impl_unit_ops!($($unit),+);
         impl_unit_inv!($($unit),+);
         impl_unit_pow!($($unit),+);
-        // impl_unit_pow_n!($($unit),+);
         impl_unit_concrete!($($unit),+);
     };
 }
@@ -35,7 +34,7 @@ concrete_types!(
 pub type Distance = Length;
 
 
-conv_macros::impl_scale! {
+dim_macros::impl_scale! {
     for Length impl (Nano, Micro, Milli, Kilo) Meter;
     // for Mass impl (Milli, Kilo) Gram;
     for Time impl (Milli) Second;

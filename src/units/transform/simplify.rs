@@ -153,7 +153,7 @@ macro_rules! impl_simplify {
 }
 
 
-/*conv_macros::impl_reorg! {
+/*dim_macros::impl_reorg! {
     where U: Unit;
 
     // impl U^-3 {}
@@ -190,7 +190,7 @@ macro_rules! impl_simplify {
 }*/
 
 
-/*conv_macros::impl_reorg! {
+/*dim_macros::impl_reorg! {
     where A: Unit, B: Unit;
 
     // impl A * B {

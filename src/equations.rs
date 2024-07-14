@@ -41,7 +41,7 @@ pub fn frequency_to_wavelength<V: Scalar + 'static>(
     freq: Quantity<Frequency, V>,
     speed: Quantity<Speed, V>,
 ) -> Quantity<Length, V> {
-    conv_macros::qty![speed / [freq as 1/Time] -> Length]
+    dim_macros::qty![speed / [freq as 1/Time] -> Length]
 }
 
 
@@ -49,7 +49,7 @@ pub fn wavelength_to_frequency<V: Scalar + 'static>(
     length: Quantity<Length, V>,
     speed: Quantity<Speed, V>,
 ) -> Quantity<Frequency, V> {
-    conv_macros::qty![speed / length -> 1/Time as Frequency]
+    dim_macros::qty![speed / length -> 1/Time as Frequency]
 }
 
 

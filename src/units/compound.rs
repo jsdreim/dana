@@ -3,12 +3,12 @@ use super::traits::*;
 pub mod per_unit;
 pub mod unit_div;
 pub mod unit_mul;
-pub mod unit_pow_n_const_2;
+pub mod unit_pow;
 
 pub use per_unit::PerUnit;
 pub use unit_div::UnitDiv;
 pub use unit_mul::UnitMul;
-pub use unit_pow_n_const_2::*;
+pub use unit_pow::*;
 
 
 impl_unit_ops!(

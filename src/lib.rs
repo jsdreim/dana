@@ -86,7 +86,7 @@ mod tests {
 
     #[test]
     fn test_proc_macro_qty() {
-        use conv_macros::qty as qty2;
+        use dim_macros::qty as qty2;
         use crate::units::symbols::{electrical::*, physical::*};
 
         let v: Quantity<Voltage> = qty2![3.3 V];

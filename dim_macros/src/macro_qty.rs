@@ -236,6 +236,7 @@ impl ToTokens for MacroQty {
             }
             Self::SimplifyType { qty, utype } => {
                 let utype = utype.as_type();
+                // eprintln!("{utype}");
                 tokens.extend(quote!(#qty.simplify::<#utype>()));
             }
             Self::Operation { op, lhs, rhs } => {
