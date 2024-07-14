@@ -101,6 +101,40 @@ mod tests {
     }
 
     #[test]
+    fn test_quantity_norm() {
+        fn test(l1: Quantity<L>) {
+            let l2 = l1.normalize();
+
+            // eprintln!("{l1:>8e} -> {l2:>8.3}");
+            assert!((l2 - l1).abs() < qty![1e-9 nm]);
+        }
+
+        test(qty![4.321_e+9 mm]);
+        test(qty![4.321_e+8 mm]);
+        test(qty![4.321_e+7 mm]);
+        test(qty![4.321_e+6 mm]);
+        // eprintln!();
+        test(qty![4.321_e+5 mm]);
+        test(qty![4.321_e+4 mm]);
+        test(qty![4.321_e+3 mm]);
+        // eprintln!();
+        test(qty![4.321_e+2 mm]);
+        test(qty![4.321_e+1 mm]);
+        test(qty![4.321_e00 mm]);
+        // eprintln!();
+        test(qty![4.321_e-1 mm]);
+        test(qty![4.321_e-2 mm]);
+        test(qty![4.321_e-3 mm]);
+        // eprintln!();
+        test(qty![4.321_e-4 mm]);
+        test(qty![4.321_e-5 mm]);
+        test(qty![4.321_e-6 mm]);
+        test(qty![4.321_e-7 mm]);
+        test(qty![4.321_e-8 mm]);
+        test(qty![4.321_e-9 mm]);
+    }
+
+    #[test]
     fn test_scale() {
         let dist = Length::MilliMeter.quantity(50.0);
 

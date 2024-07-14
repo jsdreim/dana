@@ -52,6 +52,52 @@ impl<U: Unit, V: Scalar> Quantity<U, V> {
     pub fn value_as_base(self) -> V {
         self.value_as(U::default())
     }
+
+    pub fn normalize(self) -> Self where
+        U: UnitScale,
+        V: Float,
+    {
+        if self.value.is_zero() {
+            self.with_base()
+        } else {
+            let limit = V::from_u8(3).unwrap();
+            let mut log: V = self.value.log10();
+            let mut unit: U = self.unit;
+
+            if log.is_sign_positive() {
+                while log >= limit {
+                    let Some(next) = unit.next_up() else { break };
+
+                    let log_rel = unit.scale_factor(next).log10();
+                    let log_new = log + V::from_f64(log_rel).unwrap();
+
+                    if log_new >= V::zero() {
+                        log = log_new;
+                        unit = next;
+                    } else {
+                        break;
+                    }
+                }
+            } else {
+                while log < V::zero() {
+                    let Some(next) = unit.next_down() else { break };
+
+                    let log_rel = unit.scale_factor(next).log10();
+                    let log_new = log + V::from_f64(log_rel).unwrap();
+
+                    //  TODO: `<=` or `<`?
+                    if log_new <= limit {
+                        log = log_new;
+                        unit = next;
+                    } else {
+                        break;
+                    }
+                }
+            }
+
+            self.with_unit(unit)
+        }
+    }
 }
 
 

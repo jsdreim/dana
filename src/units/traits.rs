@@ -61,6 +61,12 @@ impl<U: UnitConcrete> UnitNonExp for U {}
 impl<U: UnitConcrete> ConvertFrom<U> for U {}
 
 
+pub trait UnitScale: Unit {
+    fn next_down(&self) -> Option<Self>;
+    fn next_up(&self) -> Option<Self>;
+}
+
+
 //region Exponential traits.
 pub trait UnitNonExp: Unit {}
 

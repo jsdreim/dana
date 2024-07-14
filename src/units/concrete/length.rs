@@ -1,4 +1,4 @@
-use crate::units::{Unit, UnitConcrete};
+use crate::units::traits::{Unit, UnitConcrete, UnitScale};
 
 
 #[derive(Clone, Copy, Debug, PartialEq, PartialOrd, /*Eq, Ord*/)]
@@ -37,6 +37,31 @@ impl UnitConcrete for Length {
             Self::CentiMeter => "cm",
             Self::Meter => "m",
             Self::KiloMeter => "km",
+        }
+    }
+}
+
+
+impl UnitScale for Length {
+    fn next_down(&self) -> Option<Self> {
+        match self {
+            Self::NanoMeter => None,
+            Self::MicroMeter => Some(Self::NanoMeter),
+            Self::MilliMeter => Some(Self::MicroMeter),
+            Self::CentiMeter => Some(Self::MilliMeter),
+            Self::Meter => Some(Self::MilliMeter),
+            Self::KiloMeter => Some(Self::Meter),
+        }
+    }
+
+    fn next_up(&self) -> Option<Self> {
+        match self {
+            Self::NanoMeter => Some(Self::MicroMeter),
+            Self::MicroMeter => Some(Self::MilliMeter),
+            Self::MilliMeter => Some(Self::Meter),
+            Self::CentiMeter => Some(Self::Meter),
+            Self::Meter => Some(Self::KiloMeter),
+            Self::KiloMeter => None,
         }
     }
 }
