@@ -1,3 +1,4 @@
+mod debug;
 mod macro_qty;
 mod macro_reorg;
 mod macro_scale;
@@ -35,10 +36,9 @@ pub fn impl_scale(stream: TokenStream) -> TokenStream {
 
 #[proc_macro]
 pub fn qty(stream: TokenStream) -> TokenStream {
+    // let debug = debug::CallDebug::new("qty", &stream);
     let qty = syn::parse_macro_input!(stream as MacroQty);
-    // dbg!(&qty);
-
-    // eprintln!("  {}", qty.to_token_stream());
+    // debug.print(&qty);
     qty.into_token_stream().into()
 }
 
