@@ -69,13 +69,68 @@ impl ToTokens for UnitIdent {
 }
 
 
+#[derive(Debug)]
+pub enum Exponent {
+    Whole(proc_macro2::Literal),
+    Frac(proc_macro2::Literal, proc_macro2::Literal),
+}
+
+impl Exponent {
+    fn numerator(&self) -> &proc_macro2::Literal {
+        match self {
+            Self::Whole(a) => a,
+            Self::Frac(a, _) => a,
+        }
+    }
+
+    fn denominator(&self) -> Option<&proc_macro2::Literal> {
+        match self {
+            Self::Whole(_) => None,
+            Self::Frac(_, b) => Some(b),
+        }
+    }
+}
+
+impl Parse for Exponent {
+    fn parse(input: ParseStream) -> Result<Self> {
+        match input.parse::<proc_macro2::Literal>() {
+            Ok(lit) => Ok(Self::Whole(lit)),
+            Err(..) => {
+                let inner;
+                parenthesized!(inner in input);
+
+                let first = inner.parse()?;
+
+                if inner.is_empty() {
+                    Ok(Self::Whole(first))
+                } else {
+                    inner.parse::<Token![/]>()?;
+                    Ok(Self::Frac(first, inner.parse()?))
+                }
+            }
+        }
+    }
+}
+
+impl ToTokens for Exponent {
+    fn to_tokens(&self, tokens: &mut TokenStream) {
+        let (a, b) = match self {
+            Self::Whole(a) => (a, proc_macro2::Literal::i32_unsuffixed(1)),
+            Self::Frac(a, b) => (a, b.clone()),
+        };
+
+        tokens.extend(quote!(TypeFrac<#a, #b>));
+    }
+}
+
+
 type Inner = UnitIdent;
 
 
 #[derive(Debug)]
 enum UnitExpBase<U: Parse + ToTokens = Inner> {
     Base(U),
-    Recurse(UnitDef<U>),
+    Unit(UnitDef<U>),
 }
 
 
@@ -84,7 +139,7 @@ struct UnitExp<U: Parse + ToTokens = Inner> {
     base: UnitExpBase<U>,
     inv: bool,
     neg: bool,
-    exp: Option<proc_macro2::Literal>,
+    exp: Option<Exponent>,
 }
 
 impl<U: Parse + ToTokens> Parse for UnitExp<U> {
@@ -110,7 +165,7 @@ impl<U: Parse + ToTokens> Parse for UnitExp<U> {
         } else {
             let inner;
             parenthesized!(inner in input);
-            base = UnitExpBase::Recurse(inner.parse()?);
+            base = UnitExpBase::Unit(inner.parse()?);
         }
 
         if input.parse::<Token![^]>().is_ok() {
@@ -134,39 +189,44 @@ impl<U: Parse + ToTokens> Parse for UnitExp<U> {
 
 impl<U: Parse + ToTokens> UnitExp<U> {
     fn to_unit(self) -> Result<UnitDef<U>> {
-        let base: UnitDef<U> = match self.base {
+        let base = match self.base {
             UnitExpBase::Base(base) => UnitDef::Base(base),
-            UnitExpBase::Recurse(unit) => unit,
+            UnitExpBase::Unit(unit) => unit,
         };
 
         let unit = match self.exp {
-            None => base,
-            Some(exp) => match (self.neg, exp.to_string().as_str()) {
-                (false, "0") => todo!("zero exponent"),
+            Some(exp) => {
+                let a = exp.numerator();
+                let b = exp.denominator();
+                let a_str = a.to_string();
+                let b_str = b.map(|t| t.to_string())
+                    .unwrap_or_else(|| String::from("1"));
 
-                (false, "1") => base,
-                (true,  "1") => UnitDef::Inv(Box::new(base)),
+                let unit = match [a_str.as_str(), b_str.as_str()] {
+                    [_, "0"] => return Err(syn::Error::new(
+                        b.unwrap().span(),
+                        "Root of degree zero cannot be defined.",
+                    )),
 
-                (false, _) => UnitDef::Pow(
-                    Box::new(base),
-                    syn::Ident::new(&format!("E{exp}"), exp.span()),
-                ),
-                (true,  _) => UnitDef::Inv(Box::new(UnitDef::Pow(
-                    Box::new(base),
-                    syn::Ident::new(&format!("E{exp}"), exp.span()),
-                ))),
+                    ["0", _] => return Err(syn::Error::new(
+                        a.span(),
+                        "Unit with exponent of zero is scalar.",
+                    )),
 
-                // _ => {
-                //     return Err(syn::Error::new(exp.span(), "Invalid exponent"));
-                // }
+                    [a, b] if a == b => base,
+                    _ => UnitDef::Pow(Box::new(base), exp),
+                };
+
+                if self.neg {
+                    UnitDef::Inv(Box::new(unit))
+                } else {
+                    unit
+                }
             }
+            None => base,
         };
 
         if self.inv {
-            // match unit {
-            //     UnitDef::Inv(unit) => Ok(*unit),
-            //     unit => Ok(UnitDef::Inv(Box::new(unit))),
-            // }
             Ok(UnitDef::Inv(Box::new(unit)))
         } else {
             Ok(unit)
@@ -189,7 +249,7 @@ pub enum UnitDef<U: Parse + ToTokens = Inner> {
     Div(Box<UnitDef<U>>, Box<UnitDef<U>>),
     Mul(Box<UnitDef<U>>, Box<UnitDef<U>>),
     Inv(Box<UnitDef<U>>),
-    Pow(Box<UnitDef<U>>, syn::Ident),
+    Pow(Box<UnitDef<U>>, Exponent),
 }
 
 impl<U: Parse + ToTokens> Parse for UnitDef<U> {
