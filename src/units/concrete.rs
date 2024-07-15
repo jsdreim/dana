@@ -34,7 +34,7 @@ concrete_types!(
 pub type Distance = Length;
 
 
-dim_macros::impl_scale! {
+impl_scale! {
     for Length impl (Nano, Micro, Milli, Kilo) Meter;
     // for Mass impl (Milli, Kilo) Gram;
     for Time impl (Milli) Second;

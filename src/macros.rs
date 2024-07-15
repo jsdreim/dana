@@ -233,43 +233,6 @@ macro_rules! qtype {
     (         $($t:tt)*) => { $crate::Quantity<$crate::utype!($($t)*)     > };
 }
 
-#[macro_export]
-macro_rules! qty {
-    //  Return the scalar value of a quantity.
-    [* $($qty:tt)+] => { $crate::qty![$($qty)*].value };
-
-    //region Conversion of existing quantities.
-    //  Convert a quantity to the default of an inferred unit type.
-    [$qty:tt as _]         => { $crate::qty![$qty].convert() };
-    [$qty:tt in _]         => { $crate::qty![$qty].convert() };
-
-    //  Convert a quantity to the default of a specified unit type.
-    [$qty:tt as $($t:tt)*] => { $crate::qty![$qty].convert::<$crate::utype!($($t)*)>() };
-    //  Convert a quantity to a specified unit.
-    [$qty:tt in $($t:tt)*] => { $crate::qty![$qty].convert_to($crate::unit!($($t)*))   };
-
-    //  Reorganize the units of a quantity.
-    [$qty:tt -> $($t:tt)*] => { $crate::qty![$qty].simplify::<$crate::utype!($($t)*)>() };
-    // [$qty:tt -> $($t:tt)*] => { $crate::qty![$qty].convert_to($crate::unit!($($t)*))   };
-    //endregion
-
-    //region Creation of new quantities.
-    //  Define a new quantity with the default of an inferred unit type.
-    [$val:literal       ] => { $crate::Quantity { value: $val, unit: Default::default() } };
-
-    //  Define a new quantity with a specified unit.
-    [$val:tt * $($t:tt)*] => { $crate::Quantity { value: $val, unit: $crate::unit!($($t)*) } };
-    [$val:tt / $($t:tt)*] => { $crate::qty![$val * (1 / $($t)*)] };
-    [$val:tt   $($t:tt)+] => { $crate::qty![$val * (    $($t)+)] };
-    //endregion
-
-    //  Recurse over the contents of square brackets.
-    [[$($t:tt)*]] => { $crate::qty![$($t)*] };
-
-    //  Pass through a single token unaltered.
-    [$token:tt] => { $token };
-}
-
 
 macro_rules! impl_unit_concrete {
     ($unit:ident) => {
