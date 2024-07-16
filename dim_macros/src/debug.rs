@@ -4,7 +4,7 @@ use proc_macro::TokenStream;
 use quote::ToTokens;
 
 
-struct CallDebug {
+pub struct CallDebug {
     span: proc_macro2::Span,
     text: String,
     line: usize,
@@ -36,23 +36,25 @@ impl CallDebug {
     }
 
     pub fn print(&self, output: impl ToTokens) {
+        use std::io::Write;
+
         let text_out = format!("{}", output.to_token_stream());
+        let pipe_out = &mut std::io::stderr().lock();
 
         #[cfg(procmacro2_semver_exempt)]
-        eprintln!(
-            "[{}:{}:{}] {} = {}",
+        write!(
+            pipe_out,
+            "[{}:{}:{}] ",
             self.span.source_file().path().display(),
             self.line,
             self.column,
-            self.text,
-            text_out,
-        );
+        ).unwrap();
 
-        #[cfg(not(procmacro2_semver_exempt))]
-        eprintln!(
+        writeln!(
+            pipe_out,
             "{} = {}",
             self.text,
             text_out,
-        );
+        ).unwrap();
     }
 }
