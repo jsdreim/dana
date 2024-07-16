@@ -10,12 +10,12 @@ use crate::unit_def::*;
 
 
 #[derive(Debug)]
-pub struct UnitMapping<U: Parse + ToTokens> {
+pub struct UnitMapping<U: UnitValid> {
     type_base: UnitDef<U>,
     types: Vec<UnitDef<U>>,
 }
 
-impl<U: Parse + ToTokens> Parse for UnitMapping<U> {
+impl<U: UnitValid> Parse for UnitMapping<U> {
     fn parse(input: ParseStream) -> Result<Self> {
         input.parse::<Token![impl]>()?;
         let type_base = input.parse::<UnitDef<U>>()?;
@@ -34,19 +34,19 @@ impl<U: Parse + ToTokens> Parse for UnitMapping<U> {
 }
 
 
-struct ImplReorg<'p, U: Parse + ToTokens> {
+struct ImplReorg<'p, U: UnitValid> {
     params: &'p Vec<syn::TypeParam>,
     from: &'p UnitDef<U>,
     into: &'p UnitDef<U>,
 }
 
-impl<U: Parse + ToTokens> ImplReorg<'_, U> {
+impl<U: UnitValid> ImplReorg<'_, U> {
     fn swap(&mut self) {
         std::mem::swap(&mut self.from, &mut self.into);
     }
 }
 
-impl<U: Parse + ToTokens> ToTokens for ImplReorg<'_, U> {
+impl<U: UnitValid> ToTokens for ImplReorg<'_, U> {
     fn to_tokens(&self, tokens: &mut TokenStream) {
         let type_from = self.from.as_type();
         let type_into = self.into.as_type();

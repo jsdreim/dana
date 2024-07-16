@@ -8,6 +8,10 @@ use syn::{
 };
 
 
+pub trait UnitValid: std::fmt::Debug + Parse + ToTokens {}
+impl<T: std::fmt::Debug + Parse + ToTokens> UnitValid for T {}
+
+
 #[derive(Debug)]
 pub enum UnitIdent {
     /// One identifier.
@@ -128,21 +132,21 @@ type Inner = UnitIdent;
 
 
 #[derive(Debug)]
-enum UnitExpBase<U: Parse + ToTokens = Inner> {
+enum UnitExpBase<U: UnitValid = Inner> {
     Base(U),
     Unit(UnitDef<U>),
 }
 
 
 #[derive(Debug)]
-struct UnitExp<U: Parse + ToTokens = Inner> {
+struct UnitExp<U: UnitValid = Inner> {
     base: UnitExpBase<U>,
     inv: bool,
     neg: bool,
     exp: Option<Exponent>,
 }
 
-impl<U: Parse + ToTokens> Parse for UnitExp<U> {
+impl<U: UnitValid> Parse for UnitExp<U> {
     fn parse(input: ParseStream) -> Result<Self> {
         let base;
         let inv;
@@ -187,7 +191,7 @@ impl<U: Parse + ToTokens> Parse for UnitExp<U> {
     }
 }
 
-impl<U: Parse + ToTokens> UnitExp<U> {
+impl<U: UnitValid> UnitExp<U> {
     fn to_unit(self) -> Result<UnitDef<U>> {
         let base = match self.base {
             UnitExpBase::Base(base) => UnitDef::Base(base),
@@ -236,14 +240,14 @@ impl<U: Parse + ToTokens> UnitExp<U> {
 
 
 #[derive(Debug)]
-enum Operation<U: Parse + ToTokens> {
+enum Operation<U: UnitValid> {
     Div(UnitExp<U>),
     Mul(UnitExp<U>),
 }
 
 
 #[derive(Debug)]
-pub enum UnitDef<U: Parse + ToTokens = Inner> {
+pub enum UnitDef<U: UnitValid = Inner> {
     Base(U),
 
     Div(Box<UnitDef<U>>, Box<UnitDef<U>>),
@@ -252,7 +256,7 @@ pub enum UnitDef<U: Parse + ToTokens = Inner> {
     Pow(Box<UnitDef<U>>, Exponent),
 }
 
-impl<U: Parse + ToTokens> Parse for UnitDef<U> {
+impl<U: UnitValid> Parse for UnitDef<U> {
     fn parse(input: ParseStream) -> Result<Self> {
         let left: Result<UnitExp<U>> = input.parse();
         let mut ops = Vec::new();
@@ -290,7 +294,7 @@ impl<U: Parse + ToTokens> Parse for UnitDef<U> {
     }
 }
 
-impl<U: Parse + ToTokens> UnitDef<U> {
+impl<U: UnitValid> UnitDef<U> {
     pub fn as_type(&self) -> TokenStream {
         match self {
             Self::Base(unit) => unit.to_token_stream(),
