@@ -1,6 +1,14 @@
 use super::traits::*;
 
 
+/// # New Unit Checklist
+/// 1. Source file.
+/// 2. Add to `concrete_types!` and `impl_scale!` calls below.
+/// 3. Add relevant relationships in [`crate::units::transform::convert`].
+/// 4. Add to [`crate::units::symbols`].
+struct _Notes;
+
+
 macro_rules! concrete_types {
     ($($module:ident::$unit:ident),+$(,)?) => {
         $(
