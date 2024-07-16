@@ -162,7 +162,7 @@ mod tests {
 
         //  Battery should last for 31h15m.
         let t: Quantity<Time> = qty![q / [i in C/s] -> t];
-        assert_eq!(t, qty![31.0 h] + qty![15.0 min]);
+        assert_eq!(t, qty![31.0 h, 15.0 min]);
 
         //  After that time, should have dissipated 324kJ (90Wh) in total.
         let e: Quantity<Energy> = qty![(p * t) as E];

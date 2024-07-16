@@ -9,54 +9,85 @@ use syn::{
 use crate::unit_def::*;
 
 
-#[derive(Debug)]
 pub struct QtyNew {
+    pub sign: Option<syn::token::Minus>,
     pub value: proc_macro2::Literal,
     pub unit: UnitDef,
 }
 
+impl std::fmt::Debug for QtyNew {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f, "QtyNew {{ sign: {}, value: {:?}, unit: {:?} }}",
+            match self.sign {
+                Some(m) => format!("Some(Minus {{ spans: {:?} }})", m.spans),
+                None => String::from("None"),
+            },
+            self.value,
+            self.unit,
+        )
+    }
+}
+
 impl Parse for QtyNew {
     fn parse(input: ParseStream) -> Result<Self> {
-        use syn::parse::discouraged::Speculative;
+        let sign = input.parse::<Token![-]>().ok();
+        let value = input.parse()?;
 
-        let fork = input.fork();
-        let value = fork.parse()?;
-
-        let unit: UnitDef = if fork.parse::<Token![/]>().is_ok() {
-            UnitDef::Inv(Box::new(fork.parse()?))
-        } else if fork.parse::<Token![*]>().is_ok() {
-            fork.parse()?
+        let unit: UnitDef = if input.parse::<Token![/]>().is_ok() {
+            UnitDef::Inv(Box::new(input.parse()?))
+        } else if input.parse::<Token![*]>().is_ok() {
+            input.parse()?
         } else {
-            fork.parse()?
+            input.parse()?
         };
 
-        input.advance_to(&fork);
+        Ok(Self { sign, value, unit })
+    }
+}
 
-        Ok(Self { value, unit })
+impl ToTokens for QtyNew {
+    fn to_tokens(&self, tokens: &mut TokenStream) {
+        let sign = self.sign;
+        let value = &self.value;
+        let unit = self.unit.as_value();
+
+        tokens.extend(quote!(::dimensional::Quantity {
+            value: #sign #value,
+            unit: #unit,
+        }));
     }
 }
 
 
 #[derive(Debug)]
 pub enum QtyBase {
-    New(QtyNew),
+    New(QtyNew, Vec<QtyNew>),
     Pass(TokenTree),
 }
 
 impl Parse for QtyBase {
     fn parse(input: ParseStream) -> Result<Self> {
-        if let Ok(value) = input.parse() {
-            //  Definition of a new quantity.
+        if input.fork().parse::<QtyNew>().is_ok() {
+            //  At least one new quantity definition.
+            let mut add = Vec::new();
 
-            let unit: UnitDef = if input.parse::<Token![/]>().is_ok() {
-                UnitDef::Inv(Box::new(input.parse()?))
-            } else if input.parse::<Token![*]>().is_ok() {
-                input.parse()?
-            } else {
-                input.parse()?
-            };
+            //  Read new quantities.
+            while let Ok(new) = input.parse() {
+                add.push(new);
 
-            Ok(Self::New(QtyNew { value, unit }))
+                if input.parse::<Token![,]>().is_ok() {
+                    //  Comma separator.
+                } else if input.parse::<Token![+]>().is_ok() {
+                    //  Plus separator.
+                }
+            }
+
+            add.rotate_left(1);
+            let new = add.pop()
+                .expect("qty found in fork of stream, but not in real stream");
+
+            Ok(Self::New(new, add))
         } else {
             //  Usage of an existing quantity.
             Ok(Self::Pass(input.parse()?))
@@ -121,7 +152,7 @@ impl Parse for Op {
 #[derive(Debug)]
 pub enum MacroQty {
     /// Define a new quantity.
-    New(QtyNew),
+    New(QtyNew, Vec<QtyNew>),
     /// Retrieve the scalar value of a quantity.
     Deref(Box<Self>),
 
@@ -201,7 +232,7 @@ impl Parse for MacroQty {
         }
 
         let mut qty: Self = match base {
-            QtyBase::New(new) => Self::New(new),
+            QtyBase::New(new, add) => Self::New(new, add),
             QtyBase::Pass(tt) => match syn::parse2(tt.to_token_stream()) {
                 Ok(Recursion(qty)) => qty,
                 Err(_) => Self::Pass(tt.into_token_stream()),
@@ -230,15 +261,10 @@ impl Parse for MacroQty {
 impl ToTokens for MacroQty {
     fn to_tokens(&self, tokens: &mut TokenStream) {
         match self {
-            Self::New(QtyNew { value, unit }) => {
-                let unit = unit.as_value();
-
-                tokens.extend(quote! {
-                    ::dimensional::Quantity {
-                        value: #value,
-                        unit: #unit,
-                    }
-                });
+            // Self::New(new, _) => new.to_tokens(tokens),
+            Self::New(new, add) if add.is_empty() => new.to_tokens(tokens),
+            Self::New(new, add) => {
+                tokens.extend(quote!((#new #(+ #add)*)));
             }
             Self::Deref(qty) => {
                 tokens.extend(quote!((#qty.value)));

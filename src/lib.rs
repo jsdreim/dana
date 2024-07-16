@@ -269,6 +269,31 @@ mod tests {
             qty![*[[9.80665 N] / (crate::constants::GFORCE)] as M in kJ].floor(),
             89_875_517_873_681.0,
         );
+
+        //  Test additive definitions.
+        assert_eq!(qty![250.0 cm], qty![2.0 m + 50.0 cm]);
+        assert_eq!(qty![250.0 cm], qty![2.0 m, 50.0 cm]);
+        assert_eq!(qty![250.0 cm], qty![2.0 m 50.0 cm]);
+
+        //  Test subtractive definitions.
+        assert_eq!(qty![150.0 cm], qty![2.0 m + -50.0 cm]);
+        assert_eq!(qty![150.0 cm], qty![2.0 m, -50.0 cm]);
+        assert_eq!(qty![150.0 cm], qty![2.0 m - 50.0 cm]);
+
+        //  Test chained addition, conversion, and deref with all combinations
+        //      of recursion brackets.
+        //  NOTE: Deref on multiple literals should probably not be encouraged,
+        //      but to explicitly *forbid* it would likely cause more problems
+        //      than the simple *ability* to write confusing invocations. Just
+        //      use recursion brackets to make it clear.
+        assert_eq!(qty![*   2.0 m  +  10.0 cm   in mm ], 2.1e3);
+        assert_eq!(qty![*  [2.0 m] + [10.0 cm]  in mm ], 2.1e3);
+        assert_eq!(qty![* [ 2.0 m  +  10.0 cm ] in mm ], 2.1e3);
+        assert_eq!(qty![* [[2.0 m] + [10.0 cm]] in mm ], 2.1e3);
+        assert_eq!(qty![*[  2.0 m  +  10.0 cm   in mm]], 2.1e3);
+        assert_eq!(qty![*[ [2.0 m] + [10.0 cm]  in mm]], 2.1e3);
+        assert_eq!(qty![*[[ 2.0 m  +  10.0 cm ] in mm]], 2.1e3);
+        assert_eq!(qty![*[[[2.0 m] + [10.0 cm]] in mm]], 2.1e3);
     }
 
     #[test]
