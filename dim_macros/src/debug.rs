@@ -4,6 +4,17 @@ use proc_macro::TokenStream;
 use quote::ToTokens;
 
 
+macro_rules! macro_dbg {
+    { as macro $name:literal for $stream:ident; $($t:tt)* } => {{
+        let debug = $crate::debug::CallDebug::new($name, &$stream);
+        let value = { $($t)* };
+        debug.print(&value);
+        value
+    }};
+    { $($t:tt)* } => { $($t)* };
+}
+
+
 pub struct CallDebug {
     span: proc_macro2::Span,
     text: String,

@@ -1,3 +1,4 @@
+#[macro_use]
 mod debug;
 mod macro_qty;
 mod macro_reorg;
@@ -14,23 +15,21 @@ use unit_def::UnitDef;
 
 #[proc_macro]
 pub fn impl_reorg(stream: TokenStream) -> TokenStream {
-    let data = syn::parse_macro_input!(stream as Reorg);
-    // dbg!(&data.maps);
-
-    // eprintln!("\n");
-    // eprintln!("{}", data.to_token_stream());
-    // eprintln!("\n");
-
-    data.into_token_stream().into()
+    let code = macro_dbg! {
+        // as macro "impl_reorg" for stream;
+        syn::parse_macro_input!(stream as Reorg)
+    };
+    code.into_token_stream().into()
 }
 
 
 #[proc_macro]
 pub fn impl_scale(stream: TokenStream) -> TokenStream {
-    let data = syn::parse_macro_input!(stream as MacroScale);
-
-    // eprintln!("  {}", data.to_token_stream());
-    data.into_token_stream().into()
+    let code = macro_dbg! {
+        // as macro "impl_scale" for stream;
+        syn::parse_macro_input!(stream as MacroScale)
+    };
+    code.into_token_stream().into()
 }
 
 
@@ -39,28 +38,29 @@ pub fn impl_scale(stream: TokenStream) -> TokenStream {
 /// See the crate-level documentation for examples.
 #[proc_macro]
 pub fn qty(stream: TokenStream) -> TokenStream {
-    // let debug = debug::CallDebug::new("qty", &stream);
-    let qty = syn::parse_macro_input!(stream as MacroQty);
-    // debug.print(&qty);
+    let qty = macro_dbg! {
+        // as macro "qty" for stream;
+        syn::parse_macro_input!(stream as MacroQty)
+    };
     qty.into_token_stream().into()
 }
 
 
 #[proc_macro]
 pub fn unit(stream: TokenStream) -> TokenStream {
-    let unit = syn::parse_macro_input!(stream as UnitDef);
-    let ts = unit.as_value();
-
-    // eprintln!("{ts}");
-    ts.into()
+    let unit = macro_dbg! {
+        // as macro "unit" for stream;
+        syn::parse_macro_input!(stream as UnitDef).as_value()
+    };
+    unit.into()
 }
 
 
 #[proc_macro]
 pub fn utype(stream: TokenStream) -> TokenStream {
-    let utype = syn::parse_macro_input!(stream as UnitDef);
-    let ts = utype.as_type();
-
-    // eprintln!("{ts}");
-    ts.into()
+    let utype = macro_dbg! {
+        // as macro "utype" for stream;
+        syn::parse_macro_input!(stream as UnitDef).as_type()
+    };
+    utype.into()
 }
