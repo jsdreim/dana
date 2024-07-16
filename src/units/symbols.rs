@@ -82,7 +82,7 @@ pub mod common {
 define_symbols!(pub mod basic(length, mass, time, speed, accel));
 // define_symbols!(pub mod geometric(length, area, volume));
 define_symbols!(pub mod physical(basic, energy, frequency, force, momentum));
-define_symbols!(pub mod electrical(power, current, voltage, resistance));
+define_symbols!(pub mod electrical(power, charge, current, voltage, resistance));
 
 
 // define_symbols! {
@@ -171,6 +171,19 @@ define_symbols! {
         const MW = MegaWatt;
         const GW = GigaWatt;
         const TW = TeraWatt;
+    }
+
+    pub mod charge for type Charge as q, Q {
+        const uC = MicroCoulomb;
+        const mC = MilliCoulomb;
+        const  C = Coulomb;
+        const kC = KiloCoulomb;
+        const MC = MegaCoulomb;
+        const GC = GigaCoulomb;
+        const TC = TeraCoulomb;
+
+        const Ah: (Current * Time) = (A * h);
+        const mAh: (Current * Time) = (mA * h);
     }
 
     pub mod current for type Current as I {

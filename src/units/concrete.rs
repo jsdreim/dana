@@ -34,6 +34,7 @@ concrete_types!(
     force::Force,
     energy::Energy,
     power::Power,
+    charge::Charge,
     current::Current,
     voltage::Voltage,
     resistance::Resistance,
@@ -52,6 +53,7 @@ impl_scale! {
     for Energy impl (Micro, Milli, Kilo, Mega, Giga, Tera) Joule;
 
     for Power impl (Micro, Milli, Kilo, Mega, Giga, Tera) Watt;
+    for Charge impl (Micro, Milli, Kilo, Mega, Giga, Tera) Coulomb;
     for Current impl (Micro, Milli, Kilo, Mega, Giga, Tera) Amp;
     for Voltage impl (Micro, Milli, Kilo, Mega, Giga, Tera) Volt;
     for Resistance impl (Micro, Milli, Kilo, Mega, Giga, Tera) Ohm;
