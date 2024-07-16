@@ -34,6 +34,9 @@ pub fn impl_scale(stream: TokenStream) -> TokenStream {
 }
 
 
+/// Quantity macro.
+///
+/// See the crate-level documentation for examples.
 #[proc_macro]
 pub fn qty(stream: TokenStream) -> TokenStream {
     // let debug = debug::CallDebug::new("qty", &stream);

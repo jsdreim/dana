@@ -9,6 +9,7 @@ pub use commutative::*;
 pub use transform::*;
 
 
+/// Trait for a type that represents a dimensional "unit".
 pub trait Unit: Copy + Default + std::fmt::Display + PartialEq {
     // type ScaleType: crate::Scalar;
 
