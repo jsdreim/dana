@@ -9,11 +9,37 @@ use syn::{
 use crate::unit_def::*;
 
 
+#[derive(Debug)]
+pub struct QtyNew {
+    pub value: proc_macro2::Literal,
+    pub unit: UnitDef,
+}
+
+impl Parse for QtyNew {
+    fn parse(input: ParseStream) -> Result<Self> {
+        use syn::parse::discouraged::Speculative;
+
+        let fork = input.fork();
+        let value = fork.parse()?;
+
+        let unit: UnitDef = if fork.parse::<Token![/]>().is_ok() {
+            UnitDef::Inv(Box::new(fork.parse()?))
+        } else if fork.parse::<Token![*]>().is_ok() {
+            fork.parse()?
+        } else {
+            fork.parse()?
+        };
+
+        input.advance_to(&fork);
+
+        Ok(Self { value, unit })
+    }
+}
+
+
+#[derive(Debug)]
 pub enum QtyBase {
-    New {
-        value: proc_macro2::Literal,
-        unit: UnitDef,
-    },
+    New(QtyNew),
     Pass(TokenTree),
 }
 
@@ -30,7 +56,7 @@ impl Parse for QtyBase {
                 input.parse()?
             };
 
-            Ok(Self::New { value, unit })
+            Ok(Self::New(QtyNew { value, unit }))
         } else {
             //  Usage of an existing quantity.
             Ok(Self::Pass(input.parse()?))
@@ -95,10 +121,7 @@ impl Parse for Op {
 #[derive(Debug)]
 pub enum MacroQty {
     /// Define a new quantity.
-    New {
-        value: proc_macro2::Literal,
-        unit: UnitDef,
-    },
+    New(QtyNew),
     /// Retrieve the scalar value of a quantity.
     Deref(Box<Self>),
 
@@ -178,7 +201,7 @@ impl Parse for MacroQty {
         }
 
         let mut qty: Self = match base {
-            QtyBase::New { value, unit } => Self::New { value, unit },
+            QtyBase::New(new) => Self::New(new),
             QtyBase::Pass(tt) => match syn::parse2(tt.to_token_stream()) {
                 Ok(Recursion(qty)) => qty,
                 Err(_) => Self::Pass(tt.into_token_stream()),
@@ -207,7 +230,7 @@ impl Parse for MacroQty {
 impl ToTokens for MacroQty {
     fn to_tokens(&self, tokens: &mut TokenStream) {
         match self {
-            Self::New { value, unit } => {
+            Self::New(QtyNew { value, unit }) => {
                 let unit = unit.as_value();
 
                 tokens.extend(quote! {
