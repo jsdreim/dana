@@ -50,19 +50,23 @@ pub fn qty(stream: TokenStream) -> TokenStream {
 
 #[proc_macro]
 pub fn unit(stream: TokenStream) -> TokenStream {
+    wrap_dbg!(UnitDef::as_value as UnitDefTop);
+
     let unit = macro_dbg! {
-        // as macro "unit" for stream;
-        syn::parse_macro_input!(stream as UnitDef).as_value()
+        as macro "unit" for stream if debug;
+        syn::parse_macro_input!(stream as UnitDefTop)
     };
-    unit.into()
+    unit.inner.as_value().into()
 }
 
 
 #[proc_macro]
-pub fn utype(stream: TokenStream) -> TokenStream {
-    let utype = macro_dbg! {
-        // as macro "utype" for stream;
-        syn::parse_macro_input!(stream as UnitDef).as_type()
+pub fn dim(stream: TokenStream) -> TokenStream {
+    wrap_dbg!(UnitDef::as_type as UnitDefTop);
+
+    let dim = macro_dbg! {
+        as macro "dim" for stream if debug;
+        syn::parse_macro_input!(stream as UnitDefTop)
     };
-    utype.into()
+    dim.inner.as_type().into()
 }

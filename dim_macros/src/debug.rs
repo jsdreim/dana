@@ -78,10 +78,12 @@ macro_rules! macro_dbg {
 
 
 macro_rules! wrap_dbg {
-    ($inner:ident as $vis:vis $wrap:ident) => {
-        wrap_dbg!($inner as $vis $wrap { debug: if ? });
+    ($inner:ident $(::  $method:ident)? as $vis:vis $wrap:ident) => {
+        wrap_dbg!($inner $(:: $method)? as $vis     $wrap { debug: if ? });
     };
-    ($inner:ident as $vis:vis $wrap:ident { $debug:ident: if $sigil:tt }) => {
+    ($inner:ident $(::  $method:ident)? as $vis:vis $wrap:ident {
+        $debug:ident: if $sigil:tt$(,)?
+    }) => {
         #[allow(dead_code)]
         $vis struct $wrap {
             pub $debug: bool,
@@ -99,7 +101,7 @@ macro_rules! wrap_dbg {
 
         impl ::quote::ToTokens for $wrap {
             fn to_tokens(&self, tokens: &mut ::proc_macro2::TokenStream) {
-                self.inner.to_tokens(tokens);
+                self.inner$(.$method())?.to_tokens(tokens);
             }
         }
     };
