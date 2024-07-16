@@ -7,7 +7,7 @@ use crate::{
 
 
 pub fn gravitational_parameter(mass: Quantity<Mass>) -> Quantity<GravParam> {
-    (mass * G).simplify()
+    (mass * CONST_G).simplify()
 }
 
 
@@ -18,7 +18,7 @@ pub fn gravity(
 ) -> Quantity<Force> {
     //  F = G(M₁M₂ / r²)
 
-    let force: qtype!((l^3/t^2/m) * (m*m/l^2)) = G * (
+    let force: qtype!((l^3/t^2/m) * (m*m/l^2)) = CONST_G * (
         (mass_1 * mass_2)
         / dist.squared()
     );
@@ -28,12 +28,12 @@ pub fn gravity(
 
 
 pub fn photon_energy(freq: Quantity<Frequency>) -> Quantity<Energy> {
-    (freq * H).simplify()
+    (freq * CONST_H).simplify()
 }
 
 
 pub fn photon_frequency(energy: Quantity<Energy>) -> Quantity<Frequency> {
-    (energy / H).simplify()
+    (energy / CONST_H).simplify()
 }
 
 
@@ -86,11 +86,11 @@ mod tests {
     fn test_photon() {
         fn test(wave: Quantity<L>, energy_expected: Quantity<E>) {
             //  Check the two stages of conversion separately.
-            let freq = wavelength_to_frequency(wave, C);
+            let freq = wavelength_to_frequency(wave, CONST_C);
             let energy = photon_energy(freq);
 
             //  Confirm that the functions are symmetric.
-            assert_eq!(wave, frequency_to_wavelength(freq, C));
+            assert_eq!(wave, frequency_to_wavelength(freq, CONST_C));
             assert_eq!(freq, photon_frequency(energy));
 
             //  Confirm that the results are correct.

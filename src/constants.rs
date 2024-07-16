@@ -7,7 +7,7 @@ use crate::units::{*, symbols::*};
 ///
 /// [m]: Length::Meter
 /// [s]: Time::Second
-pub const C: qtype!(Speed) = qty!(299_792_458.0 m/s);
+pub const CONST_C: qtype!(Speed) = qty!(299_792_458.0 m/s);
 
 
 /// Elementary charge; Electrical charge of a single proton.
@@ -15,7 +15,7 @@ pub const C: qtype!(Speed) = qty!(299_792_458.0 m/s);
 /// Unit: [C]
 ///
 /// [C]: Charge::Coulomb
-pub const E: qtype!(Charge) = qty![1.602_176_634_e-19 Charge::Coulomb];
+pub const CONST_E: qtype!(Charge) = qty![1.602_176_634_e-19 C];
 
 
 /// Gravitational constant.
@@ -25,7 +25,7 @@ pub const E: qtype!(Charge) = qty![1.602_176_634_e-19 Charge::Coulomb];
 /// [m]: Length::Meter
 /// [s]: Time::Second
 /// [kg]: Mass::KiloGram
-pub const G: qtype!(GravParam / Mass) = qty!(6.6743e-11 m^3/s^2/kg);
+pub const CONST_G: qtype!(GravParam / Mass) = qty!(6.6743e-11 m^3/s^2/kg);
 
 
 /// One "G"; The average acceleration due to gravity at the surface of Earth.
@@ -43,7 +43,7 @@ pub const GFORCE: qtype!(Accel) = qty!(9.80665 m/s/s);
 ///
 /// [eV]: Energy::ElectronVolt
 /// [Hz]: Frequency::Hertz
-pub const H: qtype!(Energy / Frequency) = qty![4.135_667_696_e-15 eV/Hz];
+pub const CONST_H: qtype!(Energy / Frequency) = qty![4.135_667_696_e-15 eV/Hz];
 
 
 /// Boltzmann constant; Relationship between thermal energy and temperature.
@@ -52,7 +52,7 @@ pub const H: qtype!(Energy / Frequency) = qty![4.135_667_696_e-15 eV/Hz];
 ///
 /// [eV]: Energy::ElectronVolt
 /// [K]: Temperature::Kelvin
-pub const K: qtype!(Energy / Temperature) = qty![8.617_333_262_e-5 eV/Temperature::Kelvin];
+pub const CONST_K: qtype!(Energy / Temperature) = qty![8.617_333_262_e-5 eV/K];
 
 
 // /// Gas constant; Relationship between energy, temperature, and substance amount.
@@ -67,7 +67,7 @@ pub const K: qtype!(Energy / Temperature) = qty![8.617_333_262_e-5 eV/Temperatur
 
 #[test]
 fn test_constants() {
-    assert_eq!(format!("{C:.3e}"), "2.998e8 m/s");
-    assert_eq!(format!("{G:.3e}"), "6.674e-11 (m^3/s^2)/kg");
+    assert_eq!(format!("{CONST_C:.3e}"), "2.998e8 m/s");
+    assert_eq!(format!("{CONST_G:.3e}"), "6.674e-11 (m^3/s^2)/kg");
     assert_eq!(format!("{GFORCE:.2}"), "9.81 (m/s)/s");
 }

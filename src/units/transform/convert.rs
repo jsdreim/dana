@@ -72,7 +72,7 @@ impl_relationship! {
     Current = Charge / Time; // I=Q/t
 
     Power = Energy * Frequency; // P = E/t = E(1/t) = Ef
-    Energy = Mass * const C.squared(); // E=mc²
+    Energy = Mass * const CONST_C.squared(); // E=mc²
 }
 
 impl_relationship! {
@@ -82,7 +82,7 @@ impl_relationship! {
 
 #[cfg(test)]
 mod tests {
-    use crate::{constants, Quantity, units::symbols::*};
+    use crate::{Quantity, units::symbols::*};
     use super::*;
 
     #[test]
@@ -101,7 +101,7 @@ mod tests {
         // let v = qty![5.0 m/s];
 
         let f = qty![1.0 kHz];
-        let v = qty![(constants::C) in m/s];
+        let v = qty![CONST_C in m/s];
 
         let v_f = v / qty![f as 1/t];
 
