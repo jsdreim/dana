@@ -81,7 +81,7 @@ pub mod common {
 
 define_symbols!(pub mod basic(length, mass, time, speed, accel));
 // define_symbols!(pub mod geometric(length, area, volume));
-define_symbols!(pub mod physical(basic, energy, frequency, force, momentum));
+define_symbols!(pub mod physical(basic, energy, frequency, force, momentum, temp));
 define_symbols!(pub mod electrical(power, charge, current, voltage, resistance));
 
 
@@ -139,6 +139,16 @@ define_symbols! {
         const MHz = MegaHertz;
         const GHz = GigaHertz;
         const THz = TeraHertz;
+    }
+
+    pub mod temp for type Temperature as K, Θ {
+        const uK = MicroKelvin;
+        const mK = MilliKelvin;
+        const  K = Kelvin;
+        const kK = KiloKelvin;
+        const MK = MegaKelvin;
+        const GK = GigaKelvin;
+        const TK = TeraKelvin;
     }
 
     pub mod force for type Force as F {

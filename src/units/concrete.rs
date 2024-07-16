@@ -30,6 +30,7 @@ concrete_types!(
     mass::Mass,
     time::Time,
     frequency::Frequency,
+    temp::Temperature,
 
     force::Force,
     energy::Energy,
@@ -48,6 +49,7 @@ impl_scale! {
     // for Mass impl (Milli, Kilo) Gram;
     for Time impl (Milli) Second;
     for Frequency impl (Micro, Milli, Kilo, Mega, Giga, Tera) Hertz;
+    for Temp impl (Micro, Milli, Kilo, Mega, Giga, Tera) Kelvin;
 
     for Force impl (Kilo, Mega, Giga) Newton;
     for Energy impl (Micro, Milli, Kilo, Mega, Giga, Tera) Joule;
