@@ -38,9 +38,11 @@ pub fn impl_scale(stream: TokenStream) -> TokenStream {
 /// See the crate-level documentation for examples.
 #[proc_macro]
 pub fn qty(stream: TokenStream) -> TokenStream {
+    wrap_dbg!(MacroQty as MacroQtyTop);
+
     let qty = macro_dbg! {
-        // as macro "qty" for stream;
-        syn::parse_macro_input!(stream as MacroQty)
+        as macro "qty" for stream if debug;
+        syn::parse_macro_input!(stream as MacroQtyTop)
     };
     qty.into_token_stream().into()
 }

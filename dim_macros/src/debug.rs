@@ -4,17 +4,6 @@ use proc_macro::TokenStream;
 use quote::ToTokens;
 
 
-macro_rules! macro_dbg {
-    { as macro $name:literal for $stream:ident; $($t:tt)* } => {{
-        let debug = $crate::debug::CallDebug::new($name, &$stream);
-        let value = { $($t)* };
-        debug.print(&value);
-        value
-    }};
-    { $($t:tt)* } => { $($t)* };
-}
-
-
 pub struct CallDebug {
     span: proc_macro2::Span,
     text: String,
@@ -68,4 +57,50 @@ impl CallDebug {
             text_out,
         ).unwrap();
     }
+}
+
+
+macro_rules! macro_dbg {
+    { as macro $name:literal for $stream:ident $(;)? if $db:ident; $($t:tt)* } => {{
+        let debug = $crate::debug::CallDebug::new($name, &$stream);
+        let value = { $($t)* };
+        if value.$db { debug.print(&value); }
+        value
+    }};
+    { as macro $name:literal for $stream:ident; $($t:tt)* } => {{
+        let debug = $crate::debug::CallDebug::new($name, &$stream);
+        let value = { $($t)* };
+        debug.print(&value);
+        value
+    }};
+    { $($t:tt)* } => { $($t)* };
+}
+
+
+macro_rules! wrap_dbg {
+    ($inner:ident as $vis:vis $wrap:ident) => {
+        wrap_dbg!($inner as $vis $wrap { debug: if ? });
+    };
+    ($inner:ident as $vis:vis $wrap:ident { $debug:ident: if $sigil:tt }) => {
+        #[allow(dead_code)]
+        $vis struct $wrap {
+            pub $debug: bool,
+            pub inner: $inner,
+        }
+
+        impl ::syn::parse::Parse for $wrap {
+            fn parse(input: ::syn::parse::ParseStream) -> ::syn::Result<Self> {
+                Ok(Self {
+                    $debug: input.parse::<::syn::Token![$sigil]>().is_ok(),
+                    inner: input.parse()?,
+                })
+            }
+        }
+
+        impl ::quote::ToTokens for $wrap {
+            fn to_tokens(&self, tokens: &mut ::proc_macro2::TokenStream) {
+                self.inner.to_tokens(tokens);
+            }
+        }
+    };
 }
