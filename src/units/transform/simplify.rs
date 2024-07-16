@@ -217,6 +217,12 @@ impl_simplify! {
     impl (1/(A/B)) <-> (B/A);
 }
 
+//  a*b = b*a
+impl_simplify! {
+    where A: Unit, B: Unit;
+    impl (A*B) -> (B*A);
+}
+
 //region Single fractions.
 //  a * (1/b) = a/b
 impl_simplify! {
@@ -271,7 +277,7 @@ impl_simplify! {
 impl_simplify! {
     where A: Unit, B: Unit;
     for (A /(A /B)) -> B
-    use (a1/(a2/b)) in fn(self) { (b, a2.scale_factor(a1)) }
+    use (a1/(a2/b)) in fn(self) { (b, a1.scale_factor(a2)) }
 }
 
 

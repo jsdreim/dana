@@ -144,4 +144,29 @@ mod tests {
         let e: Quantity<Energy> = qty![(p * t) in J];
         assert_eq!(qty![*e in J], 21.78);
     }
+
+    #[test]
+    fn test_electrical_charge() {
+        //  7500mAh 12V battery (with no discharge curve) across a 50Ω resistor.
+        let q: Quantity<Charge> = qty![7.5 Ah as Q];
+        let v: Quantity<Voltage> = qty![12.0 V];
+        let r: Quantity<Resistance> = qty![50.0 Ω];
+
+        //  Should measure 240mA of current through the resistor.
+        let i: Quantity<Current> = qty![(v / r) as I];
+        assert_eq!(i, qty![240.0 mA]);
+
+        //  Resistor should be dissipating 2.88W as heat.
+        let p: Quantity<Power> = qty![(i * v) as P];
+        assert_eq!(p, qty![2.88 W]);
+
+        //  Battery should last for 31h15m.
+        let t: Quantity<Time> = qty![q / [i in C/s] -> t];
+        assert_eq!(t, qty![31.0 h] + qty![15.0 min]);
+
+        //  After that time, should have dissipated 324kJ (90Wh) in total.
+        let e: Quantity<Energy> = qty![(p * t) as E];
+        assert_eq!(e, qty![324.0 kJ]);
+        assert_eq!(e, qty![90.0 Wh]);
+    }
 }
