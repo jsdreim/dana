@@ -148,29 +148,37 @@ struct UnitExp<U: UnitValid = Inner> {
 
 impl<U: UnitValid> Parse for UnitExp<U> {
     fn parse(input: ParseStream) -> Result<Self> {
-        let base;
-        let inv;
-        let neg;
-        let exp;
+        let inv = if let Ok(literal) = input.parse::<proc_macro2::Literal>() {
+            //  Found a literal. The only literal allowed here is `1`, and it
+            //      must be followed by `/` to specify an inverted unit.
 
-        if let Ok(numerator) = input.parse::<syn::LitInt>() {
-            input.parse::<Token![/]>()?;
-            inv = true;
+            let lit_1 = literal.to_string() == "1";
+            let div_follows = input.parse::<Token![/]>().is_ok();
 
-            if numerator.base10_digits() != "1" {
-                return Err(syn::Error::new(numerator.span(), "Invalid numerator."));
+            if lit_1 && div_follows {
+                true
+            } else {
+                return Err(syn::Error::new(
+                    literal.span(),
+                    "expected a unit or `1` divided by a unit",
+                ));
             }
         } else {
-            inv = false;
-        }
+            false
+        };
 
-        if let Ok(unit) = input.parse() {
-            base = UnitExpBase::Base(unit);
-        } else {
+        let base = if let Ok(unit) = input.parse() {
+            UnitExpBase::Base(unit)
+        } else if input.peek(syn::token::Paren) {
             let inner;
             parenthesized!(inner in input);
-            base = UnitExpBase::Unit(inner.parse()?);
-        }
+            UnitExpBase::Unit(inner.parse()?)
+        } else {
+            return Err(input.error("expected a unit"));
+        };
+
+        let neg;
+        let exp;
 
         if input.parse::<Token![^]>().is_ok() {
             neg = if input.parse::<Token![-]>().is_ok() {
@@ -209,12 +217,12 @@ impl<U: UnitValid> UnitExp<U> {
                 let unit = match [a_str.as_str(), b_str.as_str()] {
                     [_, "0"] => return Err(syn::Error::new(
                         b.unwrap().span(),
-                        "Root of degree zero cannot be defined.",
+                        "root of degree zero cannot be defined",
                     )),
 
                     ["0", _] => return Err(syn::Error::new(
                         a.span(),
-                        "Unit with exponent of zero is scalar.",
+                        "unit with exponent of zero is scalar",
                     )),
 
                     [a, b] if a == b => base,
@@ -240,13 +248,6 @@ impl<U: UnitValid> UnitExp<U> {
 
 
 #[derive(Debug)]
-enum Operation<U: UnitValid> {
-    Div(UnitExp<U>),
-    Mul(UnitExp<U>),
-}
-
-
-#[derive(Debug)]
 pub enum UnitDef<U: UnitValid = Inner> {
     Base(U),
 
@@ -258,36 +259,25 @@ pub enum UnitDef<U: UnitValid = Inner> {
 
 impl<U: UnitValid> Parse for UnitDef<U> {
     fn parse(input: ParseStream) -> Result<Self> {
-        let left: Result<UnitExp<U>> = input.parse();
-        let mut ops = Vec::new();
+        let left: UnitExp<U> = input.parse()?;
+        let mut out = left.to_unit()?;
 
         loop {
             if input.parse::<Token![/]>().is_ok() {
-                ops.push(input.parse().map(Operation::Div));
+                let rhs = input.parse::<UnitExp<U>>()?.to_unit()?;
+                out = Self::Div(Box::new(out), Box::new(rhs));
                 continue;
+
             } else if input.parse::<Token![*]>().is_ok() {
-                ops.push(input.parse().map(Operation::Mul));
+                let rhs = input.parse::<UnitExp<U>>()?.to_unit()?;
+                out = Self::Mul(Box::new(out), Box::new(rhs));
                 continue;
+
             } else {
                 break;
             }
 
             // unreachable!()
-        }
-
-        // return Err(input.error("asdf"));
-
-        let mut out = left?.to_unit()?;
-
-        for op in ops {
-            out = match op? {
-                Operation::Div(right) => {
-                    Self::Div(Box::new(out), Box::new(right.to_unit()?))
-                }
-                Operation::Mul(right) => {
-                    Self::Mul(Box::new(out), Box::new(right.to_unit()?))
-                }
-            };
         }
 
         Ok(out)
