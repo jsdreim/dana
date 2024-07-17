@@ -133,7 +133,7 @@ type Inner = UnitIdent;
 #[derive(Debug)]
 enum UnitExpBase<U: UnitValid = Inner> {
     Base(U),
-    Unit(UnitDef<U>),
+    Unit(UnitSpec<U>),
 }
 
 
@@ -204,9 +204,9 @@ impl<U: UnitValid> Parse for UnitExp<U> {
 }
 
 impl<U: UnitValid> UnitExp<U> {
-    fn to_unit(self) -> Result<UnitDef<U>> {
+    fn to_unit(self) -> Result<UnitSpec<U>> {
         let base = match self.base {
-            UnitExpBase::Base(base) => UnitDef::Base(base),
+            UnitExpBase::Base(base) => UnitSpec::Base(base),
             UnitExpBase::Unit(unit) => unit,
         };
 
@@ -235,11 +235,11 @@ impl<U: UnitValid> UnitExp<U> {
 
                     [1, 1] => base,
                     // [a, b] if a == b => base,
-                    _ => UnitDef::Pow(Box::new(base), exp),
+                    _ => UnitSpec::Pow(Box::new(base), exp),
                 };
 
                 if self.neg {
-                    UnitDef::Inv(Box::new(unit))
+                    UnitSpec::Inv(Box::new(unit))
                 } else {
                     unit
                 }
@@ -248,7 +248,7 @@ impl<U: UnitValid> UnitExp<U> {
         };
 
         if self.inv {
-            Ok(UnitDef::Inv(Box::new(unit)))
+            Ok(UnitSpec::Inv(Box::new(unit)))
         } else {
             Ok(unit)
         }
@@ -257,16 +257,16 @@ impl<U: UnitValid> UnitExp<U> {
 
 
 #[derive(Debug)]
-pub enum UnitDef<U: UnitValid = Inner> {
+pub enum UnitSpec<U: UnitValid = Inner> {
     Base(U),
 
-    Div(Box<UnitDef<U>>, Box<UnitDef<U>>),
-    Mul(Box<UnitDef<U>>, Box<UnitDef<U>>),
-    Inv(Box<UnitDef<U>>),
-    Pow(Box<UnitDef<U>>, Exponent),
+    Div(Box<UnitSpec<U>>, Box<UnitSpec<U>>),
+    Mul(Box<UnitSpec<U>>, Box<UnitSpec<U>>),
+    Inv(Box<UnitSpec<U>>),
+    Pow(Box<UnitSpec<U>>, Exponent),
 }
 
-impl<U: UnitValid> Parse for UnitDef<U> {
+impl<U: UnitValid> Parse for UnitSpec<U> {
     fn parse(input: ParseStream) -> Result<Self> {
         let left: UnitExp<U> = input.parse()?;
         let mut out = left.to_unit()?;
@@ -293,7 +293,7 @@ impl<U: UnitValid> Parse for UnitDef<U> {
     }
 }
 
-impl<U: UnitValid> UnitDef<U> {
+impl<U: UnitValid> UnitSpec<U> {
     pub fn as_type(&self) -> TokenStream {
         match self {
             Self::Base(unit) => unit.to_token_stream(),
@@ -319,26 +319,26 @@ impl<U: UnitValid> UnitDef<U> {
         }
     }
 
-    pub fn as_value(&self) -> TokenStream {
+    pub fn as_expr(&self) -> TokenStream {
         match self {
             Self::Base(unit) => unit.to_token_stream(),
 
             Self::Div(left, right) => {
-                let ts_l = left.as_value();
-                let ts_r = right.as_value();
+                let ts_l = left.as_expr();
+                let ts_r = right.as_expr();
                 quote!(::dimensional::units::UnitDiv(#ts_l, #ts_r))
             }
             Self::Mul(left, right) => {
-                let ts_l = left.as_value();
-                let ts_r = right.as_value();
+                let ts_l = left.as_expr();
+                let ts_r = right.as_expr();
                 quote!(::dimensional::units::UnitMul(#ts_l, #ts_r))
             }
             Self::Inv(unit) => {
-                let ts = unit.as_value();
+                let ts = unit.as_expr();
                 quote!(::dimensional::units::PerUnit(#ts))
             }
             Self::Pow(base, exp) => {
-                let ts = base.as_value();
+                let ts = base.as_expr();
                 quote!(::dimensional::units::UnitPow::<_, ::dimensional::units::exp::#exp>::new(#ts))
             }
         }

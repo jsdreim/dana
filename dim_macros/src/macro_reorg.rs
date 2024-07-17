@@ -11,21 +11,21 @@ use crate::unit_def::*;
 
 #[derive(Debug)]
 pub struct UnitMapping<U: UnitValid> {
-    type_base: UnitDef<U>,
-    types: Vec<UnitDef<U>>,
+    type_base: UnitSpec<U>,
+    types: Vec<UnitSpec<U>>,
 }
 
 impl<U: UnitValid> Parse for UnitMapping<U> {
     fn parse(input: ParseStream) -> Result<Self> {
         input.parse::<Token![impl]>()?;
-        let type_base = input.parse::<UnitDef<U>>()?;
+        let type_base = input.parse::<UnitSpec<U>>()?;
         let mut types = Vec::new();
 
         let inner;
         braced!(inner in input);
 
         while inner.parse::<Token![as]>().is_ok() {
-            types.push(inner.parse::<UnitDef<U>>()?);
+            types.push(inner.parse::<UnitSpec<U>>()?);
             inner.parse::<Token![;]>()?;
         }
 
@@ -36,8 +36,8 @@ impl<U: UnitValid> Parse for UnitMapping<U> {
 
 struct ImplReorg<'p, U: UnitValid> {
     params: &'p Vec<syn::TypeParam>,
-    from: &'p UnitDef<U>,
-    into: &'p UnitDef<U>,
+    from: &'p UnitSpec<U>,
+    into: &'p UnitSpec<U>,
 }
 
 impl<U: UnitValid> ImplReorg<'_, U> {
@@ -50,8 +50,8 @@ impl<U: UnitValid> ToTokens for ImplReorg<'_, U> {
     fn to_tokens(&self, tokens: &mut TokenStream) {
         let type_from = self.from.as_type();
         let type_into = self.into.as_type();
-        let bind_from = self.from.as_value();
-        let unit_into = self.into.as_value();
+        let bind_from = self.from.as_expr();
+        let unit_into = self.into.as_expr();
 
         tokens.extend(quote!(impl));
 

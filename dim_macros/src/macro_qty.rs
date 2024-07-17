@@ -13,7 +13,7 @@ use crate::unit_def::*;
 pub struct QtyNew {
     pub sign: Option<syn::token::Minus>,
     pub value: Literal,
-    pub unit: UnitDef,
+    pub unit: UnitSpec,
 }
 
 impl std::fmt::Debug for QtyNew {
@@ -56,7 +56,7 @@ impl Parse for QtyNew {
 
         //  Read a unit specifier, possibly inverting it.
         let unit = if inv {
-            UnitDef::Inv(Box::new(fork.parse()?))
+            UnitSpec::Inv(Box::new(fork.parse()?))
         } else {
             fork.parse()?
         };
@@ -71,7 +71,7 @@ impl ToTokens for QtyNew {
     fn to_tokens(&self, tokens: &mut TokenStream) {
         let sign = self.sign;
         let value = &self.value;
-        let unit = self.unit.as_value();
+        let unit = self.unit.as_expr();
 
         tokens.extend(quote!(::dimensional::Quantity {
             value: #sign #value,
@@ -163,10 +163,10 @@ impl Parse for QtyBase {
 
 pub enum Op {
     Convert,
-    ConvertType(UnitDef),
-    ConvertUnit(UnitDef),
+    ConvertType(UnitSpec),
+    ConvertUnit(UnitSpec),
     Simplify,
-    SimplifyType(UnitDef),
+    SimplifyType(UnitSpec),
     Binary {
         op: Punct,
         rhs: TokenTree,
@@ -217,12 +217,12 @@ pub enum MacroQty<const TOP: bool = true> {
     /// Convert a quantity to the default of a specified unit type.
     ConvertType {
         qty: Box<MacroQty<false>>,
-        utype: UnitDef,
+        utype: UnitSpec,
     },
     /// Convert a quantity to a specified unit.
     ConvertUnit {
         qty: Box<MacroQty<false>>,
-        unit: UnitDef,
+        unit: UnitSpec,
     },
 
     /// Simplify a quantity to an inferred unit type.
@@ -232,7 +232,7 @@ pub enum MacroQty<const TOP: bool = true> {
     /// Simplify a quantity to a specified unit type.
     SimplifyType {
         qty: Box<MacroQty<false>>,
-        utype: UnitDef,
+        utype: UnitSpec,
     },
 
     /// Perform a binary operation between quantities.
@@ -262,11 +262,11 @@ impl<const A: bool> MacroQty<A> {
         Self::Convert { qty: self.demote() }
     }
 
-    fn convert_type(self, utype: UnitDef) -> Self {
+    fn convert_type(self, utype: UnitSpec) -> Self {
         Self::ConvertType { qty: self.demote(), utype }
     }
 
-    fn convert_unit(self, unit: UnitDef) -> Self {
+    fn convert_unit(self, unit: UnitSpec) -> Self {
         Self::ConvertUnit { qty: self.demote(), unit }
     }
 
@@ -274,7 +274,7 @@ impl<const A: bool> MacroQty<A> {
         Self::Simplify { qty: self.demote() }
     }
 
-    fn simplify_type(self, utype: UnitDef) -> Self {
+    fn simplify_type(self, utype: UnitSpec) -> Self {
         Self::SimplifyType { qty: self.demote(), utype }
     }
 
@@ -336,7 +336,7 @@ impl<const TOP: bool> ToTokens for MacroQty<TOP> {
                 tokens.extend(quote!(#qty.convert::<#utype>()));
             }
             Self::ConvertUnit { qty, unit } => {
-                let unit = unit.as_value();
+                let unit = unit.as_expr();
                 tokens.extend(quote!(#qty.convert_to(#unit)));
             }
             Self::Simplify { qty } => {
