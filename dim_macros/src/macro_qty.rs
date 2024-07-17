@@ -31,18 +31,27 @@ impl std::fmt::Debug for QtyNew {
 
 impl Parse for QtyNew {
     fn parse(input: ParseStream) -> Result<Self> {
-        let sign = input.parse::<Token![-]>().ok();
-        let value = input.parse()?;
+        use syn::parse::discouraged::Speculative;
 
-        let unit: UnitDef = if input.peek(Token![/]) {
-            input.parse::<Token![/]>()?;
-            UnitDef::Inv(Box::new(input.parse()?))
-        } else if input.peek(Token![*]) {
-            input.parse::<Token![*]>()?;
-            input.parse()?
+        let fork = input.fork();
+        let sign = fork.parse::<Token![-]>().ok();
+        let value = fork.parse()?;
+
+        let inv = if fork.parse::<Token![/]>().is_ok() {
+            true
+        } else if fork.parse::<Token![*]>().is_ok() {
+            false
         } else {
-            input.parse()?
+            false
         };
+
+        let unit = if inv {
+            UnitDef::Inv(Box::new(fork.parse()?))
+        } else {
+            fork.parse()?
+        };
+
+        input.advance_to(&fork);
 
         Ok(Self { sign, value, unit })
     }
@@ -71,15 +80,9 @@ pub enum QtyBase {
 
 impl Parse for QtyBase {
     fn parse(input: ParseStream) -> Result<Self> {
-        use syn::parse::discouraged::Speculative;
-
-        let fork = input.fork();
-
-        match fork.parse::<QtyNew>() {
+        match input.parse::<QtyNew>() {
             Ok(first) => {
                 //  At least one new quantity definition.
-                input.advance_to(&fork);
-
                 let mut add = Vec::new();
 
                 loop {
@@ -104,15 +107,12 @@ impl Parse for QtyBase {
                         }*/
                     };
 
-                    let fork = input.fork();
-
                     //  Try to parse a quantity.
-                    match fork.parse::<QtyNew>() {
+                    match input.parse::<QtyNew>() {
                         Ok(new) => {
                             //  Parsed another quantity. Put it into the list of
                             //      quantities to add to the initial one.
                             add.push(new);
-                            input.advance_to(&fork);
                             continue;
                         }
                         Err(e) if expecting_another => {

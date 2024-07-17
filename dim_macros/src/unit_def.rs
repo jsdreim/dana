@@ -147,6 +147,10 @@ struct UnitExp<U: UnitValid = Inner> {
 
 impl<U: UnitValid> Parse for UnitExp<U> {
     fn parse(input: ParseStream) -> Result<Self> {
+        if input.is_empty() {
+            return Err(input.error("expected unit"));
+        }
+
         let inv = if let Ok(literal) = input.parse::<proc_macro2::Literal>() {
             //  Found a literal. The only literal allowed here is `1`, and it
             //      must be followed by `/` to specify an inverted unit.
@@ -166,14 +170,15 @@ impl<U: UnitValid> Parse for UnitExp<U> {
             false
         };
 
-        let base = if let Ok(unit) = input.parse() {
-            UnitExpBase::Base(unit)
-        } else if input.peek(syn::token::Paren) {
-            let inner;
-            parenthesized!(inner in input);
-            UnitExpBase::Unit(inner.parse()?)
-        } else {
-            return Err(input.error("expected unit"));
+        let base = match input.parse() {
+            Ok(unit) => UnitExpBase::Base(unit),
+            Err(_) => if input.peek(syn::token::Paren) {
+                let inner;
+                parenthesized!(inner in input);
+                UnitExpBase::Unit(inner.parse()?)
+            } else {
+                return Err(input.error("expected unit"));
+            }
         };
 
         let neg;
