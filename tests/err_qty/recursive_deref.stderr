@@ -1,0 +1,5 @@
+error: expected literal token
+ --> tests/err_qty/recursive_deref.rs:5:22
+  |
+5 |     let _err = qty![[*1.0 m]];
+  |                      ^

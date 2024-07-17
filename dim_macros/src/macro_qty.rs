@@ -83,6 +83,7 @@ impl ToTokens for QtyNew {
 #[derive(Debug)]
 pub enum QtyBase {
     New(QtyNew, Vec<QtyNew>),
+    Recursive(MacroQty<false>),
     PassIdent(syn::Ident),
     PassGroup(proc_macro2::Group),
 }
@@ -142,7 +143,12 @@ impl Parse for QtyBase {
 
                 Ok(Self::New(first, add))
             }
-            Err(e) => if let Ok(ident) = input.parse() {
+            Err(e) => if input.peek(syn::token::Bracket) {
+                let inner;
+                bracketed!(inner in input);
+                Ok(Self::Recursive(inner.parse()?))
+
+            } else if let Ok(ident) = input.parse() {
                 Ok(Self::PassIdent(ident))
             } else if let Ok(group) = input.parse() {
                 Ok(Self::PassGroup(group))
@@ -150,17 +156,6 @@ impl Parse for QtyBase {
                 Err(e)
             }
         }
-    }
-}
-
-
-struct Recursion(MacroQty);
-
-impl Parse for Recursion {
-    fn parse(input: ParseStream) -> Result<Self> {
-        let inner;
-        bracketed!(inner in input);
-        Ok(Self(inner.parse()?))
     }
 }
 
@@ -208,91 +203,97 @@ impl Parse for Op {
 
 
 #[derive(Debug)]
-pub enum MacroQty {
+pub enum MacroQty<const TOP: bool = true> {
     /// Define a new quantity.
     New(QtyNew, Vec<QtyNew>),
     /// Retrieve the scalar value of a quantity.
-    Deref(Box<Self>),
+    Deref(Box<MacroQty<false>>),
 
     /// Convert a quantity to the default of an inferred unit type.
     Convert {
-        qty: Box<Self>,
+        qty: Box<MacroQty<false>>,
     },
     /// Convert a quantity to the default of a specified unit type.
     ConvertType {
-        qty: Box<Self>,
+        qty: Box<MacroQty<false>>,
         utype: UnitDef,
     },
     /// Convert a quantity to a specified unit.
     ConvertUnit {
-        qty: Box<Self>,
+        qty: Box<MacroQty<false>>,
         unit: UnitDef,
     },
 
     /// Simplify a quantity to an inferred unit type.
     Simplify {
-        qty: Box<Self>,
+        qty: Box<MacroQty<false>>,
     },
     /// Simplify a quantity to a specified unit type.
     SimplifyType {
-        qty: Box<Self>,
+        qty: Box<MacroQty<false>>,
         utype: UnitDef,
     },
 
     /// Perform a binary operation between quantities.
     Operation {
         op: proc_macro2::Punct,
-        lhs: Box<Self>,
-        rhs: Box<Self>,
+        lhs: Box<MacroQty<false>>,
+        rhs: Box<MacroQty<false>>,
     },
     /// Passthrough.
     Pass(TokenStream),
 }
 
-impl MacroQty {
+impl<const A: bool> MacroQty<A> {
+    fn to_level<const B: bool>(self) -> MacroQty<B> {
+        unsafe { std::mem::transmute(self) }
+    }
+
+    fn demote(self) -> Box<MacroQty<false>> {
+        Box::new(self.to_level())
+    }
+
     fn deref(self) -> Self {
-        Self::Deref(self.into())
+        Self::Deref(self.demote())
     }
 
     fn convert(self) -> Self {
-        Self::Convert { qty: self.into() }
+        Self::Convert { qty: self.demote() }
     }
 
     fn convert_type(self, utype: UnitDef) -> Self {
-        Self::ConvertType { qty: self.into(), utype }
+        Self::ConvertType { qty: self.demote(), utype }
     }
 
     fn convert_unit(self, unit: UnitDef) -> Self {
-        Self::ConvertUnit { qty: self.into(), unit }
+        Self::ConvertUnit { qty: self.demote(), unit }
     }
 
     fn simplify(self) -> Self {
-        Self::Simplify { qty: self.into() }
+        Self::Simplify { qty: self.demote() }
     }
 
     fn simplify_type(self, utype: UnitDef) -> Self {
-        Self::SimplifyType { qty: self.into(), utype }
+        Self::SimplifyType { qty: self.demote(), utype }
     }
 
     fn op(self, op: proc_macro2::Punct, rhs: Self) -> Self {
-        Self::Operation { op, lhs: self.into(), rhs: rhs.into() }
+        Self::Operation { op, lhs: self.demote(), rhs: rhs.demote() }
     }
 }
 
-impl Parse for MacroQty {
+impl<const TOP: bool> Parse for MacroQty<TOP> {
     fn parse(input: ParseStream) -> Result<Self> {
-        //  Check for a "deref" sigil at the start.
-        let deref: bool = input.parse::<Token![*]>().is_ok();
+        //  If this is the top level, check for a "deref" sigil.
+        let deref: bool = TOP && input.parse::<Token![*]>().is_ok();
 
         //  Parse a single item. Either a new quantity literal or something to
         //      pass through unchanged.
         let mut qty: Self = match input.parse()? {
             QtyBase::New(new, add) => Self::New(new, add),
+            QtyBase::Recursive(inner) => inner.to_level(),
             QtyBase::PassIdent(ident) => Self::Pass(ident.into_token_stream()),
-            QtyBase::PassGroup(group) => match syn::parse2(group.to_token_stream()) {
-                Err(_) => Self::Pass(group.into_token_stream()),
-                Ok(Recursion(qty)) => qty,
-            }
+            QtyBase::PassGroup(group) => Self::Pass(group.into_token_stream()),
         };
 
         //  Read and apply as many transformations and operations as are found.
@@ -315,7 +316,7 @@ impl Parse for MacroQty {
     }
 }
 
-impl ToTokens for MacroQty {
+impl<const TOP: bool> ToTokens for MacroQty<TOP> {
     fn to_tokens(&self, tokens: &mut TokenStream) {
         match self {
             // Self::New(new, _) => new.to_tokens(tokens),
