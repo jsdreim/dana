@@ -34,17 +34,26 @@ impl Parse for QtyNew {
         use syn::parse::discouraged::Speculative;
 
         let fork = input.fork();
+
+        //  Check for a negative sign.
         let sign = fork.parse::<Token![-]>().ok();
+
+        //  Read a scalar value.
         let value = fork.parse()?;
 
+        //  Check for an optional div/mul operator.
         let inv = if fork.parse::<Token![/]>().is_ok() {
+            //  `1.0 / s`
             true
         } else if fork.parse::<Token![*]>().is_ok() {
+            //  `1.0 * s`
             false
         } else {
+            //  `1.0 s`
             false
         };
 
+        //  Read a unit specifier, possibly inverting it.
         let unit = if inv {
             UnitDef::Inv(Box::new(fork.parse()?))
         } else {
@@ -272,15 +281,12 @@ impl MacroQty {
 
 impl Parse for MacroQty {
     fn parse(input: ParseStream) -> Result<Self> {
+        //  Check for a "deref" sigil at the start.
         let deref: bool = input.parse::<Token![*]>().is_ok();
-        let base: QtyBase = input.parse()?;
-        let mut ops: Vec<Op> = Vec::new();
 
-        while let Ok(op) = input.parse() {
-            ops.push(op);
-        }
-
-        let mut qty: Self = match base {
+        //  Parse a single item. Either a new quantity literal or something to
+        //      pass through unchanged.
+        let mut qty: Self = match input.parse()? {
             QtyBase::New(new, add) => Self::New(new, add),
             QtyBase::PassIdent(ident) => Self::Pass(ident.into_token_stream()),
             QtyBase::PassGroup(group) => match syn::parse2(group.to_token_stream()) {
@@ -289,7 +295,8 @@ impl Parse for MacroQty {
             }
         };
 
-        for op in ops {
+        //  Read and apply as many transformations and operations as are found.
+        while let Ok(op) = input.parse() {
             qty = match op {
                 Op::Convert             => qty.convert(),
                 Op::ConvertType(utype)  => qty.convert_type(utype),
