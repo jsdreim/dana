@@ -160,7 +160,7 @@ impl<U: UnitValid> Parse for UnitExp<U> {
             } else {
                 return Err(syn::Error::new(
                     literal.span(),
-                    "expected a unit or `1` divided by a unit",
+                    "expected unit or `1` divided by unit",
                 ));
             }
         } else {
@@ -174,7 +174,7 @@ impl<U: UnitValid> Parse for UnitExp<U> {
             parenthesized!(inner in input);
             UnitExpBase::Unit(inner.parse()?)
         } else {
-            return Err(input.error("expected a unit"));
+            return Err(input.error("expected unit"));
         };
 
         let neg;
