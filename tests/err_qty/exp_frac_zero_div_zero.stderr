@@ -1,0 +1,5 @@
+error: root of degree zero cannot be defined
+ --> tests/err_qty/exp_frac_zero_div_zero.rs:5:30
+  |
+5 |     let _err = qty![1.0 m^(0/0)];
+  |                              ^

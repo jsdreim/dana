@@ -1,0 +1,5 @@
+error: unit with exponent of zero is scalar
+ --> tests/err_qty/exp_zero.rs:5:27
+  |
+5 |     let _err = qty![1.0 m^0];
+  |                           ^

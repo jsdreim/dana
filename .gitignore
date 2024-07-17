@@ -1,4 +1,9 @@
+# Top-level directories.
 /.idea
 /target
 
+# Top-level files.
 /Cargo.lock
+
+# Files.
+.directory

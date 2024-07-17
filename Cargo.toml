@@ -16,6 +16,9 @@ version = "1.0.203"
 features = ["derive"]
 optional = true
 
+[dev-dependencies]
+trybuild = "1.0.96"
+
 
 [features]
 default = []

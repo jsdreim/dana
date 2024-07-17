@@ -1,0 +1,5 @@
+error: expected `/`
+ --> tests/err_qty/exp_paren_one_mul_one.rs:5:29
+  |
+5 |     let _err = qty![1.0 m^(1*1)];
+  |                             ^

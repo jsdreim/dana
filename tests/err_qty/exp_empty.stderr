@@ -1,0 +1,7 @@
+error: unexpected end of input, expected literal token
+ --> tests/err_qty/exp_empty.rs:5:16
+  |
+5 |     let _err = qty![1.0 m^];
+  |                ^^^^^^^^^^^^
+  |
+  = note: this error originates in the macro `qty` (in Nightly builds, run with -Z macro-backtrace for more info)
