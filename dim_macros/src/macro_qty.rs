@@ -163,7 +163,7 @@ pub enum Op {
     Simplify,
     SimplifyType(UnitDef),
     Binary {
-        op: TokenTree,
+        op: proc_macro2::Punct,
         rhs: TokenTree,
     },
 }
@@ -232,7 +232,7 @@ pub enum MacroQty {
 
     /// Perform a binary operation between quantities.
     Operation {
-        op: TokenTree,
+        op: proc_macro2::Punct,
         lhs: Box<Self>,
         rhs: Box<Self>,
     },
@@ -265,7 +265,7 @@ impl MacroQty {
         Self::SimplifyType { qty: self.into(), utype }
     }
 
-    fn op(self, op: TokenTree, rhs: Self) -> Self {
+    fn op(self, op: proc_macro2::Punct, rhs: Self) -> Self {
         Self::Operation { op, lhs: self.into(), rhs: rhs.into() }
     }
 }
