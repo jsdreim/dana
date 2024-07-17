@@ -97,21 +97,20 @@ impl Exponent {
 
 impl Parse for Exponent {
     fn parse(input: ParseStream) -> Result<Self> {
-        match input.parse::<proc_macro2::Literal>() {
-            Ok(lit) => Ok(Self::Whole(lit)),
-            Err(..) => {
-                let inner;
-                parenthesized!(inner in input);
+        if input.peek(syn::token::Paren) {
+            let inner;
+            parenthesized!(inner in input);
 
-                let first = inner.parse()?;
+            let first = inner.parse()?;
 
-                if inner.is_empty() {
-                    Ok(Self::Whole(first))
-                } else {
-                    inner.parse::<Token![/]>()?;
-                    Ok(Self::Frac(first, inner.parse()?))
-                }
+            if inner.is_empty() {
+                Ok(Self::Whole(first))
+            } else {
+                inner.parse::<Token![/]>()?;
+                Ok(Self::Frac(first, inner.parse()?))
             }
+        } else {
+            Ok(Self::Whole(input.parse()?))
         }
     }
 }
