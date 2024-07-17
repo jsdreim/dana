@@ -1,8 +1,9 @@
-use proc_macro2::{TokenStream, TokenTree};
+use proc_macro2::{Group, Literal, Punct, TokenStream, TokenTree};
 use quote::{quote, ToTokens};
 use syn::{
     bracketed,
     parse::{Parse, ParseStream},
+    parse2,
     Result,
     Token,
 };
@@ -11,7 +12,7 @@ use crate::unit_def::*;
 
 pub struct QtyNew {
     pub sign: Option<syn::token::Minus>,
-    pub value: proc_macro2::Literal,
+    pub value: Literal,
     pub unit: UnitDef,
 }
 
@@ -85,7 +86,7 @@ pub enum QtyBase {
     New(QtyNew, Vec<QtyNew>),
     Recursive(MacroQty<false>),
     PassIdent(syn::Ident),
-    PassGroup(proc_macro2::Group),
+    PassGroup(Group),
 }
 
 impl Parse for QtyBase {
@@ -167,7 +168,7 @@ pub enum Op {
     Simplify,
     SimplifyType(UnitDef),
     Binary {
-        op: proc_macro2::Punct,
+        op: Punct,
         rhs: TokenTree,
     },
 }
@@ -236,7 +237,7 @@ pub enum MacroQty<const TOP: bool = true> {
 
     /// Perform a binary operation between quantities.
     Operation {
-        op: proc_macro2::Punct,
+        op: Punct,
         lhs: Box<MacroQty<false>>,
         rhs: Box<MacroQty<false>>,
     },
@@ -277,7 +278,7 @@ impl<const A: bool> MacroQty<A> {
         Self::SimplifyType { qty: self.demote(), utype }
     }
 
-    fn op(self, op: proc_macro2::Punct, rhs: Self) -> Self {
+    fn op(self, op: Punct, rhs: Self) -> Self {
         Self::Operation { op, lhs: self.demote(), rhs: rhs.demote() }
     }
 }
@@ -304,7 +305,7 @@ impl<const TOP: bool> Parse for MacroQty<TOP> {
                 Op::ConvertUnit(unit)   => qty.convert_unit(unit),
                 Op::Simplify            => qty.simplify(),
                 Op::SimplifyType(utype) => qty.simplify_type(utype),
-                Op::Binary { op, rhs }  => qty.op(op, syn::parse2(rhs.into_token_stream())?),
+                Op::Binary { op, rhs }  => qty.op(op, parse2(rhs.into_token_stream())?),
             }
         }
 
