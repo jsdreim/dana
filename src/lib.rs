@@ -89,32 +89,6 @@
 //! ```
 //!
 //!
-//  Exponents.
-//! ### Exponential Units
-//!
-//! Units may have fractional powers:
-//! ```
-//! use dimensional::{qty, units::symbols::*};
-//!
-//! let dist = qty![8.0  m]; // 8 meters of length.
-//! let area = qty![64.0 m^2]; // 64 square meters, or (8m)^2.
-//! let root = qty![4.0  m^(2/3)]; // Third root of 64 m^2.
-//! ```
-//!
-//! A unit cannot have an exponent of zero, as this would simply be a scalar,
-//!     which [`Quantity`] cannot represent as a unit:
-//! ```compile_fail
-//! # use dimensional::{qty, units::symbols::*};
-//! let scalar = qty![1.0 m^0];
-//! ```
-//!
-//! A unit also cannot have an infinite/undefined exponent:
-//! ```compile_fail
-//! # use dimensional::{qty, units::symbols::*};
-//! let inf = qty![1.0 m^(1/0)];
-//! ```
-//!
-//!
 //  Conversion.
 //! ## Unit Conversion
 //!
