@@ -34,9 +34,11 @@ impl Parse for QtyNew {
         let sign = input.parse::<Token![-]>().ok();
         let value = input.parse()?;
 
-        let unit: UnitDef = if input.parse::<Token![/]>().is_ok() {
+        let unit: UnitDef = if input.peek(Token![/]) {
+            input.parse::<Token![/]>()?;
             UnitDef::Inv(Box::new(input.parse()?))
-        } else if input.parse::<Token![*]>().is_ok() {
+        } else if input.peek(Token![*]) {
+            input.parse::<Token![*]>()?;
             input.parse()?
         } else {
             input.parse()?
@@ -63,34 +65,43 @@ impl ToTokens for QtyNew {
 #[derive(Debug)]
 pub enum QtyBase {
     New(QtyNew, Vec<QtyNew>),
-    Pass(TokenTree),
+    PassIdent(syn::Ident),
+    PassGroup(proc_macro2::Group),
 }
 
 impl Parse for QtyBase {
     fn parse(input: ParseStream) -> Result<Self> {
-        if input.fork().parse::<QtyNew>().is_ok() {
-            //  At least one new quantity definition.
-            let mut add = Vec::new();
+        use syn::parse::discouraged::Speculative;
 
-            //  Read new quantities.
-            while let Ok(new) = input.parse() {
-                add.push(new);
+        let fork = input.fork();
 
-                if input.parse::<Token![,]>().is_ok() {
-                    //  Comma separator.
-                } else if input.parse::<Token![+]>().is_ok() {
-                    //  Plus separator.
-                }
+        match fork.parse::<QtyNew>() {
+            Ok(first) => {
+                //  At least one new quantity definition.
+                input.advance_to(&fork);
+
+                let add = Vec::new();
+
+                /*//  Read new quantities.
+                while let Ok(new) = input.parse() {
+                    add.push(new);
+
+                    if input.parse::<Token![,]>().is_ok() {
+                        //  Comma separator.
+                    } else if input.parse::<Token![+]>().is_ok() {
+                        //  Plus separator.
+                    }
+                }*/
+
+                Ok(Self::New(first, add))
             }
-
-            add.rotate_left(1);
-            let new = add.pop()
-                .expect("qty found in fork of stream, but not in real stream");
-
-            Ok(Self::New(new, add))
-        } else {
-            //  Usage of an existing quantity.
-            Ok(Self::Pass(input.parse()?))
+            Err(e) => if let Ok(ident) = input.parse() {
+                Ok(Self::PassIdent(ident))
+            } else if let Ok(group) = input.parse() {
+                Ok(Self::PassGroup(group))
+            } else {
+                Err(e)
+            }
         }
     }
 }
@@ -233,9 +244,10 @@ impl Parse for MacroQty {
 
         let mut qty: Self = match base {
             QtyBase::New(new, add) => Self::New(new, add),
-            QtyBase::Pass(tt) => match syn::parse2(tt.to_token_stream()) {
+            QtyBase::PassIdent(ident) => Self::Pass(ident.into_token_stream()),
+            QtyBase::PassGroup(group) => match syn::parse2(group.to_token_stream()) {
+                Err(_) => Self::Pass(group.into_token_stream()),
                 Ok(Recursion(qty)) => qty,
-                Err(_) => Self::Pass(tt.into_token_stream()),
             }
         };
 
