@@ -80,18 +80,56 @@ impl Parse for QtyBase {
                 //  At least one new quantity definition.
                 input.advance_to(&fork);
 
-                let add = Vec::new();
+                let mut add = Vec::new();
 
-                /*//  Read new quantities.
-                while let Ok(new) = input.parse() {
-                    add.push(new);
+                loop {
+                    //  Should we *expect* to find another quantity?
+                    let expecting_another = {
+                        if input.parse::<Token![+]>().is_ok() {
+                            //  Found a plus sign, should definitely be another
+                            //      quantity after this.
+                            true
+                        } else if input.parse::<Token![,]>().is_ok() {
+                            //  Found a comma. Could be another, but this is
+                            //      allowed to be trailing.
+                            false
+                        } else {
+                            //  Found no indication. There may or may not be
+                            //      another quantity.
+                            false
+                        } /*else {
+                            //  Found no indication. Specifically expect NOT to
+                            //      find another quantity.
+                            break;
+                        }*/
+                    };
 
-                    if input.parse::<Token![,]>().is_ok() {
-                        //  Comma separator.
-                    } else if input.parse::<Token![+]>().is_ok() {
-                        //  Plus separator.
+                    let fork = input.fork();
+
+                    //  Try to parse a quantity.
+                    match fork.parse::<QtyNew>() {
+                        Ok(new) => {
+                            //  Parsed another quantity. Put it into the list of
+                            //      quantities to add to the initial one.
+                            add.push(new);
+                            input.advance_to(&fork);
+                            continue;
+                        }
+                        Err(e) if expecting_another => {
+                            //  Could not parse another quantity, but expected
+                            //      to, due to parsing a conjunction character.
+                            //      Return the parse error.
+                            return Err(e);
+                        }
+                        Err(_) => {
+                            //  Could not parse another quantity, but did not
+                            //      expect to find one. Simply stop trying.
+                            break;
+                        }
                     }
-                }*/
+
+                    // unreachable!();
+                }
 
                 Ok(Self::New(first, add))
             }
