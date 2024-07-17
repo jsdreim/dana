@@ -209,22 +209,27 @@ impl<U: UnitValid> UnitExp<U> {
             Some(exp) => {
                 let a = exp.numerator();
                 let b = exp.denominator();
-                let a_str = a.to_string();
-                let b_str = b.map(|t| t.to_string())
-                    .unwrap_or_else(|| String::from("1"));
+                let frac: [i32; 2] = [
+                    a.to_string().parse().unwrap_or(1),
+                    b.and_then(|t| t.to_string().parse().ok()).unwrap_or(1),
+                ];
+                //  TODO: Correctly check non-decimal literals, like hexadecimal
+                //      or binary. Probably need to rebuild around `syn::LitInt`
+                //      or similar to achieve this.
 
-                let unit = match [a_str.as_str(), b_str.as_str()] {
-                    [_, "0"] => return Err(syn::Error::new(
+                let unit = match frac {
+                    [_, 0] => return Err(syn::Error::new(
                         b.unwrap().span(),
                         "root of degree zero cannot be defined",
                     )),
 
-                    ["0", _] => return Err(syn::Error::new(
+                    [0, _] => return Err(syn::Error::new(
                         a.span(),
                         "unit with exponent of zero is scalar",
                     )),
 
-                    [a, b] if a == b => base,
+                    [1, 1] => base,
+                    // [a, b] if a == b => base,
                     _ => UnitDef::Pow(Box::new(base), exp),
                 };
 
