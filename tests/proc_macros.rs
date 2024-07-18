@@ -8,7 +8,8 @@ fn qty_invalid() {
 
 #[test]
 fn qty_valid() {
-    use dimensional::{qty, Quantity, units::{*, symbols::*}};
+    use dim_macros::qty;
+    use dimensional::{Quantity, units::{*, symbols::*}};
 
     //  Test basic definitions against fully-explicit types.
     let _qty: Quantity<L> = qty![1.0 m];
@@ -51,7 +52,8 @@ fn qty_valid() {
 
 #[test]
 fn qty_ops() {
-    use dimensional::{constants, qty, Quantity, units::{*, symbols::*}};
+    use dim_macros::qty;
+    use dimensional::{constants, Quantity, units::{*, symbols::*}};
 
     let v: Quantity<Voltage> = qty![3.3 V];
     let r: Quantity<Resistance> = qty![150.0 Ω];
