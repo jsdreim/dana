@@ -102,7 +102,7 @@ impl ToTokens for QtyNew {
 
 
 #[derive(Debug)]
-pub enum QtyNode {
+pub enum QtySingle {
     /// Define a new quantity.
     New(QtyNew, Vec<QtyNew>),
     /// Call the macro recursively.
@@ -113,7 +113,7 @@ pub enum QtyNode {
     PassGroup(Group),
 }
 
-impl Parse for QtyNode {
+impl Parse for QtySingle {
     fn parse(input: ParseStream) -> Result<Self> {
         if input.is_empty() {
             return Err(input.error("expected quantity"));
@@ -174,7 +174,7 @@ impl Parse for QtyNode {
     }
 }
 
-impl ToTokens for QtyNode {
+impl ToTokens for QtySingle {
     fn to_tokens(&self, tokens: &mut TokenStream) {
         match self {
             Self::New(first, add) if !add.is_empty() => {
@@ -185,6 +185,42 @@ impl ToTokens for QtyNode {
             Self::PassIdent(ident) => ident.to_tokens(tokens),
             Self::PassGroup(group) => group.to_tokens(tokens),
         }
+    }
+}
+
+
+#[derive(Debug)]
+pub struct QtyNode {
+    pub qty: QtySingle,
+    pub fields: Vec<syn::Ident>,
+}
+
+impl Parse for QtyNode {
+    fn parse(input: ParseStream) -> Result<Self> {
+        let qty = input.parse()?;
+        let mut fields = Vec::new();
+
+        // if let Ok(dot) = input.parse::<Token![.]>() {
+        //     let e_span = match input.parse::<syn::Ident>() {
+        //         Ok(id) => dot.span.join(id.span()).unwrap_or(dot.span),
+        //         Err(_) => dot.span,
+        //     };
+        //
+        //     return Err(syn::Error::new(e_span, "field access forbidden"));
+        // }
+
+        while input.parse::<Token![.]>().is_ok() {
+            fields.push(input.parse()?);
+        }
+
+        Ok(Self { qty, fields })
+    }
+}
+
+impl ToTokens for QtyNode {
+    fn to_tokens(&self, tokens: &mut TokenStream) {
+        let Self { qty, fields } = self;
+        tokens.extend(quote!(#qty #(.#fields)*))
     }
 }
 
@@ -239,9 +275,7 @@ impl Parse for Operation {
                 return Err(fork.error("expected `as`, `in`, `->`, or operator"));
             };
 
-            let Ok(rhs) = fork.parse::<QtyNode>() else {
-                return Err(fork.error("expected another quantity"));
-            };
+            let rhs = fork.parse()?;
 
             input.advance_to(&fork);
             Ok(Self::Binary { op, rhs })

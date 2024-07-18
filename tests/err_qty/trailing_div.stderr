@@ -1,4 +1,4 @@
-error: unexpected end of input, expected another quantity
+error: unexpected end of input, expected quantity
  --> tests/err_qty/trailing_div.rs:5:16
   |
 5 |     let _err = qty![1.0 m /];
