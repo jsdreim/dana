@@ -9,19 +9,20 @@ use syn::{
 
 
 /// Unit specifier ultimately destined to be used as an expression.
-pub type UnitSpecExpr = UnitSpec<UnitIdent>;
+pub type UnitSpecExpr = UnitSpec<UnitCoreExpr>;
 
 /// Unit specifier ultimately destined to be used as a type.
-pub type UnitSpecType = UnitSpec<UnitIdent>;
+pub type UnitSpecType = UnitSpec<UnitCoreType>;
 
 
 /// Marker trait indicating that a type is usable at the core of a [`UnitSpec`].
-pub trait UnitValid: std::fmt::Debug + Parse + ToTokens {}
-impl<T: std::fmt::Debug + Parse + ToTokens> UnitValid for T {}
+pub trait UnitCore: std::fmt::Debug + Parse + ToTokens {}
+impl<T: std::fmt::Debug + Parse + ToTokens> UnitCore for T {}
 
 
+/// Core type for an expression-destined unit specifier.
 #[derive(Debug)]
-pub enum UnitIdent {
+pub enum UnitCoreExpr {
     /// One identifier.
     Ident(syn::Ident),
     /// One token, followed by a sequence of field identifiers.
@@ -30,7 +31,7 @@ pub enum UnitIdent {
     Path(TokenTree, Vec<syn::Ident>),
 }
 
-impl Parse for UnitIdent {
+impl Parse for UnitCoreExpr {
     fn parse(input: ParseStream) -> Result<Self> {
         let mut idents = Vec::new();
 
@@ -56,7 +57,7 @@ impl Parse for UnitIdent {
     }
 }
 
-impl ToTokens for UnitIdent {
+impl ToTokens for UnitCoreExpr {
     fn to_tokens(&self, tokens: &mut TokenStream) {
         match self {
             Self::Ident(ident) => ident.to_tokens(tokens),
@@ -68,6 +69,50 @@ impl ToTokens for UnitIdent {
                     ident.to_tokens(tokens);
                 }
             }
+            Self::Path(first, path) => {
+                first.to_tokens(tokens);
+
+                for ident in path {
+                    quote!(::).to_tokens(tokens);
+                    ident.to_tokens(tokens);
+                }
+            }
+        }
+    }
+}
+
+
+/// Core type for a type-destined unit specifier.
+#[derive(Debug)]
+pub enum UnitCoreType {
+    /// One identifier.
+    Ident(syn::Ident),
+    /// One token, followed by a sequence of path identifiers.
+    Path(TokenTree, Vec<syn::Ident>),
+}
+
+impl Parse for UnitCoreType {
+    fn parse(input: ParseStream) -> Result<Self> {
+        let mut idents = Vec::new();
+
+        if input.peek2(Token![::]) {
+            let first = input.parse()?;
+
+            while input.parse::<Token![::]>().is_ok() {
+                idents.push(input.parse()?);
+            }
+
+            Ok(Self::Path(first, idents))
+        } else {
+            Ok(Self::Ident(input.parse()?))
+        }
+    }
+}
+
+impl ToTokens for UnitCoreType {
+    fn to_tokens(&self, tokens: &mut TokenStream) {
+        match self {
+            Self::Ident(ident) => ident.to_tokens(tokens),
             Self::Path(first, path) => {
                 first.to_tokens(tokens);
 
@@ -136,21 +181,21 @@ impl ToTokens for Exponent {
 
 
 #[derive(Debug)]
-enum UnitExpBase<U: UnitValid> {
+enum UnitExpBase<U: UnitCore> {
     Base(U),
     Unit(UnitSpec<U>),
 }
 
 
 #[derive(Debug)]
-struct UnitExp<U: UnitValid> {
+struct UnitExp<U: UnitCore> {
     base: UnitExpBase<U>,
     inv: bool,
     neg: bool,
     exp: Option<Exponent>,
 }
 
-impl<U: UnitValid> Parse for UnitExp<U> {
+impl<U: UnitCore> Parse for UnitExp<U> {
     fn parse(input: ParseStream) -> Result<Self> {
         if input.is_empty() {
             return Err(input.error("expected unit"));
@@ -208,7 +253,7 @@ impl<U: UnitValid> Parse for UnitExp<U> {
     }
 }
 
-impl<U: UnitValid> UnitExp<U> {
+impl<U: UnitCore> UnitExp<U> {
     fn to_unit(self) -> Result<UnitSpec<U>> {
         let base = match self.base {
             UnitExpBase::Base(base) => UnitSpec::Base(base),
@@ -262,7 +307,7 @@ impl<U: UnitValid> UnitExp<U> {
 
 
 #[derive(Debug)]
-pub enum UnitSpec<U: UnitValid> {
+pub enum UnitSpec<U: UnitCore> {
     Base(U),
 
     Div(Box<UnitSpec<U>>, Box<UnitSpec<U>>),
@@ -271,7 +316,7 @@ pub enum UnitSpec<U: UnitValid> {
     Pow(Box<UnitSpec<U>>, Exponent),
 }
 
-impl<U: UnitValid> Parse for UnitSpec<U> {
+impl<U: UnitCore> Parse for UnitSpec<U> {
     fn parse(input: ParseStream) -> Result<Self> {
         use syn::parse::discouraged::Speculative;
 
@@ -301,7 +346,7 @@ impl<U: UnitValid> Parse for UnitSpec<U> {
     }
 }
 
-impl<U: UnitValid> UnitSpec<U> {
+impl<U: UnitCore> UnitSpec<U> {
     pub fn as_type(&self) -> TokenStream {
         match self {
             Self::Base(unit) => unit.to_token_stream(),

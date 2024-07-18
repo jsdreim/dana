@@ -6,16 +6,16 @@ use syn::{
     Result,
     Token,
 };
-use crate::unit_spec::*;
+use crate::unit_spec::{UnitCore, UnitSpec};
 
 
 #[derive(Debug)]
-pub struct UnitMapping<U: UnitValid> {
+pub struct UnitMapping<U: UnitCore> {
     type_base: UnitSpec<U>,
     types: Vec<UnitSpec<U>>,
 }
 
-impl<U: UnitValid> Parse for UnitMapping<U> {
+impl<U: UnitCore> Parse for UnitMapping<U> {
     fn parse(input: ParseStream) -> Result<Self> {
         input.parse::<Token![impl]>()?;
         let type_base = input.parse::<UnitSpec<U>>()?;
@@ -34,19 +34,19 @@ impl<U: UnitValid> Parse for UnitMapping<U> {
 }
 
 
-struct ImplReorg<'p, U: UnitValid> {
+struct ImplReorg<'p, U: UnitCore> {
     params: &'p Vec<syn::TypeParam>,
     from: &'p UnitSpec<U>,
     into: &'p UnitSpec<U>,
 }
 
-impl<U: UnitValid> ImplReorg<'_, U> {
+impl<U: UnitCore> ImplReorg<'_, U> {
     fn swap(&mut self) {
         std::mem::swap(&mut self.from, &mut self.into);
     }
 }
 
-impl<U: UnitValid> ToTokens for ImplReorg<'_, U> {
+impl<U: UnitCore> ToTokens for ImplReorg<'_, U> {
     fn to_tokens(&self, tokens: &mut TokenStream) {
         let type_from = self.from.as_type();
         let type_into = self.into.as_type();
