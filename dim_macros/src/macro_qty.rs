@@ -1,9 +1,8 @@
-use proc_macro2::{Group, Literal, Punct, TokenStream, TokenTree};
+use proc_macro2::{Group, Literal, Punct, TokenStream};
 use quote::{quote, ToTokens};
 use syn::{
     bracketed,
-    parse::{Parse, ParseStream},
-    parse2,
+    parse::{discouraged::Speculative, Parse, ParseStream},
     Result,
     Token,
 };
@@ -32,8 +31,6 @@ impl std::fmt::Debug for QtyNew {
 
 impl Parse for QtyNew {
     fn parse(input: ParseStream) -> Result<Self> {
-        use syn::parse::discouraged::Speculative;
-
         let fork = input.fork();
 
         //  Check for a negative sign.
@@ -97,49 +94,14 @@ impl Parse for QtyBase {
                 let mut add = Vec::new();
 
                 loop {
-                    //  Should we *expect* to find another quantity?
-                    let expecting_another = {
-                        if input.parse::<Token![+]>().is_ok() {
-                            //  Found a plus sign, should definitely be another
-                            //      quantity after this.
-                            true
-                        } else if input.parse::<Token![,]>().is_ok() {
-                            //  Found a comma. Could be another, but this is
-                            //      allowed to be trailing.
-                            false
-                        } else {
-                            //  Found no indication. There may or may not be
-                            //      another quantity.
-                            false
-                        } /*else {
-                            //  Found no indication. Specifically expect NOT to
-                            //      find another quantity.
-                            break;
-                        }*/
-                    };
+                    //  Allow a comma here.
+                    input.parse::<Token![,]>().ok();
 
-                    //  Try to parse a quantity.
+                    //  Try to parse another quantity.
                     match input.parse::<QtyNew>() {
-                        Ok(new) => {
-                            //  Parsed another quantity. Put it into the list of
-                            //      quantities to add to the initial one.
-                            add.push(new);
-                            continue;
-                        }
-                        Err(e) if expecting_another => {
-                            //  Could not parse another quantity, but expected
-                            //      to, due to parsing a conjunction character.
-                            //      Return the parse error.
-                            return Err(e);
-                        }
-                        Err(_) => {
-                            //  Could not parse another quantity, but did not
-                            //      expect to find one. Simply stop trying.
-                            break;
-                        }
+                        Ok(new) => add.push(new),
+                        Err(_) => break,
                     }
-
-                    // unreachable!();
                 }
 
                 Ok(Self::New(first, add))
@@ -148,7 +110,6 @@ impl Parse for QtyBase {
                 let inner;
                 bracketed!(inner in input);
                 Ok(Self::Recursive(inner.parse()?))
-
             } else if let Ok(ident) = input.parse() {
                 Ok(Self::PassIdent(ident))
             } else if let Ok(group) = input.parse() {
@@ -161,6 +122,7 @@ impl Parse for QtyBase {
 }
 
 
+#[derive(Debug)]
 pub enum Op {
     Convert,
     ConvertType(UnitSpec),
@@ -169,7 +131,7 @@ pub enum Op {
     SimplifyType(UnitSpec),
     Binary {
         op: Punct,
-        rhs: TokenTree,
+        rhs: MacroQty<false>,
     },
 }
 
@@ -194,10 +156,14 @@ impl Parse for Op {
                 Ok(Self::SimplifyType(input.parse()?))
             }
         } else {
-            Ok(Self::Binary {
-                op: input.parse()?,
-                rhs: input.parse()?,
-            })
+            let fork = input.fork();
+            let op = Self::Binary {
+                op: fork.parse()?,
+                rhs: fork.parse::<QtyBase>()?.into(),
+            };
+
+            input.advance_to(&fork);
+            Ok(op)
         }
     }
 }
@@ -236,9 +202,9 @@ pub enum MacroQty<const TOP: bool = true> {
     },
 
     /// Perform a binary operation between quantities.
-    Operation {
-        op: Punct,
+    Binary {
         lhs: Box<MacroQty<false>>,
+        op: Punct,
         rhs: Box<MacroQty<false>>,
     },
     /// Passthrough.
@@ -246,6 +212,28 @@ pub enum MacroQty<const TOP: bool = true> {
 }
 
 impl<const A: bool> MacroQty<A> {
+    fn apply_operation(self, op: Op) -> Self {
+        match op {
+            Op::Convert
+            => Self::Convert { qty: self.demote() },
+
+            Op::ConvertType(utype)
+            => Self::ConvertType { qty: self.demote(), utype },
+
+            Op::ConvertUnit(unit)
+            => Self::ConvertUnit { qty: self.demote(), unit },
+
+            Op::Simplify
+            => Self::Simplify { qty: self.demote() },
+
+            Op::SimplifyType(utype)
+            => Self::SimplifyType { qty: self.demote(), utype },
+
+            Op::Binary { op, rhs }
+            => Self::Binary { lhs: self.demote(), op, rhs: rhs.into() },
+        }
+    }
+
     fn to_level<const B: bool>(self) -> MacroQty<B> {
         unsafe { std::mem::transmute(self) }
     }
@@ -257,29 +245,16 @@ impl<const A: bool> MacroQty<A> {
     fn deref(self) -> Self {
         Self::Deref(self.demote())
     }
+}
 
-    fn convert(self) -> Self {
-        Self::Convert { qty: self.demote() }
-    }
-
-    fn convert_type(self, utype: UnitSpec) -> Self {
-        Self::ConvertType { qty: self.demote(), utype }
-    }
-
-    fn convert_unit(self, unit: UnitSpec) -> Self {
-        Self::ConvertUnit { qty: self.demote(), unit }
-    }
-
-    fn simplify(self) -> Self {
-        Self::Simplify { qty: self.demote() }
-    }
-
-    fn simplify_type(self, utype: UnitSpec) -> Self {
-        Self::SimplifyType { qty: self.demote(), utype }
-    }
-
-    fn op(self, op: Punct, rhs: Self) -> Self {
-        Self::Operation { op, lhs: self.demote(), rhs: rhs.demote() }
+impl<const TOP: bool> From<QtyBase> for MacroQty<TOP> {
+    fn from(base: QtyBase) -> Self {
+        match base {
+            QtyBase::New(new, add) => Self::New(new, add),
+            QtyBase::Recursive(inner) => inner.to_level(),
+            QtyBase::PassIdent(ident) => Self::Pass(ident.into_token_stream()),
+            QtyBase::PassGroup(group) => Self::Pass(group.into_token_stream()),
+        }
     }
 }
 
@@ -290,30 +265,19 @@ impl<const TOP: bool> Parse for MacroQty<TOP> {
 
         //  Parse a single item. Either a new quantity literal or something to
         //      pass through unchanged.
-        let mut qty: Self = match input.parse()? {
-            QtyBase::New(new, add) => Self::New(new, add),
-            QtyBase::Recursive(inner) => inner.to_level(),
-            QtyBase::PassIdent(ident) => Self::Pass(ident.into_token_stream()),
-            QtyBase::PassGroup(group) => Self::Pass(group.into_token_stream()),
-        };
+        let mut qty: Self = input.parse::<QtyBase>()?.into();
 
         //  Read and apply as many transformations and operations as are found.
         while let Ok(op) = input.parse() {
-            qty = match op {
-                Op::Convert             => qty.convert(),
-                Op::ConvertType(utype)  => qty.convert_type(utype),
-                Op::ConvertUnit(unit)   => qty.convert_unit(unit),
-                Op::Simplify            => qty.simplify(),
-                Op::SimplifyType(utype) => qty.simplify_type(utype),
-                Op::Binary { op, rhs }  => qty.op(op, parse2(rhs.into_token_stream())?),
-            }
+            qty = qty.apply_operation(op);
         }
 
+        //  Dereference, if needed.
         if deref {
-            Ok(qty.deref())
-        } else {
-            Ok(qty)
+            qty = qty.deref();
         }
+
+        Ok(qty)
     }
 }
 
@@ -344,10 +308,9 @@ impl<const TOP: bool> ToTokens for MacroQty<TOP> {
             }
             Self::SimplifyType { qty, utype } => {
                 let utype = utype.as_type();
-                // eprintln!("{utype}");
                 tokens.extend(quote!(#qty.simplify::<#utype>()));
             }
-            Self::Operation { op, lhs, rhs } => {
+            Self::Binary { lhs, op, rhs } => {
                 tokens.extend(quote!((#lhs #op #rhs)));
             }
             Self::Pass(ts) => ts.to_tokens(tokens),

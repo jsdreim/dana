@@ -268,28 +268,31 @@ pub enum UnitSpec<U: UnitValid = Inner> {
 
 impl<U: UnitValid> Parse for UnitSpec<U> {
     fn parse(input: ParseStream) -> Result<Self> {
-        let left: UnitExp<U> = input.parse()?;
-        let mut out = left.to_unit()?;
+        use syn::parse::discouraged::Speculative;
+
+        let mut unit: Self = input.parse::<UnitExp<U>>()?.to_unit()?;
 
         loop {
-            if input.parse::<Token![/]>().is_ok() {
-                let rhs = input.parse::<UnitExp<U>>()?.to_unit()?;
-                out = Self::Div(Box::new(out), Box::new(rhs));
-                continue;
+            let fork = input.fork();
 
-            } else if input.parse::<Token![*]>().is_ok() {
-                let rhs = input.parse::<UnitExp<U>>()?.to_unit()?;
-                out = Self::Mul(Box::new(out), Box::new(rhs));
-                continue;
-
+            unit = if fork.parse::<Token![/]>().is_ok() {
+                match fork.parse::<UnitExp<U>>() {
+                    Ok(rhs) => Self::Div(unit.into(), rhs.to_unit()?.into()),
+                    Err(..) => break,
+                }
+            } else if fork.parse::<Token![*]>().is_ok() {
+                match fork.parse::<UnitExp<U>>() {
+                    Ok(rhs) => Self::Mul(unit.into(), rhs.to_unit()?.into()),
+                    Err(..) => break,
+                }
             } else {
                 break;
-            }
+            };
 
-            // unreachable!()
+            input.advance_to(&fork);
         }
 
-        Ok(out)
+        Ok(unit)
     }
 }
 

@@ -1,0 +1,5 @@
+error: unexpected token
+ --> tests/err_qty/trailing_sub.rs:5:27
+  |
+5 |     let _err = qty![1.0 m -];
+  |                           ^
