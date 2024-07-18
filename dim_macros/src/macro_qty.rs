@@ -102,14 +102,18 @@ impl ToTokens for QtyNew {
 
 
 #[derive(Debug)]
-pub enum SingleQty {
+pub enum QtyNode {
+    /// Define a new quantity.
     New(QtyNew, Vec<QtyNew>),
-    Recursive(Box<MacroQty<false>>),
+    /// Call the macro recursively.
+    Recursive(Box<QtyTree>),
+    /// Pass one ident through unaffected.
     PassIdent(syn::Ident),
+    /// Pass one group through unaffected.
     PassGroup(Group),
 }
 
-impl Parse for SingleQty {
+impl Parse for QtyNode {
     fn parse(input: ParseStream) -> Result<Self> {
         if input.is_empty() {
             return Err(input.error("expected quantity"));
@@ -170,7 +174,7 @@ impl Parse for SingleQty {
     }
 }
 
-impl ToTokens for SingleQty {
+impl ToTokens for QtyNode {
     fn to_tokens(&self, tokens: &mut TokenStream) {
         match self {
             Self::New(new, add) if add.is_empty() => new.to_tokens(tokens),
@@ -184,19 +188,29 @@ impl ToTokens for SingleQty {
 
 
 #[derive(Debug)]
-pub enum Op {
+pub enum Operation {
+    /// Convert a quantity to the default of an inferred unit type.
     Convert,
+    /// Convert a quantity to the default of a specified unit type.
     ConvertType(UnitSpec),
+    /// Convert a quantity to a specified unit.
     ConvertUnit(UnitSpec),
+
+    /// Simplify a quantity to an inferred unit type.
     Simplify,
+    /// Simplify a quantity to a specified unit type.
     SimplifyType(UnitSpec),
+
+    /// Perform a binary operation between quantities.
     Binary {
+        /// Binary operator character.
         op: Punct,
-        rhs: SingleQty,
+        /// Other quantity involved in the operation.
+        rhs: QtyNode,
     },
 }
 
-impl Parse for Op {
+impl Parse for Operation {
     fn parse(input: ParseStream) -> Result<Self> {
         if input.parse::<Token![as]>().is_ok() {
             if input.parse::<Token![_]>().is_ok() {
@@ -223,7 +237,7 @@ impl Parse for Op {
                 return Err(fork.error("expected `as`, `in`, `->`, or operator"));
             };
 
-            let Ok(rhs) = fork.parse::<SingleQty>() else {
+            let Ok(rhs) = fork.parse::<QtyNode>() else {
                 return Err(fork.error("expected another quantity"));
             };
 
@@ -235,86 +249,82 @@ impl Parse for Op {
 
 
 #[derive(Debug)]
-pub enum MacroQty<const TOP: bool = true> {
+pub enum QtyTree {
     /// A single quantity.
-    Leaf(SingleQty),
+    Leaf(QtyNode),
 
-    /// Retrieve the scalar value of a quantity.
-    Deref(Box<MacroQty<false>>),
-
-    /// Perform some kind of operation.
-    Operation(Box<MacroQty<false>>, Box<Op>),
+    /// A quantity with some kind of operation to perform.
+    Branch(Box<Self>, Operation),
 }
 
-impl<const A: bool> MacroQty<A> {
-    fn apply_operation(self, op: Op) -> Self {
-        Self::Operation(self.demote(), Box::new(op))
-    }
-
-    fn to_level<const B: bool>(self) -> MacroQty<B> {
-        unsafe { std::mem::transmute(self) }
-    }
-
-    fn demote(self) -> Box<MacroQty<false>> {
-        Box::new(self.to_level())
-    }
-
-    fn deref(self) -> Self {
-        Self::Deref(self.demote())
-    }
-}
-
-impl<const TOP: bool> Parse for MacroQty<TOP> {
+impl Parse for QtyTree {
     fn parse(input: ParseStream) -> Result<Self> {
-        //  If this is the top level, check for a "deref" sigil.
-        let deref: bool = TOP && input.parse::<Token![*]>().is_ok();
-
         //  Parse a single item. Either a new quantity literal or something to
         //      pass through unchanged.
         let mut qty: Self = Self::Leaf(input.parse()?);
 
         //  Read and apply as many transformations and operations as are found.
         while !input.is_empty() {
-            qty = qty.apply_operation(input.parse()?);
-        }
-
-        //  Dereference, if needed.
-        if deref {
-            qty = qty.deref();
+            qty = Self::Branch(Box::new(qty), input.parse()?);
         }
 
         Ok(qty)
     }
 }
 
-impl<const TOP: bool> ToTokens for MacroQty<TOP> {
+impl ToTokens for QtyTree {
     fn to_tokens(&self, tokens: &mut TokenStream) {
         match self {
             Self::Leaf(qty) => qty.to_tokens(tokens),
-            Self::Deref(qty) => tokens.extend(quote!((#qty.value))),
-            Self::Operation(qty, op) => tokens.extend(match op.as_ref() {
-                Op::Convert => {
+            Self::Branch(qty, op) => tokens.extend(match op {
+                Operation::Convert => {
                     quote!(#qty.convert())
                 }
-                Op::ConvertType(utype) => {
+                Operation::ConvertType(utype) => {
                     let utype = utype.as_type();
                     quote!(#qty.convert::<#utype>())
                 }
-                Op::ConvertUnit(unit) => {
+                Operation::ConvertUnit(unit) => {
                     let unit = unit.as_expr();
                     quote!(#qty.convert_to(#unit))
                 }
-                Op::Simplify => {
+                Operation::Simplify => {
                     quote!(#qty.simplify())
                 }
-                Op::SimplifyType(utype) => {
+                Operation::SimplifyType(utype) => {
                     let utype = utype.as_type();
                     quote!(#qty.simplify::<#utype>())
                 }
-                Op::Binary { op, rhs } => {
+                Operation::Binary { op, rhs } => {
                     quote!((#qty #op #rhs))
                 }
             }),
+        }
+    }
+}
+
+
+#[derive(Debug)]
+pub struct MacroQty {
+    pub deref: bool,
+    pub tree: QtyTree,
+}
+
+impl Parse for MacroQty {
+    fn parse(input: ParseStream) -> Result<Self> {
+        Ok(Self {
+            deref: input.parse::<Token![*]>().is_ok(),
+            tree: input.parse::<QtyTree>()?,
+        })
+    }
+}
+
+impl ToTokens for MacroQty {
+    fn to_tokens(&self, tokens: &mut TokenStream) {
+        self.tree.to_tokens(tokens);
+
+        if self.deref {
+            tokens.extend(quote!(.value));
         }
     }
 }
