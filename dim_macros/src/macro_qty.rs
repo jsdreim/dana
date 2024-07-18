@@ -66,18 +66,18 @@ impl ToTokens for QtyNew {
 
 
 #[derive(Debug)]
-pub enum QtyBase {
+pub enum SingleQty {
     New(QtyNew, Vec<QtyNew>),
     Recursive(MacroQty<false>),
     PassIdent(syn::Ident),
     PassGroup(Group),
 }
 
-impl QtyBase {
+impl SingleQty {
     fn promote(self) -> Box<MacroQty<false>> { Box::new(self.into()) }
 }
 
-impl Parse for QtyBase {
+impl Parse for SingleQty {
     fn parse(input: ParseStream) -> Result<Self> {
         if input.is_empty() {
             return Err(input.error("expected quantity"));
@@ -148,7 +148,7 @@ pub enum Op {
     SimplifyType(UnitSpec),
     Binary {
         op: Punct,
-        rhs: QtyBase,
+        rhs: SingleQty,
     },
 }
 
@@ -179,7 +179,7 @@ impl Parse for Op {
                 return Err(fork.error("expected `as`, `in`, `->`, or operator"));
             };
 
-            let Ok(rhs) = fork.parse::<QtyBase>() else {
+            let Ok(rhs) = fork.parse::<SingleQty>() else {
                 return Err(fork.error("expected another quantity"));
             };
 
@@ -272,13 +272,13 @@ impl<const A: bool> MacroQty<A> {
     }
 }
 
-impl<const TOP: bool> From<QtyBase> for MacroQty<TOP> {
-    fn from(base: QtyBase) -> Self {
+impl<const TOP: bool> From<SingleQty> for MacroQty<TOP> {
+    fn from(base: SingleQty) -> Self {
         match base {
-            QtyBase::New(new, add) => Self::New(new, add),
-            QtyBase::Recursive(inner) => inner.to_level(),
-            QtyBase::PassIdent(ident) => Self::Pass(ident.into_token_stream()),
-            QtyBase::PassGroup(group) => Self::Pass(group.into_token_stream()),
+            SingleQty::New(new, add) => Self::New(new, add),
+            SingleQty::Recursive(inner) => inner.to_level(),
+            SingleQty::PassIdent(ident) => Self::Pass(ident.into_token_stream()),
+            SingleQty::PassGroup(group) => Self::Pass(group.into_token_stream()),
         }
     }
 }
@@ -290,7 +290,7 @@ impl<const TOP: bool> Parse for MacroQty<TOP> {
 
         //  Parse a single item. Either a new quantity literal or something to
         //      pass through unchanged.
-        let mut qty: Self = input.parse::<QtyBase>()?.into();
+        let mut qty: Self = input.parse::<SingleQty>()?.into();
 
         //  Read and apply as many transformations and operations as are found.
         while !input.is_empty() {
