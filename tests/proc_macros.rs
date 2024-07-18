@@ -52,10 +52,10 @@ fn qty_valid() {
 
     let _qty: Quantity<Force> = qty![
         1.0 kg, 50.0 g,
-        as Energy + {added} TJ
-        in Mass::MetricTon
+        as ::dimensional::units::Energy + {added} TJ
+        in ::dimensional::units::Mass::MetricTon
         * {accel}
-        as Force + 3.0 N
+        as Force + 3.0 N + 1.0 Force::Newton
     ];
 }
 

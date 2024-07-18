@@ -25,32 +25,35 @@ impl<T: std::fmt::Debug + Parse + ToTokens> UnitCore for T {}
 pub enum UnitCoreExpr {
     /// One identifier.
     Ident(syn::Ident),
-    /// One token, followed by a sequence of field identifiers.
-    Field(TokenTree, Vec<syn::Ident>),
-    /// One token, followed by a sequence of path identifiers.
-    Path(TokenTree, Vec<syn::Ident>),
+    /// One token, followed by a sequence of dots and field identifiers.
+    Field { first: TokenTree, path: Vec<syn::Ident> },
+    /// One token, possibly preceded by a path separator, followed by a sequence
+    ///     of path separators and identifiers.
+    Path { leading: bool, first: TokenTree, path: Vec<syn::Ident> },
 }
 
 impl Parse for UnitCoreExpr {
     fn parse(input: ParseStream) -> Result<Self> {
-        let mut idents = Vec::new();
+        let mut path = Vec::new();
 
-        if input.peek2(Token![::]) {
+        let leading = input.parse::<Token![::]>().is_ok();
+
+        if leading || input.peek2(Token![::]) {
             let first = input.parse()?;
 
             while input.parse::<Token![::]>().is_ok() {
-                idents.push(input.parse()?);
+                path.push(input.parse()?);
             }
 
-            Ok(Self::Path(first, idents))
+            Ok(Self::Path { leading, first, path })
         } else if input.peek2(Token![.]) {
             let first = input.parse()?;
 
             while input.parse::<Token![.]>().is_ok() {
-                idents.push(input.parse()?);
+                path.push(input.parse()?);
             }
 
-            Ok(Self::Field(first, idents))
+            Ok(Self::Field { first, path })
         } else {
             Ok(Self::Ident(input.parse()?))
         }
@@ -61,7 +64,7 @@ impl ToTokens for UnitCoreExpr {
     fn to_tokens(&self, tokens: &mut TokenStream) {
         match self {
             Self::Ident(ident) => ident.to_tokens(tokens),
-            Self::Field(first, path) => {
+            Self::Field { first, path } => {
                 first.to_tokens(tokens);
 
                 for ident in path {
@@ -69,7 +72,11 @@ impl ToTokens for UnitCoreExpr {
                     ident.to_tokens(tokens);
                 }
             }
-            Self::Path(first, path) => {
+            Self::Path { leading, first, path } => {
+                if *leading {
+                    quote!(::).to_tokens(tokens);
+                }
+
                 first.to_tokens(tokens);
 
                 for ident in path {
@@ -82,27 +89,30 @@ impl ToTokens for UnitCoreExpr {
 }
 
 
-/// Core type for a type-destined unit specifier.
+/// Core type for an expression-destined unit specifier.
 #[derive(Debug)]
 pub enum UnitCoreType {
     /// One identifier.
     Ident(syn::Ident),
-    /// One token, followed by a sequence of path identifiers.
-    Path(TokenTree, Vec<syn::Ident>),
+    /// One token, possibly preceded by a path separator, followed by a sequence
+    ///     of path separators and identifiers.
+    Path { leading: bool, first: TokenTree, path: Vec<syn::Ident> },
 }
 
 impl Parse for UnitCoreType {
     fn parse(input: ParseStream) -> Result<Self> {
-        let mut idents = Vec::new();
+        let mut path = Vec::new();
 
-        if input.peek2(Token![::]) {
+        let leading = input.parse::<Token![::]>().is_ok();
+
+        if leading || input.peek2(Token![::]) {
             let first = input.parse()?;
 
             while input.parse::<Token![::]>().is_ok() {
-                idents.push(input.parse()?);
+                path.push(input.parse()?);
             }
 
-            Ok(Self::Path(first, idents))
+            Ok(Self::Path { leading, first, path })
         } else {
             Ok(Self::Ident(input.parse()?))
         }
@@ -113,7 +123,11 @@ impl ToTokens for UnitCoreType {
     fn to_tokens(&self, tokens: &mut TokenStream) {
         match self {
             Self::Ident(ident) => ident.to_tokens(tokens),
-            Self::Path(first, path) => {
+            Self::Path { leading, first, path } => {
+                if *leading {
+                    quote!(::).to_tokens(tokens);
+                }
+
                 first.to_tokens(tokens);
 
                 for ident in path {
