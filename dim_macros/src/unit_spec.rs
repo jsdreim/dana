@@ -6,6 +6,7 @@ use syn::{
     Result,
     Token,
 };
+use crate::util::PathSep;
 
 
 /// Unit specifier ultimately destined to be used as an expression.
@@ -30,7 +31,7 @@ pub enum UnitCoreExpr {
     /// One token, possibly preceded by a path separator, followed by a sequence
     ///     of path separators and identifiers.
     Path {
-        leading: bool,
+        lead: Option<PathSep>,
         first: TokenTree,
         path: Vec<syn::Ident>,
         fields: Vec<syn::Ident>,
@@ -39,9 +40,9 @@ pub enum UnitCoreExpr {
 
 impl Parse for UnitCoreExpr {
     fn parse(input: ParseStream) -> Result<Self> {
-        let leading = input.parse::<Token![::]>().is_ok();
+        let lead = input.parse().ok();
 
-        if leading || input.peek2(Token![::]) {
+        if lead.is_some() || input.peek2(Token![::]) {
             let mut path = Vec::new();
             let mut fields = Vec::new();
 
@@ -55,7 +56,7 @@ impl Parse for UnitCoreExpr {
                 fields.push(input.parse()?);
             }
 
-            Ok(Self::Path { leading, first, path, fields })
+            Ok(Self::Path { lead, first, path, fields })
         } else if input.peek2(Token![.]) {
             let mut fields = Vec::new();
 
@@ -77,29 +78,10 @@ impl ToTokens for UnitCoreExpr {
         match self {
             Self::Ident(ident) => ident.to_tokens(tokens),
             Self::Field { first, fields } => {
-                first.to_tokens(tokens);
-
-                for ident in fields {
-                    quote!(.).to_tokens(tokens);
-                    ident.to_tokens(tokens);
-                }
+                tokens.extend(quote!(#first #(.#fields)*));
             }
-            Self::Path { leading, first, path, fields } => {
-                if *leading {
-                    quote!(::).to_tokens(tokens);
-                }
-
-                first.to_tokens(tokens);
-
-                for ident in path {
-                    quote!(::).to_tokens(tokens);
-                    ident.to_tokens(tokens);
-                }
-
-                for ident in fields {
-                    quote!(.).to_tokens(tokens);
-                    ident.to_tokens(tokens);
-                }
+            Self::Path { lead, first, path, fields } => {
+                tokens.extend(quote!(#lead #first #(::#path)* #(.#fields)*));
             }
         }
     }
@@ -113,23 +95,23 @@ pub enum UnitCoreType {
     Ident(syn::Ident),
     /// One token, possibly preceded by a path separator, followed by a sequence
     ///     of path separators and identifiers.
-    Path { leading: bool, first: TokenTree, path: Vec<syn::Ident> },
+    Path { lead: Option<PathSep>, first: TokenTree, path: Vec<syn::Ident> },
 }
 
 impl Parse for UnitCoreType {
     fn parse(input: ParseStream) -> Result<Self> {
-        let mut path = Vec::new();
+        let lead = input.parse().ok();
 
-        let leading = input.parse::<Token![::]>().is_ok();
+        if lead.is_some() || input.peek2(Token![::]) {
+            let mut path = Vec::new();
 
-        if leading || input.peek2(Token![::]) {
             let first = input.parse()?;
 
             while input.parse::<Token![::]>().is_ok() {
                 path.push(input.parse()?);
             }
 
-            Ok(Self::Path { leading, first, path })
+            Ok(Self::Path { lead, first, path })
         } else {
             Ok(Self::Ident(input.parse()?))
         }
@@ -140,17 +122,8 @@ impl ToTokens for UnitCoreType {
     fn to_tokens(&self, tokens: &mut TokenStream) {
         match self {
             Self::Ident(ident) => ident.to_tokens(tokens),
-            Self::Path { leading, first, path } => {
-                if *leading {
-                    quote!(::).to_tokens(tokens);
-                }
-
-                first.to_tokens(tokens);
-
-                for ident in path {
-                    quote!(::).to_tokens(tokens);
-                    ident.to_tokens(tokens);
-                }
+            Self::Path { lead, first, path } => {
+                tokens.extend(quote!(#lead #first #(::#path)*));
             }
         }
     }

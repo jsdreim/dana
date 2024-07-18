@@ -7,6 +7,23 @@ use syn::{
 };
 
 
+#[derive(Debug)]
+pub struct PathSep { pub spans: [proc_macro2::Span; 2] }
+
+impl Parse for PathSep {
+    fn parse(input: ParseStream) -> Result<Self> {
+        let syn::token::PathSep { spans } = input.parse()?;
+        Ok(Self { spans })
+    }
+}
+
+impl ToTokens for PathSep {
+    fn to_tokens(&self, tokens: &mut TokenStream) {
+        syn::token::PathSep { spans: self.spans }.to_tokens(tokens)
+    }
+}
+
+
 #[derive(Clone, Copy)]
 pub enum Sign {
     Negative(Token![-]),
