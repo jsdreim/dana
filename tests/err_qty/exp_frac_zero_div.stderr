@@ -1,4 +1,4 @@
-error: unexpected end of input, expected literal token
+error: unexpected end of input, expected integer literal
  --> tests/err_qty/exp_frac_zero_div.rs:5:30
   |
 5 |     let _err = qty![1.0 m^(0/)];

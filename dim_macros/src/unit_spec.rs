@@ -130,21 +130,29 @@ impl ToTokens for UnitCoreType {
 }
 
 
-#[derive(Debug)]
 pub enum Exponent {
-    Whole(proc_macro2::Literal),
-    Frac(proc_macro2::Literal, proc_macro2::Literal),
+    Whole(syn::LitInt),
+    Frac(syn::LitInt, syn::LitInt),
+}
+
+impl std::fmt::Debug for Exponent {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Whole(a) => write!(f, "Whole({a})"),
+            Self::Frac(a, b) => write!(f, "Frac({a}, {b})"),
+        }
+    }
 }
 
 impl Exponent {
-    fn numerator(&self) -> &proc_macro2::Literal {
+    fn numerator(&self) -> &syn::LitInt {
         match self {
             Self::Whole(a) => a,
             Self::Frac(a, _) => a,
         }
     }
 
-    fn denominator(&self) -> Option<&proc_macro2::Literal> {
+    fn denominator(&self) -> Option<&syn::LitInt> {
         match self {
             Self::Whole(_) => None,
             Self::Frac(_, b) => Some(b),
@@ -175,7 +183,7 @@ impl Parse for Exponent {
 impl ToTokens for Exponent {
     fn to_tokens(&self, tokens: &mut TokenStream) {
         let (a, b) = match self {
-            Self::Whole(a) => (a, proc_macro2::Literal::i32_unsuffixed(1)),
+            Self::Whole(a) => (a, syn::LitInt::new("1", a.span())),
             Self::Frac(a, b) => (a, b.clone()),
         };
 
@@ -257,12 +265,12 @@ impl<U: UnitCore> UnitExp<U> {
                 let a = exp.numerator();
                 let b = exp.denominator();
                 let frac: [i32; 2] = [
-                    a.to_string().parse().unwrap_or(1),
-                    b.and_then(|t| t.to_string().parse().ok()).unwrap_or(1),
+                    a.base10_parse()?,
+                    match b {
+                        Some(b) => b.base10_parse()?,
+                        None => 1,
+                    },
                 ];
-                //  TODO: Correctly check non-decimal literals, like hexadecimal
-                //      or binary. Probably need to rebuild around `syn::LitInt`
-                //      or similar to achieve this.
 
                 let unit = match frac {
                     [_, 0] => return Err(syn::Error::new(

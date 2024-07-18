@@ -1,4 +1,4 @@
-error: expected literal token
+error: expected integer literal
  --> tests/err_qty/exp_paren_div.rs:5:28
   |
 5 |     let _err = qty![1.0 m^(/)];
