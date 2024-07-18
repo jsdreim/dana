@@ -26,34 +26,46 @@ pub enum UnitCoreExpr {
     /// One identifier.
     Ident(syn::Ident),
     /// One token, followed by a sequence of dots and field identifiers.
-    Field { first: TokenTree, path: Vec<syn::Ident> },
+    Field { first: TokenTree, fields: Vec<syn::Ident> },
     /// One token, possibly preceded by a path separator, followed by a sequence
     ///     of path separators and identifiers.
-    Path { leading: bool, first: TokenTree, path: Vec<syn::Ident> },
+    Path {
+        leading: bool,
+        first: TokenTree,
+        path: Vec<syn::Ident>,
+        fields: Vec<syn::Ident>,
+    },
 }
 
 impl Parse for UnitCoreExpr {
     fn parse(input: ParseStream) -> Result<Self> {
-        let mut path = Vec::new();
-
         let leading = input.parse::<Token![::]>().is_ok();
 
         if leading || input.peek2(Token![::]) {
+            let mut path = Vec::new();
+            let mut fields = Vec::new();
+
             let first = input.parse()?;
 
             while input.parse::<Token![::]>().is_ok() {
                 path.push(input.parse()?);
             }
 
-            Ok(Self::Path { leading, first, path })
+            while input.parse::<Token![.]>().is_ok() {
+                fields.push(input.parse()?);
+            }
+
+            Ok(Self::Path { leading, first, path, fields })
         } else if input.peek2(Token![.]) {
+            let mut fields = Vec::new();
+
             let first = input.parse()?;
 
             while input.parse::<Token![.]>().is_ok() {
-                path.push(input.parse()?);
+                fields.push(input.parse()?);
             }
 
-            Ok(Self::Field { first, path })
+            Ok(Self::Field { first, fields })
         } else {
             Ok(Self::Ident(input.parse()?))
         }
@@ -64,15 +76,15 @@ impl ToTokens for UnitCoreExpr {
     fn to_tokens(&self, tokens: &mut TokenStream) {
         match self {
             Self::Ident(ident) => ident.to_tokens(tokens),
-            Self::Field { first, path } => {
+            Self::Field { first, fields } => {
                 first.to_tokens(tokens);
 
-                for ident in path {
+                for ident in fields {
                     quote!(.).to_tokens(tokens);
                     ident.to_tokens(tokens);
                 }
             }
-            Self::Path { leading, first, path } => {
+            Self::Path { leading, first, path, fields } => {
                 if *leading {
                     quote!(::).to_tokens(tokens);
                 }
@@ -81,6 +93,11 @@ impl ToTokens for UnitCoreExpr {
 
                 for ident in path {
                     quote!(::).to_tokens(tokens);
+                    ident.to_tokens(tokens);
+                }
+
+                for ident in fields {
+                    quote!(.).to_tokens(tokens);
                     ident.to_tokens(tokens);
                 }
             }
