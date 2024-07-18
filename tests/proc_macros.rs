@@ -45,18 +45,6 @@ fn qty_valid() {
     assert_eq!(qty![*[ [2.0 m] + [10.0 cm]  in mm]], 2.1e3);
     assert_eq!(qty![*[[ 2.0 m  +  10.0 cm ] in mm]], 2.1e3);
     assert_eq!(qty![*[[[2.0 m] + [10.0 cm]] in mm]], 2.1e3);
-
-    //  Test heavily mixed chains of operations.
-    let accel: Quantity<Accel> = qty![30.0 cm/s/s];
-    let added: f64 = 25.0;
-
-    let _qty: Quantity<Force> = qty![
-        1.0 kg, 50.0 g,
-        as ::dimensional::units::Energy + {added} TJ
-        in ::dimensional::units::Mass::MetricTon
-        * {accel}
-        as Force + 3.0 N + 1.0 Force::Newton
-    ];
 }
 
 
@@ -78,4 +66,16 @@ fn qty_ops() {
         qty![*[[9.80665 N] / (constants::GFORCE)] as M in kJ].floor(),
         89_875_517_873_681.0,
     );
+
+    //  Test heavily mixed chains of operations.
+    let accel: Quantity<Accel> = qty![30.0 cm/s/s];
+    let added: f64 = 25.0;
+
+    let _qty: Quantity<Force> = qty![
+        1.0 kg, 50.0 g,
+        as ::dimensional::units::Energy + {added} TJ
+        in ::dimensional::units::Mass::MetricTon
+        * {accel}
+        as Force + 3.0 N + 1.0 Force::Newton
+    ];
 }
