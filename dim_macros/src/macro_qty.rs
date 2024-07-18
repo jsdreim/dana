@@ -10,9 +10,45 @@ use crate::unit_def::*;
 
 
 #[derive(Debug)]
+pub enum QtyValue {
+    Literal(Literal),
+    Ident(syn::Ident),
+    Group(Group),
+}
+
+impl QtyValue {
+    pub const fn is_literal(&self) -> bool { matches!(self, Self::Literal(_)) }
+}
+
+impl Parse for QtyValue {
+    fn parse(input: ParseStream) -> Result<Self> {
+        if let Ok(lit) = input.parse() {
+            Ok(Self::Literal(lit))
+        } else if let Ok(ident) = input.parse() {
+            Ok(Self::Ident(ident))
+        } else if let Ok(group) = input.parse() {
+            Ok(Self::Group(group))
+        } else {
+            Err(input.error("expected literal, identifier, or group"))
+        }
+    }
+}
+
+impl ToTokens for QtyValue {
+    fn to_tokens(&self, tokens: &mut TokenStream) {
+        match self {
+            Self::Literal(lit) => lit.to_tokens(tokens),
+            Self::Ident(ident) => ident.to_tokens(tokens),
+            Self::Group(group) => group.to_tokens(tokens),
+        }
+    }
+}
+
+
+#[derive(Debug)]
 pub struct QtyNew {
     pub sign: Option<crate::util::Sign>,
-    pub value: Literal,
+    pub value: QtyValue,
     pub unit: UnitSpec,
 }
 
@@ -24,10 +60,10 @@ impl Parse for QtyNew {
         let sign = fork.parse().ok();
 
         //  Read a scalar value.
-        let value = fork.parse()?;
+        let value: QtyValue = fork.parse()?;
 
         //  Check for an optional div/mul operator.
-        let inv = if fork.parse::<Token![/]>().is_ok() {
+        let inv = value.is_literal() && if fork.parse::<Token![/]>().is_ok() {
             //  `1.0 / s`
             true
         } else if fork.parse::<Token![*]>().is_ok() {
