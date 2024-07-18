@@ -9,24 +9,11 @@ use syn::{
 use crate::unit_def::*;
 
 
+#[derive(Debug)]
 pub struct QtyNew {
-    pub sign: Option<syn::token::Minus>,
+    pub sign: Option<crate::util::Sign>,
     pub value: Literal,
     pub unit: UnitSpec,
-}
-
-impl std::fmt::Debug for QtyNew {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(
-            f, "QtyNew {{ sign: {}, value: {:?}, unit: {:?} }}",
-            match self.sign {
-                Some(m) => format!("Some(Minus {{ spans: {:?} }})", m.spans),
-                None => String::from("None"),
-            },
-            self.value,
-            self.unit,
-        )
-    }
 }
 
 impl Parse for QtyNew {
@@ -34,7 +21,7 @@ impl Parse for QtyNew {
         let fork = input.fork();
 
         //  Check for a negative sign.
-        let sign = fork.parse::<Token![-]>().ok();
+        let sign = fork.parse().ok();
 
         //  Read a scalar value.
         let value = fork.parse()?;
@@ -102,13 +89,35 @@ impl Parse for QtyBase {
                 let mut add = Vec::new();
 
                 loop {
-                    //  Allow a comma here.
-                    input.parse::<Token![,]>().ok();
+                    //  Should we *expect* to find another quantity?
+                    let expecting_another = {
+                        if input.parse::<Token![+]>().is_ok() {
+                            //  Found a plus sign, should definitely be another
+                            //      quantity after this.
+                            true
+                        } else if input.parse::<Token![,]>().is_ok() {
+                            //  Found a comma. Could be another, but this is
+                            //      allowed to be trailing.
+                            false
+                        } else {
+                            //  Found no indication. There may or may not be
+                            //      another quantity.
+                            false
+                        } /*else {
+                            //  Found no indication. Specifically expect NOT to
+                            //      find another quantity.
+                            break;
+                        }*/
+                    };
 
                     //  Try to parse another quantity.
                     match input.parse::<QtyNew>() {
                         Ok(new) => add.push(new),
-                        Err(_) => break,
+                        Err(_) => if expecting_another {
+                            return Err(input.error("expected another quantity"));
+                        } else {
+                            break;
+                        }
                     }
                 }
 

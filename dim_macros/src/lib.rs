@@ -4,6 +4,7 @@ mod macro_qty;
 mod macro_reorg;
 mod macro_scale;
 mod unit_def;
+mod util;
 
 use proc_macro::TokenStream;
 use quote::ToTokens;
