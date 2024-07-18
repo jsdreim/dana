@@ -18,15 +18,16 @@ fn qty_valid() {
     let _qty: Quantity<UnitMul<L, PerUnit<L>>> = qty![1.0 m * 1/m];
     let _qty: Quantity<UnitMul<L, PerUnit<L>>> = qty![1.0 m * 1/(m)];
 
-    //  Test additive definitions.
-    assert_eq!(qty![250.0 cm], qty![2.0 m + 50.0 cm]);
-    assert_eq!(qty![250.0 cm], qty![2.0 m, 50.0 cm]);
-    assert_eq!(qty![250.0 cm], qty![2.0 m 50.0 cm]);
-
-    //  Test subtractive definitions.
-    assert_eq!(qty![150.0 cm], qty![2.0 m + -50.0 cm]);
+    //  Test sum definitions.
+    assert_eq!(qty![250.0 cm], qty![2.0 m,  50.0 cm]);
     assert_eq!(qty![150.0 cm], qty![2.0 m, -50.0 cm]);
-    assert_eq!(qty![150.0 cm], qty![2.0 m - 50.0 cm]);
+    // assert_eq!(qty![250.0 cm], qty![2.0 m, +50.0 cm]); // Forbidden by Rust.
+
+    //  Test basic operations and signs.
+    assert_eq!(qty![250.0 cm], qty![2.0 m +  50.0 cm]);
+    assert_eq!(qty![150.0 cm], qty![2.0 m + -50.0 cm]);
+    assert_eq!(qty![150.0 cm], qty![2.0 m -  50.0 cm]);
+    assert_eq!(qty![250.0 cm], qty![2.0 m - -50.0 cm]);
 
     //  Test chained definition, multiplication, and simplification.
     assert_eq!(qty![6.0 m^2], qty![2.0 m * 3.0 m -> L^2]);

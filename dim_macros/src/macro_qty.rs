@@ -124,36 +124,22 @@ impl Parse for QtySingle {
                 //  At least one new quantity definition.
                 let mut add = Vec::new();
 
-                loop {
-                    //  Should we *expect* to find another quantity?
-                    let expecting_another = {
-                        if input.parse::<Token![+]>().is_ok() {
-                            //  Found a plus sign, should definitely be another
-                            //      quantity after this.
-                            true
-                        } else if input.parse::<Token![,]>().is_ok() {
-                            //  Found a comma. Could be another, but this is
-                            //      allowed to be trailing.
-                            false
-                        } else {
-                            //  Found no indication. There may or may not be
-                            //      another quantity.
-                            false
-                        } /*else {
-                            //  Found no indication. Specifically expect NOT to
-                            //      find another quantity.
-                            break;
-                        }*/
-                    };
+                while input.parse::<Token![,]>().is_ok() {
+                    /*//  TODO: Disallow trailing comma?
+                    if input.is_empty() {
+                        return Err(input.error("expected quantity"));
+                    }
+
+                    match input.parse::<QtyNew>() {
+                        Ok(new) => add.push(new),
+                        Err(..) => return Err(input.error("expected quantity")),
+                        // Err(e) => return Err(e),
+                    }*/
 
                     //  Try to parse another quantity.
                     match input.parse::<QtyNew>() {
                         Ok(new) => add.push(new),
-                        Err(_) => if expecting_another {
-                            return Err(input.error("expected another quantity"));
-                        } else {
-                            break;
-                        }
+                        Err(..) => break,
                     }
                 }
 
