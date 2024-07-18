@@ -1,5 +1,7 @@
-error: unexpected token
- --> tests/err_qty/trailing_add.rs:5:27
+error: unexpected end of input, expected another quantity
+ --> tests/err_qty/trailing_add.rs:5:16
   |
 5 |     let _err = qty![1.0 m +];
-  |                           ^
+  |                ^^^^^^^^^^^^^
+  |
+  = note: this error originates in the macro `qty` (in Nightly builds, run with -Z macro-backtrace for more info)

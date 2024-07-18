@@ -86,8 +86,16 @@ pub enum QtyBase {
     PassGroup(Group),
 }
 
+impl QtyBase {
+    fn promote(self) -> Box<MacroQty<false>> { Box::new(self.into()) }
+}
+
 impl Parse for QtyBase {
     fn parse(input: ParseStream) -> Result<Self> {
+        if input.is_empty() {
+            return Err(input.error("expected quantity"));
+        }
+
         match input.parse::<QtyNew>() {
             Ok(first) => {
                 //  At least one new quantity definition.
@@ -131,7 +139,7 @@ pub enum Op {
     SimplifyType(UnitSpec),
     Binary {
         op: Punct,
-        rhs: MacroQty<false>,
+        rhs: QtyBase,
     },
 }
 
@@ -157,13 +165,17 @@ impl Parse for Op {
             }
         } else {
             let fork = input.fork();
-            let op = Self::Binary {
-                op: fork.parse()?,
-                rhs: fork.parse::<QtyBase>()?.into(),
+
+            let Ok(op) = fork.parse::<Punct>() else {
+                return Err(fork.error("expected `as`, `in`, `->`, or operator"));
+            };
+
+            let Ok(rhs) = fork.parse::<QtyBase>() else {
+                return Err(fork.error("expected another quantity"));
             };
 
             input.advance_to(&fork);
-            Ok(op)
+            Ok(Self::Binary { op, rhs })
         }
     }
 }
@@ -230,7 +242,11 @@ impl<const A: bool> MacroQty<A> {
             => Self::SimplifyType { qty: self.demote(), utype },
 
             Op::Binary { op, rhs }
-            => Self::Binary { lhs: self.demote(), op, rhs: rhs.into() },
+            => Self::Binary {
+                lhs: self.demote(),
+                op,
+                rhs: rhs.promote(),
+            },
         }
     }
 
@@ -268,8 +284,8 @@ impl<const TOP: bool> Parse for MacroQty<TOP> {
         let mut qty: Self = input.parse::<QtyBase>()?.into();
 
         //  Read and apply as many transformations and operations as are found.
-        while let Ok(op) = input.parse() {
-            qty = qty.apply_operation(op);
+        while !input.is_empty() {
+            qty = qty.apply_operation(input.parse()?);
         }
 
         //  Dereference, if needed.
