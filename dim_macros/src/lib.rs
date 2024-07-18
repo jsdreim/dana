@@ -3,7 +3,7 @@ mod debug;
 mod macro_qty;
 mod macro_reorg;
 mod macro_scale;
-mod unit_def;
+mod unit_spec;
 mod util;
 
 use proc_macro::TokenStream;
@@ -11,7 +11,7 @@ use quote::ToTokens;
 use macro_qty::MacroQty;
 use macro_reorg::Reorg;
 use macro_scale::MacroScale;
-use unit_def::UnitSpec;
+use unit_spec::UnitSpec;
 
 
 #[proc_macro]

@@ -6,7 +6,7 @@ use syn::{
     Result,
     Token,
 };
-use crate::unit_def::*;
+use crate::unit_spec::*;
 
 
 #[derive(Debug)]
