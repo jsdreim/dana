@@ -177,8 +177,10 @@ impl Parse for QtyNode {
 impl ToTokens for QtyNode {
     fn to_tokens(&self, tokens: &mut TokenStream) {
         match self {
-            Self::New(new, add) if add.is_empty() => new.to_tokens(tokens),
-            Self::New(new, add) => tokens.extend(quote!((#new #(+ #add)*))),
+            Self::New(first, add) if !add.is_empty() => {
+                tokens.extend(quote!((#first #(+ #add)*)));
+            }
+            Self::New(first, _add) => first.to_tokens(tokens),
             Self::Recursive(inner) => inner.to_tokens(tokens),
             Self::PassIdent(ident) => ident.to_tokens(tokens),
             Self::PassGroup(group) => group.to_tokens(tokens),
