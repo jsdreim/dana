@@ -185,15 +185,8 @@ impl ToTokens for Exponent {
 
 
 #[derive(Debug)]
-enum UnitExpBase<U: UnitCore> {
-    Base(U),
-    Unit(UnitSpec<U>),
-}
-
-
-#[derive(Debug)]
 struct UnitExp<U: UnitCore> {
-    base: UnitExpBase<U>,
+    base: UnitSpec<U>,
     inv: bool,
     neg: bool,
     exp: Option<Exponent>,
@@ -225,11 +218,11 @@ impl<U: UnitCore> Parse for UnitExp<U> {
         };
 
         let base = match input.parse() {
-            Ok(unit) => UnitExpBase::Base(unit),
+            Ok(unit) => UnitSpec::Leaf(unit),
             Err(_) => if input.peek(syn::token::Paren) {
                 let inner;
                 parenthesized!(inner in input);
-                UnitExpBase::Unit(inner.parse()?)
+                inner.parse()?
             } else {
                 return Err(input.error("expected unit"));
             }
@@ -259,11 +252,6 @@ impl<U: UnitCore> Parse for UnitExp<U> {
 
 impl<U: UnitCore> UnitExp<U> {
     fn to_unit(self) -> Result<UnitSpec<U>> {
-        let base = match self.base {
-            UnitExpBase::Base(base) => UnitSpec::Base(base),
-            UnitExpBase::Unit(unit) => unit,
-        };
-
         let unit = match self.exp {
             Some(exp) => {
                 let a = exp.numerator();
@@ -287,9 +275,9 @@ impl<U: UnitCore> UnitExp<U> {
                         "unit with exponent of zero is scalar",
                     )),
 
-                    [1, 1] => base,
-                    // [a, b] if a == b => base,
-                    _ => UnitSpec::Pow(Box::new(base), exp),
+                    [1, 1] => self.base,
+                    // [a, b] if a == b => self.base,
+                    _ => UnitSpec::Pow(Box::new(self.base), exp),
                 };
 
                 if self.neg {
@@ -298,7 +286,7 @@ impl<U: UnitCore> UnitExp<U> {
                     unit
                 }
             }
-            None => base,
+            None => self.base,
         };
 
         if self.inv {
@@ -312,7 +300,7 @@ impl<U: UnitCore> UnitExp<U> {
 
 #[derive(Debug)]
 pub enum UnitSpec<U: UnitCore> {
-    Base(U),
+    Leaf(U),
 
     Div(Box<UnitSpec<U>>, Box<UnitSpec<U>>),
     Mul(Box<UnitSpec<U>>, Box<UnitSpec<U>>),
@@ -353,7 +341,7 @@ impl<U: UnitCore> Parse for UnitSpec<U> {
 impl<U: UnitCore> UnitSpec<U> {
     pub fn as_type(&self) -> TokenStream {
         match self {
-            Self::Base(unit) => unit.to_token_stream(),
+            Self::Leaf(unit) => unit.to_token_stream(),
 
             Self::Div(left, right) => {
                 let ts_l = left.as_type();
@@ -378,7 +366,7 @@ impl<U: UnitCore> UnitSpec<U> {
 
     pub fn as_expr(&self) -> TokenStream {
         match self {
-            Self::Base(unit) => unit.to_token_stream(),
+            Self::Leaf(unit) => unit.to_token_stream(),
 
             Self::Div(left, right) => {
                 let ts_l = left.as_expr();
