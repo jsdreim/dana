@@ -6,7 +6,7 @@ use syn::{
     Result,
     Token,
 };
-use crate::unit_spec::*;
+use crate::unit_spec::{UnitSpecExpr, UnitSpecType};
 
 
 #[derive(Debug)]
@@ -49,7 +49,7 @@ impl ToTokens for QtyValue {
 pub struct QtyNew {
     pub sign: Option<crate::util::Sign>,
     pub value: QtyValue,
-    pub unit: UnitSpec,
+    pub unit: UnitSpecExpr,
 }
 
 impl Parse for QtyNew {
@@ -76,7 +76,7 @@ impl Parse for QtyNew {
 
         //  Read a unit specifier, possibly inverting it.
         let unit = if inv {
-            UnitSpec::Inv(Box::new(fork.parse()?))
+            UnitSpecExpr::Inv(Box::new(fork.parse()?))
         } else {
             fork.parse()?
         };
@@ -194,14 +194,14 @@ pub enum Operation {
     /// Convert a quantity to the default of an inferred unit type.
     Convert,
     /// Convert a quantity to the default of a specified unit type.
-    ConvertType(UnitSpec),
+    ConvertType(UnitSpecType),
     /// Convert a quantity to a specified unit.
-    ConvertUnit(UnitSpec),
+    ConvertUnit(UnitSpecExpr),
 
     /// Simplify a quantity to an inferred unit type.
     Simplify,
     /// Simplify a quantity to a specified unit type.
-    SimplifyType(UnitSpec),
+    SimplifyType(UnitSpecType),
 
     /// Perform a binary operation between quantities.
     Binary {

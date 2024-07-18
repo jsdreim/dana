@@ -8,6 +8,14 @@ use syn::{
 };
 
 
+/// Unit specifier ultimately destined to be used as an expression.
+pub type UnitSpecExpr = UnitSpec<UnitIdent>;
+
+/// Unit specifier ultimately destined to be used as a type.
+pub type UnitSpecType = UnitSpec<UnitIdent>;
+
+
+/// Marker trait indicating that a type is usable at the core of a [`UnitSpec`].
 pub trait UnitValid: std::fmt::Debug + Parse + ToTokens {}
 impl<T: std::fmt::Debug + Parse + ToTokens> UnitValid for T {}
 
@@ -127,18 +135,15 @@ impl ToTokens for Exponent {
 }
 
 
-type Inner = UnitIdent;
-
-
 #[derive(Debug)]
-enum UnitExpBase<U: UnitValid = Inner> {
+enum UnitExpBase<U: UnitValid> {
     Base(U),
     Unit(UnitSpec<U>),
 }
 
 
 #[derive(Debug)]
-struct UnitExp<U: UnitValid = Inner> {
+struct UnitExp<U: UnitValid> {
     base: UnitExpBase<U>,
     inv: bool,
     neg: bool,
@@ -257,7 +262,7 @@ impl<U: UnitValid> UnitExp<U> {
 
 
 #[derive(Debug)]
-pub enum UnitSpec<U: UnitValid = Inner> {
+pub enum UnitSpec<U: UnitValid> {
     Base(U),
 
     Div(Box<UnitSpec<U>>, Box<UnitSpec<U>>),

@@ -11,7 +11,7 @@ use quote::ToTokens;
 use macro_qty::MacroQty;
 use macro_reorg::Reorg;
 use macro_scale::MacroScale;
-use unit_spec::UnitSpec;
+use unit_spec::{UnitSpecExpr, UnitSpecType};
 
 
 #[proc_macro]
@@ -51,7 +51,7 @@ pub fn qty(stream: TokenStream) -> TokenStream {
 
 #[proc_macro]
 pub fn unit(stream: TokenStream) -> TokenStream {
-    wrap_dbg!(UnitSpec::as_expr as UnitDefTop);
+    wrap_dbg!(UnitSpecExpr::as_expr as UnitDefTop);
 
     let unit = macro_dbg! {
         as macro "unit" for stream if debug;
@@ -63,7 +63,7 @@ pub fn unit(stream: TokenStream) -> TokenStream {
 
 #[proc_macro]
 pub fn dim(stream: TokenStream) -> TokenStream {
-    wrap_dbg!(UnitSpec::as_type as UnitDefTop);
+    wrap_dbg!(UnitSpecType::as_type as UnitDefTop);
 
     let dim = macro_dbg! {
         as macro "dim" for stream if debug;
