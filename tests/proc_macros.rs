@@ -80,3 +80,40 @@ fn qty_ops() {
         as Force + 3.0 N + 1.0 Force::Newton
     ];
 }
+
+
+#[test]
+fn qtype_valid() {
+    use dim_macros::qtype;
+    use dimensional::units::{*, symbols::*, traits::*};
+
+    let u = Length::Meter / Time::Second.squared();
+
+    //  Unspecified inner type.
+    let _: qtype!(L^1/T^2) = u.quantity(1.0);
+    let _: qtype!(L^1/T^2) = u.quantity(1f64);
+    let _: qtype!(L^1/T^2) = u.quantity(1 as _);
+
+    //  Inferred inner type.
+    let _: qtype!(_; L^1/T^2) = u.quantity(1.0);
+    let _: qtype!(_; L^1/T^2) = u.quantity(1f64);
+    let _: qtype!(_; L^1/T^2) = u.quantity(1f32);
+    let _: qtype!(_; L^1/T^2) = u.quantity(1i32);
+    let _: qtype!(_; L^1/T^2) = u.quantity(1u128);
+    let _: qtype!(_; L^1/T^2) = u.quantity(1usize);
+
+    //  Explicit inner type (f32).
+    let _: qtype!(f32; L^1/T^2) = u.quantity(1.0);
+    let _: qtype!(f32; L^1/T^2) = u.quantity(1f32);
+    let _: qtype!(f32; L^1/T^2) = u.quantity(1 as _);
+
+    //  Explicit inner type (f64).
+    let _: qtype!(f64; L^1/T^2) = u.quantity(1.0);
+    let _: qtype!(f64; L^1/T^2) = u.quantity(1f64);
+    let _: qtype!(f64; L^1/T^2) = u.quantity(1 as _);
+
+    //  Explicit inner type (usize).
+    let _: qtype!(usize; L^1/T^2) = u.quantity(1);
+    let _: qtype!(usize; L^1/T^2) = u.quantity(1usize);
+    let _: qtype!(usize; L^1/T^2) = u.quantity(1 as _);
+}

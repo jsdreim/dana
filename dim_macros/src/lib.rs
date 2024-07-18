@@ -1,6 +1,7 @@
 #[macro_use]
 mod debug;
 mod macro_qty;
+mod macro_qtype;
 mod macro_reorg;
 mod macro_scale;
 mod unit_spec;
@@ -9,6 +10,7 @@ mod util;
 use proc_macro::TokenStream;
 use quote::ToTokens;
 use macro_qty::MacroQty;
+use macro_qtype::MacroQType;
 use macro_reorg::Reorg;
 use macro_scale::MacroScale;
 use unit_spec::{UnitSpecExpr, UnitSpecType};
@@ -46,6 +48,18 @@ pub fn qty(stream: TokenStream) -> TokenStream {
         syn::parse_macro_input!(stream as MacroQtyTop)
     };
     qty.into_token_stream().into()
+}
+
+
+#[proc_macro]
+pub fn qtype(stream: TokenStream) -> TokenStream {
+    wrap_dbg!(MacroQType as MacroQTypeTop);
+
+    let qtype = macro_dbg! {
+        as macro "qtype" for stream if debug;
+        syn::parse_macro_input!(stream as MacroQTypeTop)
+    };
+    qtype.into_token_stream().into()
 }
 
 
