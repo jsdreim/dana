@@ -1,5 +1,5 @@
 use std::ops::{Add, Div, Mul, Sub};
-use num_traits::{Float, Inv, Pow, real::Real, Zero};
+use num_traits::{Float, Inv, NumCast, Pow, real::Real, Zero};
 use crate::{Scalar, units::{compound::*, traits::*}};
 
 
@@ -184,6 +184,25 @@ impl<U: Unit, V: Scalar> Quantity<U, V> {
 //endregion
 
 
+//region Methods for scalar operations.
+impl<U: Unit, V: Scalar> Quantity<U, V> {
+    pub fn scalar_into<X>(self) -> Quantity<U, X> where
+        V: Into<X>,
+        X: Scalar,
+    {
+        Quantity::new(self.unit, self.value.into())
+    }
+
+    pub fn scalar_try_into<X>(self) -> Result<Quantity<U, X>, V::Error> where
+        V: TryInto<X>,
+        X: Scalar,
+    {
+        Ok(Quantity::new(self.unit, self.value.try_into()?))
+    }
+}
+//endregion
+
+
 //region Methods for unit operations.
 /// Unit conversion.
 impl<U: Unit, V: Scalar + 'static> Quantity<U, V> {
@@ -203,21 +222,12 @@ impl<U: Unit, V: Scalar + 'static> Quantity<U, V> {
         self.unit.conversion_into(unit).quantity(self.value)
     }
 
-    // pub fn convert_left_to<W: Unit>(self, unit: W)
-    //     -> Quantity<U::WithLeftConverted, V> where
-    //     U: ConvertLeft<W>,
-    //     U::Left: ConvertInto<W>,
-    // {
-    //     self.unit.convert_left(unit).quantity(self.value)
-    // }
-    //
-    // pub fn convert_right_to<W: Unit>(self, unit: W)
-    //     -> Quantity<U::WithRightConverted, V> where
-    //     U: ConvertRight<W>,
-    //     U::Right: ConvertInto<W>,
-    // {
-    //     self.unit.convert_right(unit).quantity(self.value)
-    // }
+    /// Cancel out units entirely, returning a scalar.
+    pub fn cancel(self) -> V where
+        U: Cancel,
+    {
+        self.value * self.unit.cancel_to()
+    }
 
     /// Simplify redundant units.
     pub fn simplify<W: Unit>(self) -> Quantity<W, V> where
@@ -421,6 +431,11 @@ impl<U: Unit, V: Scalar + Ord + 'static> Ord for Quantity<U, V> where
 
 //region Traits from `num_traits`.
 impl<U: Unit, V: Scalar + Float> Quantity<U, V> {
+    /// Cast the scalar to another type through the [`NumCast`] trait.
+    pub fn scalar_cast<X: Scalar + NumCast>(self) -> Option<Quantity<U, X>> {
+        Some(Quantity::new(self.unit, X::from(self.value)?))
+    }
+
     pub fn abs(self) -> Self {
         Self::new(self.unit, self.value.abs())
     }
@@ -466,6 +481,21 @@ impl<U: Unit, V: Scalar> Zero for Quantity<U, V> {
     }
 }
 //endregion
+
+
+// impl<U: Unit, V: Scalar + From<X>, X: Scalar> From<Quantity<U, X>> for Quantity<U, V> {
+//     fn from(qty: Quantity<U, X>) -> Self {
+//         Self::new(qty.unit, qty.value.into())
+//     }
+// }
+//
+// impl<U: Unit, V: Scalar + TryFrom<X>, X: Scalar> TryFrom<Quantity<U, X>> for Quantity<U, V> {
+//     type Error = V::Error;
+//
+//     fn try_from(qty: Quantity<U, X>) -> Result<Self, Self::Error> {
+//         Ok(Self::new(qty.unit, qty.value.try_into()?))
+//     }
+// }
 
 
 macro_rules! impl_fmt {
