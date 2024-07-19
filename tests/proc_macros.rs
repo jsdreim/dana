@@ -85,6 +85,45 @@ fn qty_ops() {
 
 
 #[test]
+fn qty_ops_adv() {
+    use dim_macros::qty;
+    use dimensional::{Quantity, units::{*, symbols::*}};
+
+    let n = 5.0;
+    let w_4: Quantity<Power> = qty![4.0 W];
+    let kg_3: Quantity<Mass> = qty![3.0 kg];
+    let m_s_12: Quantity<Speed> = qty![12.0 m/s];
+
+    //  Test reuse of units.
+    assert_eq!(qty![3.0 mW], qty![3e-3 w_4.unit]);
+    assert_eq!(qty![3.0 kW], qty![3e+3 w_4.unit]);
+
+    //  Test reuse of scalars.
+    assert_eq!(qty![5e+3 W], qty![n kW]);
+    assert_eq!(qty![5e+3 W], qty![{n} kW]);
+    assert_eq!(qty![3e+3 W], qty![{kg_3.value} kW]);
+    assert_eq!(qty![12e-3 W], qty![{m_s_12.value} mW]);
+
+    //  Test entirely reused definitions, in combination with operations.
+    assert_eq!(qty![36.0 kg*(m/s)], qty![
+        {kg_3.value} kg_3.unit
+        * {m_s_12.value} m_s_12.unit
+        as Momentum
+    ]);
+    assert_eq!(qty![36.0 kg*(m/s)], qty![
+        {m_s_12.value} kg_3.unit
+        * {kg_3.value} m_s_12.unit
+        as Momentum
+    ]);
+
+    //  Test...this.
+    //  TODO: Allowing field access at all may make it too easy to accidentally
+    //      break unit safety like this. Should it be reverted?
+    assert_eq!(qty![16.0 W], qty![w_4 * w_4.value]);
+}
+
+
+#[test]
 fn qtype_valid() {
     use dim_macros::qtype;
     use dimensional::units::{*, symbols::*, traits::*};
