@@ -54,28 +54,40 @@ pub struct Dim<
     const J: Exp,
 >;
 
+
+//  TODO: Seal this trait.
+pub trait IsDim: std::fmt::Display {
+    const EXP_LEN: Exp;
+    const EXP_MASS: Exp;
+    const EXP_TIME: Exp;
+    const EXP_CURR: Exp;
+    const EXP_TEMP: Exp;
+    const EXP_AMT: Exp;
+    const EXP_LUM: Exp;
+
+    const ARRAY: [(char, Exp); 7] = [
+        ('L', Self::EXP_LEN),  ('M', Self::EXP_MASS), ('T', Self::EXP_TIME),
+        ('I', Self::EXP_CURR), ('Θ', Self::EXP_TEMP), ('N', Self::EXP_AMT),
+        ('J', Self::EXP_LUM),
+    ];
+
+    fn dim() -> Self;
+}
+
 impl<
     const L: Exp, const M: Exp, const T: Exp,
     const I: Exp, const Θ: Exp, const N: Exp,
     const J: Exp,
-> Dim<L, M, T, I, Θ, N, J> {
-    pub const EXP_LEN: Exp = L;
-    pub const EXP_MASS: Exp = M;
-    pub const EXP_TIME: Exp = T;
-    pub const EXP_CURR: Exp = I;
-    pub const EXP_TEMP: Exp = Θ;
-    pub const EXP_AMT: Exp = N;
-    pub const EXP_LUM: Exp = J;
+> IsDim for Dim<L, M, T, I, Θ, N, J> {
+    const EXP_LEN: Exp = L;
+    const EXP_MASS: Exp = M;
+    const EXP_TIME: Exp = T;
+    const EXP_CURR: Exp = I;
+    const EXP_TEMP: Exp = Θ;
+    const EXP_AMT: Exp = N;
+    const EXP_LUM: Exp = J;
 
-    pub const ARRAY: [(char, Exp); 7] = [
-        ('L', L), ('M', M), ('T', T),
-        ('I', I), ('Θ', Θ), ('N', N),
-        ('J', J),
-    ];
-
-    pub const fn dim() -> Self { Self }
-
-    pub fn powi<const E: Exp>() {}
+    fn dim() -> Self { Self }
 }
 
 
@@ -109,6 +121,8 @@ impl<
     }
 }
 
+
+/// Division.
 impl<
     const L1: Exp, const M1: Exp, const T1: Exp,
     const I1: Exp, const Θ1: Exp, const N1: Exp,
@@ -128,6 +142,8 @@ impl<
     fn div(self, _rhs: Dim<L2, M2, T2, I2, Θ2, N2, J2>) -> Self::Output { Dim }
 }
 
+
+/// Multiplication.
 impl<
     const L1: Exp, const M1: Exp, const T1: Exp,
     const I1: Exp, const Θ1: Exp, const N1: Exp,
@@ -147,6 +163,8 @@ impl<
     fn mul(self, _rhs: Dim<L2, M2, T2, I2, Θ2, N2, J2>) -> Self::Output { Dim }
 }
 
+
+/// Inversion.
 impl<
     const L: Exp, const M: Exp, const T: Exp,
     const I: Exp, const Θ: Exp, const N: Exp,
@@ -163,6 +181,7 @@ pub trait DimPow<const E: Exp> {
     type Output;
 }
 
+/// Integer powers.
 impl<
     const L: Exp, const M: Exp, const T: Exp,
     const I: Exp, const Θ: Exp, const N: Exp,
@@ -183,6 +202,7 @@ pub trait DimRoot<const E: Exp> {
     type Output;
 }
 
+/// Fractional powers.
 impl<
     const L: Exp, const M: Exp, const T: Exp,
     const I: Exp, const Θ: Exp, const N: Exp,
