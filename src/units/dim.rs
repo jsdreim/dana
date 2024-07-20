@@ -122,6 +122,19 @@ impl<
 }
 
 
+macro_rules! dim_op {
+    ($dim:ident $($op:tt)*) => {Dim<
+        {<$dim as IsDim>::EXP_LEN  $($op)*},
+        {<$dim as IsDim>::EXP_MASS $($op)*},
+        {<$dim as IsDim>::EXP_TIME $($op)*},
+        {<$dim as IsDim>::EXP_CURR $($op)*},
+        {<$dim as IsDim>::EXP_TEMP $($op)*},
+        {<$dim as IsDim>::EXP_AMT  $($op)*},
+        {<$dim as IsDim>::EXP_LUM  $($op)*},
+    >};
+}
+
+
 /// Division.
 impl<
     const L1: Exp, const M1: Exp, const T1: Exp,
@@ -182,19 +195,10 @@ pub trait DimPow<const E: Exp> {
 }
 
 /// Integer powers.
-impl<
-    const L: Exp, const M: Exp, const T: Exp,
-    const I: Exp, const Θ: Exp, const N: Exp,
-    const J: Exp,
-    const E: Exp,
-> DimPow<E> for Dim<L, M, T, I, Θ, N, J> where
-    Dim<{L*E}, {M*E}, {T*E}, {I*E}, {Θ*E}, {N*E}, {J*E}>:
+impl<const E: Exp, D: IsDim> DimPow<E> for D where
+    dim_op!(D * E):
 {
-    type Output = Dim<
-        { L * E }, { M * E }, { T * E },
-        { I * E }, { Θ * E }, { N * E },
-        { J * E },
-    >;
+    type Output = dim_op!(D * E);
 }
 
 
@@ -203,23 +207,18 @@ pub trait DimRoot<const E: Exp> {
 }
 
 /// Fractional powers.
-impl<
-    const L: Exp, const M: Exp, const T: Exp,
-    const I: Exp, const Θ: Exp, const N: Exp,
-    const J: Exp,
-    const D: Exp,
-> DimRoot<D> for Dim<L, M, T, I, Θ, N, J> where
-    Assert<{ L % D == 0 }>: IsTrue, Assert<{ M % D == 0 }>: IsTrue, Assert<{ T % D == 0 }>: IsTrue,
-    Assert<{ I % D == 0 }>: IsTrue, Assert<{ Θ % D == 0 }>: IsTrue, Assert<{ N % D == 0 }>: IsTrue,
-    Assert<{ J % D == 0 }>: IsTrue,
-    Assert<{     D != 0 }>: IsTrue,
-    Dim<{L/D}, {M/D}, {T/D}, {I/D}, {Θ/D}, {N/D}, {J/D}>:
+impl<const E: Exp, D: IsDim> DimRoot<E> for D where
+    Assert<{ <D as IsDim>::EXP_LEN  % E == 0 }>: IsTrue,
+    Assert<{ <D as IsDim>::EXP_MASS % E == 0 }>: IsTrue,
+    Assert<{ <D as IsDim>::EXP_TIME % E == 0 }>: IsTrue,
+    Assert<{ <D as IsDim>::EXP_CURR % E == 0 }>: IsTrue,
+    Assert<{ <D as IsDim>::EXP_TEMP % E == 0 }>: IsTrue,
+    Assert<{ <D as IsDim>::EXP_AMT  % E == 0 }>: IsTrue,
+    Assert<{ <D as IsDim>::EXP_LUM  % E == 0 }>: IsTrue,
+    Assert<{                          E != 0 }>: IsTrue,
+    dim_op!(D / E):
 {
-    type Output = Dim<
-        { L / D }, { M / D }, { T / D },
-        { I / D }, { Θ / D }, { N / D },
-        { J / D },
-    >;
+    type Output = dim_op!(D / E);
 }
 
 
