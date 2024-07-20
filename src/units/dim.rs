@@ -1,4 +1,5 @@
 use std::ops::{Div, Mul};
+use const_assert::*;
 use num_traits::Inv;
 
 
@@ -181,6 +182,32 @@ impl<
         { L * E }, { M * E }, { T * E },
         { I * E }, { Θ * E }, { N * E },
         { J * E },
+    >;
+}
+
+
+pub trait DimRoot<const E: Exp> {
+    type Output;
+}
+
+impl<
+    const L: Exp, const M: Exp, const T: Exp,
+    const I: Exp, const Θ: Exp, const N: Exp,
+    const J: Exp,
+    const D: Exp,
+> DimRoot<D> for Dim<L, M, T, I, Θ, N, J> where
+    [(); { L / D } as usize]:, [(); { M / D } as usize]:, [(); { T / D } as usize]:,
+    [(); { I / D } as usize]:, [(); { Θ / D } as usize]:, [(); { N / D } as usize]:,
+    [(); { J / D } as usize]:,
+    Assert<{ L % D == 0 }>: IsTrue, Assert<{ M % D == 0 }>: IsTrue, Assert<{ T % D == 0 }>: IsTrue,
+    Assert<{ I % D == 0 }>: IsTrue, Assert<{ Θ % D == 0 }>: IsTrue, Assert<{ N % D == 0 }>: IsTrue,
+    Assert<{ J % D == 0 }>: IsTrue,
+    Assert<{     D != 0 }>: IsTrue,
+{
+    type Output = Dim<
+        { L / D }, { M / D }, { T / D },
+        { I / D }, { Θ / D }, { N / D },
+        { J / D },
     >;
 }
 
