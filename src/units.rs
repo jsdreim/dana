@@ -1,6 +1,7 @@
 pub mod _experimental;
 pub mod compound;
 pub mod concrete;
+pub mod dim;
 pub mod si;
 pub mod symbols;
 pub mod traits;
