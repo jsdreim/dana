@@ -3,6 +3,7 @@ use const_assert::*;
 use num_traits::Inv;
 
 
+/// Integer type used for dimension exponents.
 pub type Exp = i32;
 
 
@@ -116,9 +117,7 @@ impl<
     const I2: Exp, const Θ2: Exp, const N2: Exp,
     const J2: Exp,
 > Div<Dim<L2, M2, T2, I2, Θ2, N2, J2>> for Dim<L1, M1, T1, I1, Θ1, N1, J1> where
-    [(); { L1 - L2 } as usize]:, [(); { M1 - M2 } as usize]:, [(); { T1 - T2 } as usize]:,
-    [(); { I1 - I2 } as usize]:, [(); { Θ1 - Θ2 } as usize]:, [(); { N1 - N2 } as usize]:,
-    [(); { J1 - J2 } as usize]:,
+    Dim<{L1-L2}, {M1-M2}, {T1-T2}, {I1-I2}, {Θ1-Θ2}, {N1-N2}, {J1-J2}>:
 {
     type Output = Dim<
         { L1 - L2 }, { M1 - M2 }, { T1 - T2 },
@@ -137,9 +136,7 @@ impl<
     const I2: Exp, const Θ2: Exp, const N2: Exp,
     const J2: Exp,
 > Mul<Dim<L2, M2, T2, I2, Θ2, N2, J2>> for Dim<L1, M1, T1, I1, Θ1, N1, J1> where
-    [(); { L1 + L2 } as usize]:, [(); { M1 + M2 } as usize]:, [(); { T1 + T2 } as usize]:,
-    [(); { I1 + I2 } as usize]:, [(); { Θ1 + Θ2 } as usize]:, [(); { N1 + N2 } as usize]:,
-    [(); { J1 + J2 } as usize]:,
+    Dim<{L1+L2}, {M1+M2}, {T1+T2}, {I1+I2}, {Θ1+Θ2}, {N1+N2}, {J1+J2}>:
 {
     type Output = Dim<
         { L1 + L2 }, { M1 + M2 }, { T1 + T2 },
@@ -155,9 +152,7 @@ impl<
     const I: Exp, const Θ: Exp, const N: Exp,
     const J: Exp,
 > Inv for Dim<L, M, T, I, Θ, N, J> where
-    [(); {-L} as usize]:, [(); {-M} as usize]:, [(); {-T} as usize]:,
-    [(); {-I} as usize]:, [(); {-Θ} as usize]:, [(); {-N} as usize]:,
-    [(); {-J} as usize]:,
+    Dim<{-L}, {-M}, {-T}, {-I}, {-Θ}, {-N}, {-J}>:
 {
     type Output = Dim<{-L}, {-M}, {-T}, {-I}, {-Θ}, {-N}, {-J}>;
     fn inv(self) -> Self::Output { Dim }
@@ -174,9 +169,7 @@ impl<
     const J: Exp,
     const E: Exp,
 > DimPow<E> for Dim<L, M, T, I, Θ, N, J> where
-    [(); { L * E } as usize]:, [(); { M * E } as usize]:, [(); { T * E } as usize]:,
-    [(); { I * E } as usize]:, [(); { Θ * E } as usize]:, [(); { N * E } as usize]:,
-    [(); { J * E } as usize]:,
+    Dim<{L*E}, {M*E}, {T*E}, {I*E}, {Θ*E}, {N*E}, {J*E}>:
 {
     type Output = Dim<
         { L * E }, { M * E }, { T * E },
@@ -196,13 +189,11 @@ impl<
     const J: Exp,
     const D: Exp,
 > DimRoot<D> for Dim<L, M, T, I, Θ, N, J> where
-    [(); { L / D } as usize]:, [(); { M / D } as usize]:, [(); { T / D } as usize]:,
-    [(); { I / D } as usize]:, [(); { Θ / D } as usize]:, [(); { N / D } as usize]:,
-    [(); { J / D } as usize]:,
     Assert<{ L % D == 0 }>: IsTrue, Assert<{ M % D == 0 }>: IsTrue, Assert<{ T % D == 0 }>: IsTrue,
     Assert<{ I % D == 0 }>: IsTrue, Assert<{ Θ % D == 0 }>: IsTrue, Assert<{ N % D == 0 }>: IsTrue,
     Assert<{ J % D == 0 }>: IsTrue,
     Assert<{     D != 0 }>: IsTrue,
+    Dim<{L/D}, {M/D}, {T/D}, {I/D}, {Θ/D}, {N/D}, {J/D}>:
 {
     type Output = Dim<
         { L / D }, { M / D }, { T / D },
