@@ -6,7 +6,7 @@ use num_traits::Inv;
 pub type Exp = i32;
 
 
-pub type Scalar       = Dim< 0, 0, 0, 0, 0, 0, 0 >;
+pub type None         = Dim< 0, 0, 0, 0, 0, 0, 0 >;
 //                           L  M  T  I  Θ  N  J
 pub type Length       = Dim< 1, 0, 0, 0, 0, 0, 0 >;
 pub type Mass         = Dim< 0, 1, 0, 0, 0, 0, 0 >;
