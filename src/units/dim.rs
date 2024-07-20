@@ -5,33 +5,33 @@ use const_assert::*;
 pub type Exp = i32;
 
 
-pub type None         = Dim< 0, 0, 0, 0, 0, 0, 0 >;
-//                           L  M  T  I  Θ  N  J
-pub type Length       = Dim< 1, 0, 0, 0, 0, 0, 0 >;
-pub type Mass         = Dim< 0, 1, 0, 0, 0, 0, 0 >;
-pub type Time         = Dim< 0, 0, 1, 0, 0, 0, 0 >;
-pub type Current      = Dim< 0, 0, 0, 1, 0, 0, 0 >;
-pub type Temp         = Dim< 0, 0, 0, 0, 1, 0, 0 >;
-pub type Amount       = Dim< 0, 0, 0, 0, 0, 1, 0 >;
-pub type Lum          = Dim< 0, 0, 0, 0, 0, 0, 1 >;
-//                           L  M  T  I  Θ  N  J
-pub type Frequency    = Dim< 0, 0,-1, 0, 0, 0, 0 >;
-pub type Velocity     = Dim< 1, 0,-1, 0, 0, 0, 0 >;
-pub type Accel        = Dim< 1, 0,-2, 0, 0, 0, 0 >;
-pub type Force        = Dim< 1, 1,-2, 0, 0, 0, 0 >;
-pub type Pressure     = Dim<-1, 1,-2, 0, 0, 0, 0 >;
-pub type Area         = Dim< 2, 0, 0, 0, 0, 0, 0 >;
-pub type Volume       = Dim< 3, 0, 0, 0, 0, 0, 0 >;
-pub type Density      = Dim<-3, 1, 0, 0, 0, 0, 0 >;
-//                           L  M  T  I  Θ  N  J
-pub type Charge       = Dim< 0, 0, 1, 1, 0, 0, 0 >;
-pub type Torque       = Dim< 2, 1,-2, 0, 0, 0, 0 >;
-pub type Energy       = Dim< 2, 1,-2, 0, 0, 0, 0 >;
-pub type Power        = Dim< 2, 1,-3, 0, 0, 0, 0 >;
-pub type Voltage      = Dim< 2, 1,-3,-1, 0, 0, 0 >;
-pub type Resistance   = Dim< 2, 1,-3,-2, 0, 0, 0 >;
-pub type Capacitance  = Dim<-2,-1, 4, 2, 0, 0, 0 >;
-//                           L  M  T  I  Θ  N  J
+pub type None         = Dimension< 0, 0, 0, 0, 0, 0, 0 >;
+//                                 L  M  T  I  Θ  N  J
+pub type Length       = Dimension< 1, 0, 0, 0, 0, 0, 0 >;
+pub type Mass         = Dimension< 0, 1, 0, 0, 0, 0, 0 >;
+pub type Time         = Dimension< 0, 0, 1, 0, 0, 0, 0 >;
+pub type Current      = Dimension< 0, 0, 0, 1, 0, 0, 0 >;
+pub type Temp         = Dimension< 0, 0, 0, 0, 1, 0, 0 >;
+pub type Amount       = Dimension< 0, 0, 0, 0, 0, 1, 0 >;
+pub type Lum          = Dimension< 0, 0, 0, 0, 0, 0, 1 >;
+//                                 L  M  T  I  Θ  N  J
+pub type Frequency    = Dimension< 0, 0,-1, 0, 0, 0, 0 >;
+pub type Velocity     = Dimension< 1, 0,-1, 0, 0, 0, 0 >;
+pub type Accel        = Dimension< 1, 0,-2, 0, 0, 0, 0 >;
+pub type Force        = Dimension< 1, 1,-2, 0, 0, 0, 0 >;
+pub type Pressure     = Dimension<-1, 1,-2, 0, 0, 0, 0 >;
+pub type Area         = Dimension< 2, 0, 0, 0, 0, 0, 0 >;
+pub type Volume       = Dimension< 3, 0, 0, 0, 0, 0, 0 >;
+pub type Density      = Dimension<-3, 1, 0, 0, 0, 0, 0 >;
+//                                 L  M  T  I  Θ  N  J
+pub type Charge       = Dimension< 0, 0, 1, 1, 0, 0, 0 >;
+pub type Torque       = Dimension< 2, 1,-2, 0, 0, 0, 0 >;
+pub type Energy       = Dimension< 2, 1,-2, 0, 0, 0, 0 >;
+pub type Power        = Dimension< 2, 1,-3, 0, 0, 0, 0 >;
+pub type Voltage      = Dimension< 2, 1,-3,-1, 0, 0, 0 >;
+pub type Resistance   = Dimension< 2, 1,-3,-2, 0, 0, 0 >;
+pub type Capacitance  = Dimension<-2,-1, 4, 2, 0, 0, 0 >;
+//                                 L  M  T  I  Θ  N  J
 
 
 pub mod symbols {
@@ -46,7 +46,7 @@ pub mod symbols {
 
 
 #[derive(Clone, Copy, Debug)]
-pub struct Dim<
+pub struct Dimension<
     const L: Exp, const M: Exp, const T: Exp,
     const I: Exp, const Θ: Exp, const N: Exp,
     const J: Exp,
@@ -54,7 +54,7 @@ pub struct Dim<
 
 
 //  TODO: Seal this trait.
-pub trait IsDim: std::fmt::Display {
+pub trait DimType: std::fmt::Display {
     const EXP_LEN: Exp;
     const EXP_MASS: Exp;
     const EXP_TIME: Exp;
@@ -76,7 +76,7 @@ impl<
     const L: Exp, const M: Exp, const T: Exp,
     const I: Exp, const Θ: Exp, const N: Exp,
     const J: Exp,
-> IsDim for Dim<L, M, T, I, Θ, N, J> {
+> DimType for Dimension<L, M, T, I, Θ, N, J> {
     const EXP_LEN: Exp = L;
     const EXP_MASS: Exp = M;
     const EXP_TIME: Exp = T;
@@ -93,7 +93,7 @@ impl<
     const L: Exp, const M: Exp, const T: Exp,
     const I: Exp, const Θ: Exp, const N: Exp,
     const J: Exp,
-> std::fmt::Display for Dim<L, M, T, I, Θ, N, J> {
+> std::fmt::Display for Dimension<L, M, T, I, Θ, N, J> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         use std::fmt::Write;
 
@@ -121,33 +121,33 @@ impl<
 
 
 macro_rules! dim_op {
-    (1: $dim:ident $($t:tt)*) => {Dim<
-        {<$dim as IsDim>::EXP_LEN  $($t)*},
-        {<$dim as IsDim>::EXP_MASS $($t)*},
-        {<$dim as IsDim>::EXP_TIME $($t)*},
-        {<$dim as IsDim>::EXP_CURR $($t)*},
-        {<$dim as IsDim>::EXP_TEMP $($t)*},
-        {<$dim as IsDim>::EXP_AMT  $($t)*},
-        {<$dim as IsDim>::EXP_LUM  $($t)*},
+    (1: $dim:ident $($t:tt)*) => {Dimension<
+        {<$dim as DimType>::EXP_LEN  $($t)*},
+        {<$dim as DimType>::EXP_MASS $($t)*},
+        {<$dim as DimType>::EXP_TIME $($t)*},
+        {<$dim as DimType>::EXP_CURR $($t)*},
+        {<$dim as DimType>::EXP_TEMP $($t)*},
+        {<$dim as DimType>::EXP_AMT  $($t)*},
+        {<$dim as DimType>::EXP_LUM  $($t)*},
     >};
-    (2: $dim1:ident $op:tt $dim2:ident) => {Dim<
-        {<$dim1 as IsDim>::EXP_LEN  $op <$dim2 as IsDim>::EXP_LEN  },
-        {<$dim1 as IsDim>::EXP_MASS $op <$dim2 as IsDim>::EXP_MASS },
-        {<$dim1 as IsDim>::EXP_TIME $op <$dim2 as IsDim>::EXP_TIME },
-        {<$dim1 as IsDim>::EXP_CURR $op <$dim2 as IsDim>::EXP_CURR },
-        {<$dim1 as IsDim>::EXP_TEMP $op <$dim2 as IsDim>::EXP_TEMP },
-        {<$dim1 as IsDim>::EXP_AMT  $op <$dim2 as IsDim>::EXP_AMT  },
-        {<$dim1 as IsDim>::EXP_LUM  $op <$dim2 as IsDim>::EXP_LUM  },
+    (2: $dim1:ident $op:tt $dim2:ident) => {Dimension<
+        {<$dim1 as DimType>::EXP_LEN  $op <$dim2 as DimType>::EXP_LEN  },
+        {<$dim1 as DimType>::EXP_MASS $op <$dim2 as DimType>::EXP_MASS },
+        {<$dim1 as DimType>::EXP_TIME $op <$dim2 as DimType>::EXP_TIME },
+        {<$dim1 as DimType>::EXP_CURR $op <$dim2 as DimType>::EXP_CURR },
+        {<$dim1 as DimType>::EXP_TEMP $op <$dim2 as DimType>::EXP_TEMP },
+        {<$dim1 as DimType>::EXP_AMT  $op <$dim2 as DimType>::EXP_AMT  },
+        {<$dim1 as DimType>::EXP_LUM  $op <$dim2 as DimType>::EXP_LUM  },
     >};
 }
 
 
 /// Division.
-pub trait DimDiv<D: IsDim>: IsDim {
+pub trait DimDiv<D: DimType>: DimType {
     type Output;
 }
 
-impl<D1: IsDim, D2: IsDim> DimDiv<D2> for D1 where
+impl<D1: DimType, D2: DimType> DimDiv<D2> for D1 where
     dim_op!(2: D1 / D2):
 {
     type Output = dim_op!(2: D1 / D2);
@@ -155,11 +155,11 @@ impl<D1: IsDim, D2: IsDim> DimDiv<D2> for D1 where
 
 
 /// Multiplication.
-pub trait DimMul<D: IsDim>: IsDim {
+pub trait DimMul<D: DimType>: DimType {
     type Output;
 }
 
-impl<D1: IsDim, D2: IsDim> DimMul<D2> for D1 where
+impl<D1: DimType, D2: DimType> DimMul<D2> for D1 where
     dim_op!(2: D1 * D2):
 {
     type Output = dim_op!(2: D1 * D2);
@@ -167,11 +167,11 @@ impl<D1: IsDim, D2: IsDim> DimMul<D2> for D1 where
 
 
 /// Inversion.
-pub trait DimInv: IsDim {
+pub trait DimInv: DimType {
     type Output;
 }
 
-impl<D: IsDim> DimInv for D where
+impl<D: DimType> DimInv for D where
     dim_op!(1: D * -1):
 {
     type Output = dim_op!(1: D * -1);
@@ -179,11 +179,11 @@ impl<D: IsDim> DimInv for D where
 
 
 /// Integer powers.
-pub trait DimPow<const E: Exp>: IsDim {
+pub trait DimPow<const E: Exp>: DimType {
     type Output;
 }
 
-impl<const E: Exp, D: IsDim> DimPow<E> for D where
+impl<const E: Exp, D: DimType> DimPow<E> for D where
     dim_op!(1: D * E):
 {
     type Output = dim_op!(1: D * E);
@@ -191,19 +191,19 @@ impl<const E: Exp, D: IsDim> DimPow<E> for D where
 
 
 /// Fractional powers.
-pub trait DimRoot<const E: Exp>: IsDim {
+pub trait DimRoot<const E: Exp>: DimType {
     type Output;
 }
 
-impl<const E: Exp, D: IsDim> DimRoot<E> for D where
-    Assert<{ <D as IsDim>::EXP_LEN  % E == 0 }>: IsTrue,
-    Assert<{ <D as IsDim>::EXP_MASS % E == 0 }>: IsTrue,
-    Assert<{ <D as IsDim>::EXP_TIME % E == 0 }>: IsTrue,
-    Assert<{ <D as IsDim>::EXP_CURR % E == 0 }>: IsTrue,
-    Assert<{ <D as IsDim>::EXP_TEMP % E == 0 }>: IsTrue,
-    Assert<{ <D as IsDim>::EXP_AMT  % E == 0 }>: IsTrue,
-    Assert<{ <D as IsDim>::EXP_LUM  % E == 0 }>: IsTrue,
-    Assert<{                          E != 0 }>: IsTrue,
+impl<const E: Exp, D: DimType> DimRoot<E> for D where
+    Assert<{ <D as DimType>::EXP_LEN  % E == 0 }>: IsTrue,
+    Assert<{ <D as DimType>::EXP_MASS % E == 0 }>: IsTrue,
+    Assert<{ <D as DimType>::EXP_TIME % E == 0 }>: IsTrue,
+    Assert<{ <D as DimType>::EXP_CURR % E == 0 }>: IsTrue,
+    Assert<{ <D as DimType>::EXP_TEMP % E == 0 }>: IsTrue,
+    Assert<{ <D as DimType>::EXP_AMT  % E == 0 }>: IsTrue,
+    Assert<{ <D as DimType>::EXP_LUM  % E == 0 }>: IsTrue,
+    Assert<{                            E != 0 }>: IsTrue,
     dim_op!(1: D / E):
 {
     type Output = dim_op!(1: D / E);
