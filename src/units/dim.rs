@@ -1,6 +1,4 @@
-use std::ops::{Div, Mul};
 use const_assert::*;
-use num_traits::Inv;
 
 
 /// Integer type used for dimension exponents.
@@ -123,90 +121,80 @@ impl<
 
 
 macro_rules! dim_op {
-    ($dim:ident $($op:tt)*) => {Dim<
-        {<$dim as IsDim>::EXP_LEN  $($op)*},
-        {<$dim as IsDim>::EXP_MASS $($op)*},
-        {<$dim as IsDim>::EXP_TIME $($op)*},
-        {<$dim as IsDim>::EXP_CURR $($op)*},
-        {<$dim as IsDim>::EXP_TEMP $($op)*},
-        {<$dim as IsDim>::EXP_AMT  $($op)*},
-        {<$dim as IsDim>::EXP_LUM  $($op)*},
+    (1: $dim:ident $($t:tt)*) => {Dim<
+        {<$dim as IsDim>::EXP_LEN  $($t)*},
+        {<$dim as IsDim>::EXP_MASS $($t)*},
+        {<$dim as IsDim>::EXP_TIME $($t)*},
+        {<$dim as IsDim>::EXP_CURR $($t)*},
+        {<$dim as IsDim>::EXP_TEMP $($t)*},
+        {<$dim as IsDim>::EXP_AMT  $($t)*},
+        {<$dim as IsDim>::EXP_LUM  $($t)*},
+    >};
+    (2: $dim1:ident $op:tt $dim2:ident) => {Dim<
+        {<$dim1 as IsDim>::EXP_LEN  $op <$dim2 as IsDim>::EXP_LEN  },
+        {<$dim1 as IsDim>::EXP_MASS $op <$dim2 as IsDim>::EXP_MASS },
+        {<$dim1 as IsDim>::EXP_TIME $op <$dim2 as IsDim>::EXP_TIME },
+        {<$dim1 as IsDim>::EXP_CURR $op <$dim2 as IsDim>::EXP_CURR },
+        {<$dim1 as IsDim>::EXP_TEMP $op <$dim2 as IsDim>::EXP_TEMP },
+        {<$dim1 as IsDim>::EXP_AMT  $op <$dim2 as IsDim>::EXP_AMT  },
+        {<$dim1 as IsDim>::EXP_LUM  $op <$dim2 as IsDim>::EXP_LUM  },
     >};
 }
 
 
 /// Division.
-impl<
-    const L1: Exp, const M1: Exp, const T1: Exp,
-    const I1: Exp, const Θ1: Exp, const N1: Exp,
-    const J1: Exp,
-    const L2: Exp, const M2: Exp, const T2: Exp,
-    const I2: Exp, const Θ2: Exp, const N2: Exp,
-    const J2: Exp,
-> Div<Dim<L2, M2, T2, I2, Θ2, N2, J2>> for Dim<L1, M1, T1, I1, Θ1, N1, J1> where
-    Dim<{L1-L2}, {M1-M2}, {T1-T2}, {I1-I2}, {Θ1-Θ2}, {N1-N2}, {J1-J2}>:
-{
-    type Output = Dim<
-        { L1 - L2 }, { M1 - M2 }, { T1 - T2 },
-        { I1 - I2 }, { Θ1 - Θ2 }, { N1 - N2 },
-        { J1 - J2 },
-    >;
+pub trait DimDiv<D: IsDim>: IsDim {
+    type Output;
+}
 
-    fn div(self, _rhs: Dim<L2, M2, T2, I2, Θ2, N2, J2>) -> Self::Output { Dim }
+impl<D1: IsDim, D2: IsDim> DimDiv<D2> for D1 where
+    dim_op!(2: D1 / D2):
+{
+    type Output = dim_op!(2: D1 / D2);
 }
 
 
 /// Multiplication.
-impl<
-    const L1: Exp, const M1: Exp, const T1: Exp,
-    const I1: Exp, const Θ1: Exp, const N1: Exp,
-    const J1: Exp,
-    const L2: Exp, const M2: Exp, const T2: Exp,
-    const I2: Exp, const Θ2: Exp, const N2: Exp,
-    const J2: Exp,
-> Mul<Dim<L2, M2, T2, I2, Θ2, N2, J2>> for Dim<L1, M1, T1, I1, Θ1, N1, J1> where
-    Dim<{L1+L2}, {M1+M2}, {T1+T2}, {I1+I2}, {Θ1+Θ2}, {N1+N2}, {J1+J2}>:
-{
-    type Output = Dim<
-        { L1 + L2 }, { M1 + M2 }, { T1 + T2 },
-        { I1 + I2 }, { Θ1 + Θ2 }, { N1 + N2 },
-        { J1 + J2 },
-    >;
+pub trait DimMul<D: IsDim>: IsDim {
+    type Output;
+}
 
-    fn mul(self, _rhs: Dim<L2, M2, T2, I2, Θ2, N2, J2>) -> Self::Output { Dim }
+impl<D1: IsDim, D2: IsDim> DimMul<D2> for D1 where
+    dim_op!(2: D1 * D2):
+{
+    type Output = dim_op!(2: D1 * D2);
 }
 
 
 /// Inversion.
-impl<
-    const L: Exp, const M: Exp, const T: Exp,
-    const I: Exp, const Θ: Exp, const N: Exp,
-    const J: Exp,
-> Inv for Dim<L, M, T, I, Θ, N, J> where
-    Dim<{-L}, {-M}, {-T}, {-I}, {-Θ}, {-N}, {-J}>:
-{
-    type Output = Dim<{-L}, {-M}, {-T}, {-I}, {-Θ}, {-N}, {-J}>;
-    fn inv(self) -> Self::Output { Dim }
-}
-
-
-pub trait DimPow<const E: Exp> {
+pub trait DimInv: IsDim {
     type Output;
 }
+
+impl<D: IsDim> DimInv for D where
+    dim_op!(1: D * -1):
+{
+    type Output = dim_op!(1: D * -1);
+}
+
 
 /// Integer powers.
-impl<const E: Exp, D: IsDim> DimPow<E> for D where
-    dim_op!(D * E):
-{
-    type Output = dim_op!(D * E);
-}
-
-
-pub trait DimRoot<const E: Exp> {
+pub trait DimPow<const E: Exp>: IsDim {
     type Output;
 }
 
+impl<const E: Exp, D: IsDim> DimPow<E> for D where
+    dim_op!(1: D * E):
+{
+    type Output = dim_op!(1: D * E);
+}
+
+
 /// Fractional powers.
+pub trait DimRoot<const E: Exp>: IsDim {
+    type Output;
+}
+
 impl<const E: Exp, D: IsDim> DimRoot<E> for D where
     Assert<{ <D as IsDim>::EXP_LEN  % E == 0 }>: IsTrue,
     Assert<{ <D as IsDim>::EXP_MASS % E == 0 }>: IsTrue,
@@ -216,9 +204,9 @@ impl<const E: Exp, D: IsDim> DimRoot<E> for D where
     Assert<{ <D as IsDim>::EXP_AMT  % E == 0 }>: IsTrue,
     Assert<{ <D as IsDim>::EXP_LUM  % E == 0 }>: IsTrue,
     Assert<{                          E != 0 }>: IsTrue,
-    dim_op!(D / E):
+    dim_op!(1: D / E):
 {
-    type Output = dim_op!(D / E);
+    type Output = dim_op!(1: D / E);
 }
 
 
