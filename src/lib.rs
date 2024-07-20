@@ -130,8 +130,8 @@
 //! assert_eq!(qty![*[3.3 V] / [150.0 Ω] in mA], 22.0);
 //! ```
 
-#![allow(incomplete_features)]
-#![feature(generic_const_exprs)]
+// #![allow(incomplete_features)]
+// #![feature(generic_const_exprs)]
 
 extern crate self as dimensional;
 

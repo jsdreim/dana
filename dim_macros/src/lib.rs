@@ -17,6 +17,31 @@ use unit_spec::{UnitSpecExpr, UnitSpecType};
 
 
 #[proc_macro]
+pub fn impl_typenums(_: TokenStream) -> TokenStream {
+    let mut out = proc_macro2::TokenStream::new();
+
+    let lim: i32 = 1024;
+
+    for i in -lim..=lim {
+        let pre = if i.is_negative() { 'N' } else if i.is_positive() { 'P' } else { 'Z' };
+
+        let ident = syn::Ident::new(
+            &format!("{}{}", pre, i.abs()),
+            proc_macro2::Span::call_site(),
+        );
+
+        out.extend(quote::quote! {
+            impl HasTypenum for ExpHack<#i> {
+                type Typenum = ::typenum::consts::#ident;
+            }
+        });
+    }
+
+    out.into()
+}
+
+
+#[proc_macro]
 pub fn impl_reorg(stream: TokenStream) -> TokenStream {
     let code = macro_dbg! {
         // as macro "impl_reorg" for stream;
