@@ -311,11 +311,13 @@ impl ToTokens for QtyTree {
                     quote!(#qty.convert_to(#unit))
                 }
                 Operation::Simplify => {
-                    quote!(#qty.simplify())
+                    quote!(#qty.convert())
+                    // quote!(#qty.simplify()) // TODO
                 }
                 Operation::SimplifyType(utype) => {
                     let utype = utype.as_type();
-                    quote!(#qty.simplify::<#utype>())
+                    quote!(#qty.convert::<#utype>())
+                    // quote!(#qty.simplify::<#utype>()) // TODO
                 }
                 Operation::Binary { op, rhs } => {
                     quote!((#qty #op #rhs))

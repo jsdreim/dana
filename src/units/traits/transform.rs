@@ -87,6 +87,11 @@ pub trait ConvertFrom<U: Unit>: Unit {
 }
 
 
+impl<U, W> ConvertFrom<U> for W where
+    U: Unit, W: Unit<Dim=U::Dim>,
+{}
+
+
 pub trait ConvertInto<U: Unit>: Unit {
     /// Given another unit, return the multiplication factor needed to convert
     ///     from this unit to the other unit.

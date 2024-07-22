@@ -5,7 +5,7 @@ pub mod dim;
 pub mod si;
 pub mod symbols;
 pub mod traits;
-pub mod transform;
+// pub mod transform;
 pub mod unit_anon;
 
 pub use compound::*;

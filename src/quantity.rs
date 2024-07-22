@@ -1,6 +1,6 @@
 use std::ops::{Add, Div, Mul, Sub};
-use num_traits::{Float, Inv, NumCast, Pow, real::Real, Zero};
-use crate::{Scalar, units::{compound::*, traits::*}};
+use num_traits::{Float, Inv, NumCast, real::Real, Zero};
+use crate::{Scalar, units::{/*compound::*,*/ traits::*}};
 
 
 type ScalarDefault = f64;
@@ -124,7 +124,8 @@ impl<U: Unit, V: Scalar> Quantity<U, V> {
         }
     }
 
-    pub fn pow<const E: i32>(self) -> Quantity<
+    //  TODO
+    /*pub fn pow<const E: i32>(self) -> Quantity<
         <U as CanPow<<exp::Num<E> as exp::ExpImplemented>::Exp>>::Output,
         <V as Pow<V>>::Output,
     > where
@@ -139,7 +140,7 @@ impl<U: Unit, V: Scalar> Quantity<U, V> {
             value: self.value.pow(V::from_f64(exponent).unwrap()),
             unit: self.unit.pow(),
         }
-    }
+    }*/
     //endregion
 
     //region Roots.
@@ -163,7 +164,8 @@ impl<U: Unit, V: Scalar> Quantity<U, V> {
         }
     }
 
-    pub fn root<const D: i32>(self) -> Quantity<
+    //  TODO
+    /*pub fn root<const D: i32>(self) -> Quantity<
         <U as CanRoot<<exp::Num<D> as exp::ExpImplemented>::Exp>>::Output,
         <V as Pow<<V as Inv>::Output>>::Output,
     > where
@@ -178,7 +180,7 @@ impl<U: Unit, V: Scalar> Quantity<U, V> {
             value: self.value.pow(V::from_f64(degree).unwrap().inv()),
             unit: self.unit.root(),
         }
-    }
+    }*/
     //endregion
 }
 //endregion
@@ -307,27 +309,29 @@ impl<U: Unit, V: Scalar, X: Scalar> Sub<Quantity<U, X>> for Quantity<U, V> where
 
 //region Division/multiplication between quantities.
 impl<U: Unit, V: Scalar, W: Unit, X: Scalar> Div<Quantity<W, X>> for Quantity<U, V> where
+    U: Div<W>, <U as Div<W>>::Output: Unit,
     V: Div<X>, <V as Div<X>>::Output: Scalar,
 {
-    type Output = Quantity<UnitDiv<U, W>, <V as Div<X>>::Output>;
+    type Output = Quantity<U::Output, <V as Div<X>>::Output>;
 
     fn div(self, rhs: Quantity<W, X>) -> Self::Output {
         Quantity {
             value: self.value / rhs.value,
-            unit: UnitDiv(self.unit, rhs.unit),
+            unit: self.unit / rhs.unit,
         }
     }
 }
 
 impl<U: Unit, V: Scalar, W: Unit, X: Scalar> Mul<Quantity<W, X>> for Quantity<U, V> where
+    U: Mul<W>, <U as Mul<W>>::Output: Unit,
     V: Mul<X>, <V as Mul<X>>::Output: Scalar,
 {
-    type Output = Quantity<UnitMul<U, W>, <V as Mul<X>>::Output>;
+    type Output = Quantity<U::Output, <V as Mul<X>>::Output>;
 
     fn mul(self, rhs: Quantity<W, X>) -> Self::Output {
         Quantity {
             value: self.value * rhs.value,
-            unit: UnitMul(self.unit, rhs.unit),
+            unit: self.unit * rhs.unit,
         }
     }
 }

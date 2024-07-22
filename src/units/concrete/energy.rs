@@ -14,6 +14,7 @@ pub enum Energy {
 }
 
 impl Unit for Energy {
+    type Dim = crate::units::dim::Energy;
     // type ScaleType = f64;
 
     fn scale(&self) -> f64 {

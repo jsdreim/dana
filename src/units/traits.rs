@@ -11,6 +11,7 @@ pub use transform::*;
 
 /// Trait for a type that represents a dimensional "unit".
 pub trait Unit: Copy + Default + std::fmt::Display + PartialEq {
+    type Dim: super::dim::DimType;
     // type ScaleType: crate::Scalar;
 
     fn scale(&self) -> f64;
@@ -58,8 +59,8 @@ pub trait UnitConcrete: Unit {
 /// Concrete units by definition have an exponent of 1.
 impl<U: UnitConcrete> UnitNonExp for U {}
 
-/// Any concrete unit can be freely converted to another of its own type.
-impl<U: UnitConcrete> ConvertFrom<U> for U {}
+// /// Any concrete unit can be freely converted to another of its own type.
+// impl<U: UnitConcrete> ConvertFrom<U> for U {}
 
 
 pub trait UnitScale: Unit {
@@ -85,7 +86,7 @@ pub trait CanSquare: Unit {
     fn squared(self) -> Self::Output;
 }
 
-impl<U: CanPow<super::exp::E2>> CanSquare for U {
+impl<U: CanPow<typenum::P2>> CanSquare for U {
     type Output = U::Output;
     fn squared(self) -> Self::Output { self.pow() }
 }
@@ -96,7 +97,7 @@ pub trait CanCube: Unit {
     fn cubed(self) -> Self::Output;
 }
 
-impl<U: CanPow<super::exp::E3>> CanCube for U {
+impl<U: CanPow<typenum::P3>> CanCube for U {
     type Output = U::Output;
     fn cubed(self) -> Self::Output { self.pow() }
 }
@@ -113,7 +114,7 @@ pub trait CanSquareRoot: Unit {
     fn sqrt(self) -> Self::Output;
 }
 
-impl<U: CanRoot<super::exp::E2>> CanSquareRoot for U {
+impl<U: CanRoot<typenum::P2>> CanSquareRoot for U {
     type Output = U::Output;
     fn sqrt(self) -> Self::Output { self.root() }
 }
@@ -123,7 +124,7 @@ pub trait CanCubeRoot: Unit {
     fn cbrt(self) -> Self::Output;
 }
 
-impl<U: CanRoot<super::exp::E3>> CanCubeRoot for U {
+impl<U: CanRoot<typenum::P3>> CanCubeRoot for U {
     type Output = U::Output;
     fn cbrt(self) -> Self::Output { self.root() }
 }

@@ -20,7 +20,7 @@ use unit_spec::{UnitSpecExpr, UnitSpecType};
 pub fn impl_typenums(_: TokenStream) -> TokenStream {
     let mut out = proc_macro2::TokenStream::new();
 
-    let lim: i32 = 1024;
+    let lim: i32 = 64;
 
     for i in -lim..=lim {
         let pre = if i.is_negative() { 'N' } else if i.is_positive() { 'P' } else { 'Z' };

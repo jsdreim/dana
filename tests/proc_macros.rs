@@ -53,7 +53,7 @@ fn qty_valid() {
 #[test]
 fn qty_ops() {
     use dim_macros::qty;
-    use dimensional::{constants, Quantity, units::{*, symbols::*}};
+    use dimensional::{/*constants,*/ Quantity, units::{*, symbols::*}};
 
     let v: Quantity<Voltage> = qty![3.3 V];
     let r: Quantity<Resistance> = qty![150.0 Ω];
@@ -65,6 +65,8 @@ fn qty_ops() {
     assert_eq!(22.0, qty![*[3.3 V] /        r  in mA]);
     assert_eq!(22.0, qty![*[3.3 V] / [150.0 Ω] in mA]);
 
+    /*
+    //  TODO: Decide on a new best way to do mass-energy equivalence.
     assert_eq!(
         qty![*[[9.80665 N] / (constants::GFORCE)] as M in kJ].floor(),
         89_875_517_873_681.0,
@@ -80,7 +82,7 @@ fn qty_ops() {
         in ::dimensional::units::Mass::MetricTon
         * {accel}
         as Force + 3.0 N + 1.0 Force::Newton
-    ];
+    ];*/
 }
 
 

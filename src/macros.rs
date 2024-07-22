@@ -1,7 +1,8 @@
 #[macro_export]
 macro_rules! utype {
     //  Internal: Exponents.
-    (@@ $e:tt) => { $crate::units::exp::TypeFrac<$e, 1> };
+    // (@@ $e:tt) => { $crate::units::exp::TypeFrac<$e, 1> };
+    (@@ $e:tt) => { <$crate::units::dim::ExpHack<$e> as $crate::units::dim::HasTypenum>::Typenum };
 
     //  Internal: Unpack a group directly.
     ((@ $($t:tt)+)) => { $($t)+ };
@@ -151,81 +152,6 @@ macro_rules! unit {
     )};
 }
 
-// #[macro_export]
-macro_rules! unit_pat {
-    //  Internal: Unpack a group directly.
-    ((@ $($t:tt)+)) => { $($t)+ };
-
-    //  Unpack and interpret a group.
-    (($($t:tt)+)) => { unit_pat!($($t)+) };
-    ({$($t:tt)+}) => { unit_pat!($($t)+) };
-
-    //  Pass through a single token.
-    ($t:tt) => { $t };
-
-    //  Exponents.
-    ($a:tt ^ 0)     => { compile_error!("Cannot define unit of power zero.") };
-    ($a:tt ^ 1)     => {                             unit_pat!($a)      };
-    // ($a:tt ^ 2)     => { $crate::units::UnitSquared (unit_pat!($a), ..) };
-    // ($a:tt ^ 3)     => { $crate::units::UnitCubed   (unit_pat!($a), ..) };
-    ($a:tt ^ $e:tt) => { $crate::units::UnitPow     (unit_pat!($a), ..) };
-    //  Signed exponents.
-    ($a:tt ^-$e:tt) => { $crate::units::PerUnit     (unit_pat!($a ^ $e)) };
-    ($a:tt ^+$e:tt) => {                             unit_pat!($a ^ $e)  };
-
-    //  Inverted term.
-    (1 / $a:tt ^ $e:tt $($z:tt)*) => { unit_pat!(
-        (@ $crate::units::PerUnit(unit_pat!($a ^ $e))) $($z)*
-    )};
-    (1 / $a:tt $($z:tt)*) => { unit_pat!(
-        (@ $crate::units::PerUnit(unit_pat!($a))) $($z)*
-    )};
-
-    //  Div/mul where the second unit has an exponent.
-    (
-        $a1:tt $(^ $e1:tt)? /
-        $a2:tt   ^ $e2:tt   $($z:tt)*
-    ) => { unit_pat!(
-        (@ $crate::units::UnitDiv(
-            unit_pat!($a1 $(^ $e1)?),
-            unit_pat!($a2 ^ $e2),
-        ))
-        $($z)*
-    )};
-    (
-        $a1:tt $(^ $e1:tt)? *
-        $a2:tt   ^ $e2:tt   $($z:tt)*
-    ) => { unit_pat!(
-        (@ $crate::units::UnitMul(
-            unit_pat!($a1 $(^ $e1)?),
-            unit_pat!($a2 ^ $e2),
-        ))
-        $($z)*
-    )};
-
-    //  Div/mul where the second unit has no exponent.
-    (
-        $a1:tt $(^ $e1:tt)? /
-        $a2:tt              $($z:tt)*
-    ) => { unit_pat!(
-        (@ $crate::units::UnitDiv(
-            unit_pat!($a1 $(^ $e1)?),
-            unit_pat!($a2),
-        ))
-        $($z)*
-    )};
-    (
-        $a1:tt $(^ $e1:tt)? *
-        $a2:tt              $($z:tt)*
-    ) => { unit_pat!(
-        (@ $crate::units::UnitMul(
-            unit_pat!($a1 $(^ $e1)?),
-            unit_pat!($a2),
-        ))
-        $($z)*
-    )};
-}
-
 
 #[macro_export]
 macro_rules! qtype {
@@ -251,98 +177,5 @@ macro_rules! impl_unit_concrete {
     };
     ($($unit:ident),+$(,)?) => {
         $(impl_unit_concrete!($unit);)+
-    };
-}
-
-
-/// Basic implementation of [`Div`] and [`Mul`] between units using [`UnitDiv`]
-///     and [`UnitMul`].
-///
-/// [`Div`]: std::ops::Div
-/// [`Mul`]: std::ops::Mul
-/// [`UnitDiv`]: crate::units::compound::UnitDiv
-/// [`UnitMul`]: crate::units::compound::UnitMul
-macro_rules! impl_unit_ops {
-    ($unit:ident $(<$($tv:ident: $t0:ident $(+ $t1:ident)*),+>)?) => {
-        /*/// Unit multiplication by scalar.
-        impl<_V: $crate::Scalar $($(, $tv: $t0 $(+ $t1)*)+)?> ::std::ops::Mul<_V>
-        for $unit$(<$($tv),+>)?
-        {
-            type Output = $crate::Quantity<$unit$(<$($tv),+>)?, _V>;
-
-            fn mul(self, rhs: _V) -> Self::Output {
-                Self::Output::new(self, rhs)
-            }
-        }*/
-
-        /// Unit division.
-        impl<_U: $crate::Unit $($(, $tv: $t0 $(+ $t1)*)+)?> ::std::ops::Div<_U>
-        for $unit$(<$($tv),+>)?
-        {
-            type Output = $crate::units::UnitDiv<Self, _U>;
-
-            fn div(self, rhs: _U) -> Self::Output {
-                $crate::units::UnitDiv(self, rhs)
-            }
-        }
-
-        /// Unit multiplication.
-        impl<_U: $crate::Unit $($(, $tv: $t0 $(+ $t1)*)+)?> ::std::ops::Mul<_U>
-        for $unit$(<$($tv),+>)?
-        {
-            type Output = $crate::units::UnitMul<Self, _U>;
-
-            fn mul(self, rhs: _U) -> Self::Output {
-                $crate::units::UnitMul(self, rhs)
-            }
-        }
-    };
-    ($($unit:ident $(<$($tv:ident: $t0:ident $(+ $t1:ident)*),+>)?),+$(,)?) => {
-        $(impl_unit_ops!($unit $(<$($tv: $t0 $(+ $t1)*),+>)?);)+
-    };
-}
-
-
-/// Basic implementation of [`Inv`] using [`PerUnit`].
-///
-/// [`Inv`]: num_traits::Inv
-/// [`PerUnit`]: crate::units::PerUnit
-macro_rules! impl_unit_inv {
-    ($unit:ident $(<$($tv:ident: $t0:ident $(+ $t1:ident)*),+>)?) => {
-        impl$(<$($tv: $t0 $(+ $t1)*),+>)?
-        ::num_traits::Inv for $unit$(<$($tv),+>)?
-        {
-            type Output = $crate::units::compound::PerUnit<$unit$(<$($tv),+>)?>;
-
-            fn inv(self) -> Self::Output {
-                $crate::units::compound::PerUnit(self)
-            }
-        }
-    };
-    ($($unit:ident $(<$($tv:ident: $t0:ident $(+ $t1:ident)*),+>)?),+$(,)?) => {
-        $(impl_unit_inv!($unit $(<$($tv: $t0 $(+ $t1)*),+>)?);)+
-    };
-}
-
-macro_rules! impl_unit_pow {
-    ($unit:ident $(<$($tv:ident: $t0:ident $(+ $t1:ident)*),+>)?) => {
-        impl<__E: $crate::units::Exp $($(, $tv: $t0 $(+ $t1)*)+)?>
-        $crate::units::traits::CanPow<__E>
-        for $unit$(<$($tv),+>)?
-        {
-            type Output = $crate::units::UnitPow<Self, __E>;
-            fn pow(self) -> Self::Output { $crate::units::UnitPow::new(self) }
-        }
-
-        // impl<__D: $crate::units::Exp $($(, $tv: $t0 $(+ $t1)*)+)?>
-        // $crate::units::traits::CanRoot<__D>
-        // for $unit$(<$($tv),+>)?
-        // {
-        //     type Output = $crate::units::UnitRoot<Self, __D>;
-        //     fn root(self) -> Self::Output { $crate::units::UnitRoot::new(self) }
-        // }
-    };
-    ($($unit:ident $(<$($tv:ident: $t0:ident $(+ $t1:ident)*),+>)?),+$(,)?) => {
-        $(impl_unit_pow!($unit $(<$($tv: $t0 $(+ $t1)*),+>)?);)+
     };
 }

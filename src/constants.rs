@@ -51,8 +51,8 @@ pub const CONST_H: qtype!(Energy / Frequency) = qty![4.135_667_696_e-15 eV/Hz];
 /// Unit: [eV]/[K]
 ///
 /// [eV]: Energy::ElectronVolt
-/// [K]: Temperature::Kelvin
-pub const CONST_K: qtype!(Energy / Temperature) = qty![8.617_333_262_e-5 eV/K];
+/// [K]: Temp::Kelvin
+pub const CONST_K: qtype!(Energy / Temp) = qty![8.617_333_262_e-5 eV/K];
 
 
 // /// Gas constant; Relationship between energy, temperature, and substance amount.

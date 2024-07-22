@@ -141,7 +141,7 @@ define_symbols! {
         const THz = TeraHertz;
     }
 
-    pub mod temp for type Temperature as K, Θ {
+    pub mod temp for type Temp as K, Θ {
         const uK = MicroKelvin;
         const mK = MilliKelvin;
         const  K = Kelvin;

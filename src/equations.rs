@@ -7,7 +7,7 @@ use crate::{
 
 
 pub fn gravitational_parameter(mass: Quantity<Mass>) -> Quantity<GravParam> {
-    (mass * CONST_G).simplify()
+    (mass * CONST_G).convert()
 }
 
 
@@ -28,12 +28,12 @@ pub fn gravity(
 
 
 pub fn photon_energy(freq: Quantity<Frequency>) -> Quantity<Energy> {
-    (freq * CONST_H).simplify()
+    qty![freq * CONST_H in eV]
 }
 
 
 pub fn photon_frequency(energy: Quantity<Energy>) -> Quantity<Frequency> {
-    (energy / CONST_H).simplify()
+    qty![energy / CONST_H in Hz]
 }
 
 

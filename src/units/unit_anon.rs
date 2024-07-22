@@ -22,7 +22,7 @@ impl<D: DimType, S: Scalar + AsPrimitive<f64> + Copy> PartialEq for UnitAnon<D, 
 }
 
 impl<D: DimType, S: Scalar + AsPrimitive<f64> + Copy> Unit for UnitAnon<D, S> {
-    type Dimension = D;
+    type Dim = D;
     // type ScaleType = S;
 
     fn scale(&self) -> f64 {

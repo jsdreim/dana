@@ -8,7 +8,7 @@ use typenum::{consts::{N1, N2, N3, P1, P2, P3, P4, Z0}, Integer, NonZero, Partia
 pub type Exp = i32;
 
 
-pub type None         = Dimension<Z0, Z0, Z0, Z0, Z0, Z0, Z0>;
+pub type One          = Dimension<Z0, Z0, Z0, Z0, Z0, Z0, Z0>;
 //                                 L   M   T   I   Θ   N   J
 pub type Length       = Dimension<P1, Z0, Z0, Z0, Z0, Z0, Z0>;
 pub type Mass         = Dimension<Z0, P1, Z0, Z0, Z0, Z0, Z0>;
@@ -147,87 +147,41 @@ impl<
 }
 
 
-macro_rules! impl_dim {
-    (
-        impl unary $trait_dim:ident::$out_dim:ident
-        $(fn $func:ident($($bind:tt)*))?
-        as $trait_int:ident::$out_int:ident
-        $(where $($t:tt)*)?
-    ) => {
-        impl<
-            L: Integer + $trait_int, M: Integer + $trait_int, T: Integer + $trait_int,
-            I: Integer + $trait_int, Θ: Integer + $trait_int, N: Integer + $trait_int,
-            J: Integer + $trait_int,
-        > $trait_dim for Dimension<L, M, T, I, Θ, N, J> where
-            <L as $trait_int>::$out_int: Integer,
-            <M as $trait_int>::$out_int: Integer,
-            <T as $trait_int>::$out_int: Integer,
-            <I as $trait_int>::$out_int: Integer,
-            <Θ as $trait_int>::$out_int: Integer,
-            <N as $trait_int>::$out_int: Integer,
-            <J as $trait_int>::$out_int: Integer,
-            $($($t)*)?
-        {
-            type $out_dim = Dimension<
-                <L as $trait_int>::$out_int,
-                <M as $trait_int>::$out_int,
-                <T as $trait_int>::$out_int,
-                <I as $trait_int>::$out_int,
-                <Θ as $trait_int>::$out_int,
-                <N as $trait_int>::$out_int,
-                <J as $trait_int>::$out_int,
-            >;
-
-            $(fn $func($($bind)*) -> Self::Output {
-                Default::default()
-            })?
-        }
-    };
-    (
-        impl binary $trait_dim:ident::$out_dim:ident
-        $(fn $func:ident($($bind:tt)*))?
-        as $trait_int:ident::$out_int:ident
-        $(where $($t:tt)*)?
-    ) => {
-        impl<
-            L1: Integer + $trait_int<L2>, M1: Integer + $trait_int<M2>, T1: Integer + $trait_int<T2>,
-            I1: Integer + $trait_int<I2>, Θ1: Integer + $trait_int<Θ2>, N1: Integer + $trait_int<N2>,
-            J1: Integer + $trait_int<J2>,
-            L2: Integer, M2: Integer, T2: Integer,
-            I2: Integer, Θ2: Integer, N2: Integer,
-            J2: Integer,
-        > $trait_dim<Dimension<L2, M2, T2, I2, Θ2, N2, J2>>
-        for Dimension<L1, M1, T1, I1, Θ1, N1, J1> where
-            <L1 as $trait_int<L2>>::$out_int: Integer,
-            <M1 as $trait_int<M2>>::$out_int: Integer,
-            <T1 as $trait_int<T2>>::$out_int: Integer,
-            <I1 as $trait_int<I2>>::$out_int: Integer,
-            <Θ1 as $trait_int<Θ2>>::$out_int: Integer,
-            <N1 as $trait_int<N2>>::$out_int: Integer,
-            <J1 as $trait_int<J2>>::$out_int: Integer,
-            $($($t)*)?
-        {
-            type $out_dim = Dimension<
-                <L1 as $trait_int<L2>>::$out_int,
-                <M1 as $trait_int<M2>>::$out_int,
-                <T1 as $trait_int<T2>>::$out_int,
-                <I1 as $trait_int<I2>>::$out_int,
-                <Θ1 as $trait_int<Θ2>>::$out_int,
-                <N1 as $trait_int<N2>>::$out_int,
-                <J1 as $trait_int<J2>>::$out_int,
-            >;
-
-            $(fn $func($($bind)*, _: Dimension<L2, M2, T2, I2, Θ2, N2, J2>) -> Self::Output {
-                Default::default()
-            })?
-        }
-    };
-}
-
-
 /// Division.
 pub trait DimDiv<D: DimType>: DimType {
     type Output: DimType;
+}
+
+impl<
+    L1: Integer, M1: Integer, T1: Integer,
+    I1: Integer, Θ1: Integer, N1: Integer,
+    J1: Integer,
+    L2: Integer, M2: Integer, T2: Integer,
+    I2: Integer, Θ2: Integer, N2: Integer,
+    J2: Integer,
+> Div<Dimension<L2, M2, T2, I2, Θ2, N2, J2>>
+for Dimension<L1, M1, T1, I1, Θ1, N1, J1> where
+    L1: Sub<L2>, <L1 as Sub<L2>>::Output: Integer,
+    M1: Sub<M2>, <M1 as Sub<M2>>::Output: Integer,
+    T1: Sub<T2>, <T1 as Sub<T2>>::Output: Integer,
+    I1: Sub<I2>, <I1 as Sub<I2>>::Output: Integer,
+    Θ1: Sub<Θ2>, <Θ1 as Sub<Θ2>>::Output: Integer,
+    N1: Sub<N2>, <N1 as Sub<N2>>::Output: Integer,
+    J1: Sub<J2>, <J1 as Sub<J2>>::Output: Integer,
+{
+    type Output = Dimension<
+        <L1 as Sub<L2>>::Output,
+        <M1 as Sub<M2>>::Output,
+        <T1 as Sub<T2>>::Output,
+        <I1 as Sub<I2>>::Output,
+        <Θ1 as Sub<Θ2>>::Output,
+        <N1 as Sub<N2>>::Output,
+        <J1 as Sub<J2>>::Output,
+    >;
+
+    fn div(self, _: Dimension<L2, M2, T2, I2, Θ2, N2, J2>) -> Self::Output {
+        Default::default()
+    }
 }
 
 
@@ -236,11 +190,37 @@ pub trait DimMul<D: DimType>: DimType {
     type Output: DimType;
 }
 
-impl_dim!(impl binary Div::Output fn div(self) as Sub::Output);
-impl_dim!(impl binary Mul::Output fn mul(self) as Add::Output);
+impl<
+    L1: Integer, M1: Integer, T1: Integer,
+    I1: Integer, Θ1: Integer, N1: Integer,
+    J1: Integer,
+    L2: Integer, M2: Integer, T2: Integer,
+    I2: Integer, Θ2: Integer, N2: Integer,
+    J2: Integer,
+> Mul<Dimension<L2, M2, T2, I2, Θ2, N2, J2>>
+for Dimension<L1, M1, T1, I1, Θ1, N1, J1> where
+    L1: Add<L2>, <L1 as Add<L2>>::Output: Integer,
+    M1: Add<M2>, <M1 as Add<M2>>::Output: Integer,
+    T1: Add<T2>, <T1 as Add<T2>>::Output: Integer,
+    I1: Add<I2>, <I1 as Add<I2>>::Output: Integer,
+    Θ1: Add<Θ2>, <Θ1 as Add<Θ2>>::Output: Integer,
+    N1: Add<N2>, <N1 as Add<N2>>::Output: Integer,
+    J1: Add<J2>, <J1 as Add<J2>>::Output: Integer,
+{
+    type Output = Dimension<
+        <L1 as Add<L2>>::Output,
+        <M1 as Add<M2>>::Output,
+        <T1 as Add<T2>>::Output,
+        <I1 as Add<I2>>::Output,
+        <Θ1 as Add<Θ2>>::Output,
+        <N1 as Add<N2>>::Output,
+        <J1 as Add<J2>>::Output,
+    >;
 
-impl_dim!(impl binary DimDiv::Output as Sub::Output);
-impl_dim!(impl binary DimMul::Output as Add::Output);
+    fn mul(self, _: Dimension<L2, M2, T2, I2, Θ2, N2, J2>) -> Self::Output {
+        Default::default()
+    }
+}
 
 
 /// Inversion.
@@ -379,5 +359,6 @@ mod tests {
         let _a: Accel = Velocity::dim() / Time::dim();
         let _a: Accel = Velocity::dim() * Time::dim().inv();
         let _a: Length = Velocity::dim() * Time::dim();
+        let _a: Torque = Length::dim() * Force::dim();
     }
 }

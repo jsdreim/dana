@@ -16,21 +16,78 @@ macro_rules! concrete_types {
         pub use $module::$unit;
         )+
 
-        impl_unit_ops!($($unit),+);
-        impl_unit_inv!($($unit),+);
-        impl_unit_pow!($($unit),+);
+        // impl_unit_ops!($($unit),+);
+        // impl_unit_inv!($($unit),+);
+        // impl_unit_pow!($($unit),+);
         impl_unit_concrete!($($unit),+);
+
+        $(
+        /// Unit division.
+        impl<U: $crate::Unit> ::std::ops::Div<U> for $unit where
+            $crate::units::dim::$unit: ::std::ops::Div<<U as $crate::Unit>::Dim>,
+            <$crate::units::dim::$unit as ::std::ops::Div<<U as $crate::Unit>::Dim>>::Output:
+                $crate::units::dim::DimType,
+        {
+            type Output = $crate::units::UnitDiv<Self, U>;
+
+            fn div(self, rhs: U) -> Self::Output {
+                $crate::units::UnitDiv(self, rhs)
+            }
+        }
+
+        /// Unit multiplication.
+        impl<U: $crate::Unit> ::std::ops::Mul<U> for $unit where
+            $crate::units::dim::$unit: ::std::ops::Mul<<U as $crate::Unit>::Dim>,
+            <$crate::units::dim::$unit as ::std::ops::Mul<<U as $crate::Unit>::Dim>>::Output:
+                $crate::units::dim::DimType,
+        {
+            type Output = $crate::units::UnitMul<Self, U>;
+
+            fn mul(self, rhs: U) -> Self::Output {
+                $crate::units::UnitMul(self, rhs)
+            }
+        }
+
+        impl ::num_traits::Inv for $unit where
+            $crate::units::dim::$unit: ::num_traits::Inv,
+        {
+            type Output = $crate::units::compound::PerUnit<Self>;
+
+            fn inv(self) -> Self::Output {
+                $crate::units::compound::PerUnit(self)
+            }
+        }
+
+        /// Unit exponentiation.
+        impl<E: ::typenum::Integer> $crate::units::traits::CanPow<E> for $unit where
+            $crate::units::dim::$unit: $crate::units::dim::DimPowType<E>,
+        {
+            type Output = $crate::units::UnitPow<Self, E>;
+
+            fn pow(self) -> Self::Output {
+                $crate::units::UnitPow::new(self)
+            }
+        }
+
+        /*impl<__E: $crate::units::Exp $($(, $tv: $t0 $(+ $t1)*)+)?>
+        $crate::units::traits::CanPow<__E>
+        for $unit$(<$($tv),+>)? where
+        {
+            type Output = $crate::units::UnitPow<Self, __E>;
+            fn pow(self) -> Self::Output { $crate::units::UnitPow::new(self) }
+        }*/
+        )+
     };
 }
 
 concrete_types!(
-    // one::One,
+    one::One,
 
     length::Length,
     mass::Mass,
     time::Time,
     frequency::Frequency,
-    temp::Temperature,
+    temp::Temp,
 
     force::Force,
     energy::Energy,
@@ -49,7 +106,7 @@ impl_scale! {
     // for Mass impl (Milli, Kilo) Gram;
     for Time impl (Milli) Second;
     for Frequency impl (Micro, Milli, Kilo, Mega, Giga, Tera) Hertz;
-    for Temperature impl (Micro, Milli, Kilo, Mega, Giga, Tera) Kelvin;
+    for Temp impl (Micro, Milli, Kilo, Mega, Giga, Tera) Kelvin;
 
     for Force impl (Kilo, Mega, Giga) Newton;
     for Energy impl (Micro, Milli, Kilo, Mega, Giga, Tera) Joule;

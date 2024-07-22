@@ -13,6 +13,7 @@ pub enum Resistance {
 }
 
 impl Unit for Resistance {
+    type Dim = crate::units::dim::Resistance;
     // type ScaleType = f64;
 
     fn scale(&self) -> f64 {

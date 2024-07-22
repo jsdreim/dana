@@ -182,12 +182,28 @@ impl Parse for Exponent {
 
 impl ToTokens for Exponent {
     fn to_tokens(&self, tokens: &mut TokenStream) {
-        let (a, b) = match self {
+        let (a, _) = match self {
             Self::Whole(a) => (a, syn::LitInt::new("1", a.span())),
             Self::Frac(a, b) => (a, b.clone()),
         };
 
-        tokens.extend(quote!(TypeFrac<#a, #b>));
+        match a.base10_parse::<i32>() {
+            Ok(n) => {
+                let exp = if n.is_positive() {
+                    format!("P{n}")
+                } else if n.is_negative() {
+                    format!("P{n}")
+                } else {
+                    format!("Z{n}")
+                };
+
+                let ident = syn::Ident::new(&exp, a.span());
+                tokens.extend(quote!(::typenum::consts::#ident));
+            }
+            Err(e) => e.to_compile_error().to_tokens(tokens),
+        }
+
+        // tokens.extend(quote!(TypeFrac<#a, #b>));
     }
 }
 
@@ -285,7 +301,15 @@ impl<U: UnitCore> UnitExp<U> {
 
                     [1, 1] => self.base,
                     // [a, b] if a == b => self.base,
-                    _ => UnitSpec::Pow(Box::new(self.base), exp),
+                    [_, 1] => UnitSpec::Pow(Box::new(self.base), exp),
+
+                    _ => return Err(syn::Error::new(
+                        b.unwrap().span(),
+                        "non-whole exponents are currently unsupported",
+                        //  TODO
+                    )),
+
+                    // _ => UnitSpec::Pow(Box::new(self.base), exp),
                 };
 
                 if self.neg {
@@ -367,7 +391,7 @@ impl<U: UnitCore> UnitSpec<U> {
             }
             Self::Pow(base, exp) => {
                 let ts = base.as_type();
-                quote!(::dimensional::units::UnitPow<#ts, ::dimensional::units::exp::#exp>)
+                quote!(::dimensional::units::UnitPow<#ts, #exp>)
             }
         }
     }
@@ -392,7 +416,7 @@ impl<U: UnitCore> UnitSpec<U> {
             }
             Self::Pow(base, exp) => {
                 let ts = base.as_expr();
-                quote!(::dimensional::units::UnitPow::<_, ::dimensional::units::exp::#exp>::new(#ts))
+                quote!(::dimensional::units::UnitPow::<_, #exp>::new(#ts))
             }
         }
     }

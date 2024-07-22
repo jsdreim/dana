@@ -2,7 +2,7 @@ use crate::units::{Unit, UnitConcrete};
 
 
 #[derive(Clone, Copy, Debug, PartialEq, PartialOrd, /*Eq, Ord*/)]
-pub enum Temperature {
+pub enum Temp {
     MicroKelvin,
     MilliKelvin,
     Kelvin,
@@ -12,7 +12,8 @@ pub enum Temperature {
     TeraKelvin,
 }
 
-impl Unit for Temperature {
+impl Unit for Temp {
+    type Dim = crate::units::dim::Temp;
     // type ScaleType = f64;
 
     fn scale(&self) -> f64 {
@@ -28,7 +29,7 @@ impl Unit for Temperature {
     }
 }
 
-impl UnitConcrete for Temperature {
+impl UnitConcrete for Temp {
     const BASE: Self = Self::Kelvin;
 
     fn symbol(&self) -> &'static str {
