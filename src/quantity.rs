@@ -1,4 +1,4 @@
-use std::ops::{Add, Div, Mul, Neg, Sub};
+use std::ops::{Add, AddAssign, Div, Mul, Neg, Sub, SubAssign};
 use num_traits::{Float, Inv, NumCast, Pow, real::Real, Zero};
 use crate::{Scalar, units::traits::*};
 
@@ -268,6 +268,24 @@ impl<U: Unit, V: Scalar, W: Unit, X: Scalar> Sub<Quantity<W, X>> for Quantity<U,
             value: self.value - rhs.convert_to(self.unit).value,
             unit: self.unit,
         }
+    }
+}
+
+impl<U: Unit, V: Scalar, W: Unit, X: Scalar> AddAssign<Quantity<W, X>> for Quantity<U, V> where
+    W: ConvertInto<U>,
+    V: AddAssign<X>,
+{
+    fn add_assign(&mut self, rhs: Quantity<W, X>) {
+        self.value += rhs.convert_to(self.unit).value;
+    }
+}
+
+impl<U: Unit, V: Scalar, W: Unit, X: Scalar> SubAssign<Quantity<W, X>> for Quantity<U, V> where
+    W: ConvertInto<U>,
+    V: SubAssign<X>,
+{
+    fn sub_assign(&mut self, rhs: Quantity<W, X>) {
+        self.value -= rhs.convert_to(self.unit).value;
     }
 }
 //endregion
