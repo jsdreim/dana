@@ -1,62 +1,18 @@
-use std::ops::Mul;
 use crate::{Scalar, Unit};
 
 
-pub enum Transform<S: Scalar + 'static> {
-    None,
-    Scale(S),
-    Func(&'static fn(S) -> S),
-}
-
-impl<S: Scalar + Mul> Transform<S> {
-    pub fn apply(&self, value: S) -> S {
-        match self {
-            Self::None => value,
-            Self::Scale(s) => value * s.clone(),
-            Self::Func(f) => f(value),
-        }
-    }
-
-    pub fn to_func(&self) -> Box<dyn Fn(S) -> S> {
-        match self {
-            Self::None => Box::new(|v| v),
-            Self::Scale(s) => {
-                let s: S = s.clone();
-                Box::new(move |v| v * s.clone())
-            }
-            Self::Func(f) => Box::new(*f),
-        }
-    }
-}
-
-
 pub struct Conversion<U: Unit, S: Scalar + 'static> {
-    target: U,
-    transform: Transform<S>,
+    pub target: U,
+    pub factor: S,
 }
 
 impl<U: Unit, S: Scalar> Conversion<U, S> {
-    // pub fn basic() -> Self {
-    //     Self::units(U::default())
-    // }
-
-    /// Direct conversion of units, with no effect on scalar value.
-    pub const fn units(target: U) -> Self {
-        Self { target, transform: Transform::None }
-    }
-
-    /// Conversion of units with simple scaling coefficient.
-    pub const fn scale(target: U, scale: S) -> Self {
-        Self { target, transform: Transform::Scale(scale) }
-    }
-
-    /// Conversion of units with an arbitrary transformation.
-    pub const fn func(target: U, f: &'static fn(S) -> S) -> Self {
-        Self { target, transform: Transform::Func(f) }
+    pub const fn new(target: U, factor: S) -> Self {
+        Self { target, factor }
     }
 
     pub fn scalar(&self, value: S) -> S {
-        self.transform.apply(value)
+        value * self.factor.clone()
     }
 
     pub fn quantity(&self, value: S) -> crate::Quantity<U, S> {
@@ -66,7 +22,14 @@ impl<U: Unit, S: Scalar> Conversion<U, S> {
     pub fn map_unit<V: Unit>(self, f: impl FnOnce(U) -> V) -> Conversion<V, S> {
         Conversion {
             target: f(self.target),
-            transform: self.transform,
+            factor: self.factor,
+        }
+    }
+
+    pub fn map_factor<T: Scalar>(self, f: impl FnOnce(S) -> T) -> Conversion<U, T> {
+        Conversion {
+            target: self.target,
+            factor: f(self.factor),
         }
     }
 }
@@ -81,7 +44,7 @@ pub trait ConvertFrom<U: Unit>: Unit {
 
     fn conversion_from<S: Scalar>(self, unit: U) -> Conversion<U, S> {
         let factor = self.conversion_factor_from(unit);
-        Conversion::scale(unit, S::from_f64(factor).unwrap())
+        Conversion::new(unit, S::from_f64(factor).unwrap())
     }
 }
 
@@ -98,7 +61,7 @@ pub trait ConvertInto<U: Unit>: Unit {
 
     fn conversion_into<S: Scalar>(self, unit: U) -> Conversion<U, S> {
         let factor = self.conversion_factor_into(unit);
-        Conversion::scale(unit, S::from_f64(factor).unwrap())
+        Conversion::new(unit, S::from_f64(factor).unwrap())
     }
 }
 
