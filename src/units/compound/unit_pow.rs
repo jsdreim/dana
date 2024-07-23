@@ -65,11 +65,12 @@ impl<U: Unit, E: Integer> UnitExp for UnitPow<U, E> where
     U::Dim: DimPowType<E>,
 {}
 
-impl<U: Unit, E1, E2> CanPow<E2> for UnitPow<U, E1> where
-    E1: Integer + Mul<E2>,
-    <E1 as Mul<E2>>::Output: Integer,
+impl<U: Unit, E1, const E2: i32> CanPow<E2> for UnitPow<U, E1> where
+    ExpHack<E2>: HasTypenum,
+    E1: Integer + Mul<<ExpHack<E2> as HasTypenum>::Typenum>,
+    <E1 as Mul<<ExpHack<E2> as HasTypenum>::Typenum>>::Output: Integer,
     U::Dim: DimPowType<E1>,
-    U::Dim: DimPowType<<E1 as Mul<E2>>::Output>,
+    U::Dim: DimPowType<<E1 as Mul<<ExpHack<E2> as HasTypenum>::Typenum>>::Output>,
 {
     type Output = UnitPow<U, E1::Output>;
     fn pow(self) -> Self::Output { UnitPow::new(self.0) }

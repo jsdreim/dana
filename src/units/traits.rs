@@ -72,7 +72,7 @@ pub trait UnitNonExp: Unit {}
 
 //region Positive exponents.
 /// Trait for a type that can be raised to a power.
-pub trait CanPow<E>: Unit {
+pub trait CanPow<const E: i32>: Unit {
     type Output: Unit;
     fn pow(self) -> Self::Output;
 }
@@ -83,7 +83,7 @@ pub trait CanSquare: Unit {
     fn squared(self) -> Self::Output;
 }
 
-impl<U: CanPow<typenum::P2>> CanSquare for U {
+impl<U: CanPow<2>> CanSquare for U {
     type Output = U::Output;
     fn squared(self) -> Self::Output { self.pow() }
 }
@@ -94,7 +94,7 @@ pub trait CanCube: Unit {
     fn cubed(self) -> Self::Output;
 }
 
-impl<U: CanPow<typenum::P3>> CanCube for U {
+impl<U: CanPow<3>> CanCube for U {
     type Output = U::Output;
     fn cubed(self) -> Self::Output { self.pow() }
 }

@@ -128,8 +128,7 @@ impl<U: Unit, V: Scalar> Quantity<U, V> {
         U::Output,
         <V as Pow<V>>::Output,
     > where
-        ExpHack<E>: HasTypenum,
-        U: CanPow<<ExpHack<E> as HasTypenum>::Typenum>,
+        U: CanPow<E>,
         V: Pow<V>,
         <V as Pow<V>>::Output: Scalar,
     {

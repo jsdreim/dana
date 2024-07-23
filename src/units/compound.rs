@@ -169,36 +169,36 @@ mod impl_ops {
     //endregion
 
     //region `CanPow` impls.
-    impl<U: Unit, E: Integer> CanPow<E> for PerUnit<U> where
+    impl<U: Unit, const E: i32> CanPow<E> for PerUnit<U> where
+        ExpHack<E>: HasTypenum,
         U::Dim: Inv,
-        <U::Dim as Inv>::Output: DimType + DimPowType<E>,
-        <<U::Dim as Inv>::Output as DimPowType<E>>::Output: DimType,
+        <U::Dim as Inv>::Output: DimPowType<<ExpHack<E> as HasTypenum>::Typenum>,
     {
-        type Output = UnitPow<Self, E>;
+        type Output = UnitPow<Self, <ExpHack<E> as HasTypenum>::Typenum>;
 
         fn pow(self) -> Self::Output {
             UnitPow::new(self)
         }
     }
 
-    impl<A: Unit, B: Unit, E: Integer> CanPow<E> for UnitDiv<A, B> where
+    impl<A: Unit, B: Unit, const E: i32> CanPow<E> for UnitDiv<A, B> where
+        ExpHack<E>: HasTypenum,
         A::Dim: Div<B::Dim>,
-        <A::Dim as Div<B::Dim>>::Output: DimType + DimPowType<E>,
-        <<A::Dim as Div<B::Dim>>::Output as DimPowType<E>>::Output: DimType,
+        <A::Dim as Div<B::Dim>>::Output: DimPowType<<ExpHack<E> as HasTypenum>::Typenum>,
     {
-        type Output = UnitPow<Self, E>;
+        type Output = UnitPow<Self, <ExpHack<E> as HasTypenum>::Typenum>;
 
         fn pow(self) -> Self::Output {
             UnitPow::new(self)
         }
     }
 
-    impl<A: Unit, B: Unit, E: Integer> CanPow<E> for UnitMul<A, B> where
+    impl<A: Unit, B: Unit, const E: i32> CanPow<E> for UnitMul<A, B> where
+        ExpHack<E>: HasTypenum,
         A::Dim: Mul<B::Dim>,
-        <A::Dim as Mul<B::Dim>>::Output: DimType + DimPowType<E>,
-        <<A::Dim as Mul<B::Dim>>::Output as DimPowType<E>>::Output: DimType,
+        <A::Dim as Mul<B::Dim>>::Output: DimPowType<<ExpHack<E> as HasTypenum>::Typenum>,
     {
-        type Output = UnitPow<Self, E>;
+        type Output = UnitPow<Self, <ExpHack<E> as HasTypenum>::Typenum>;
 
         fn pow(self) -> Self::Output {
             UnitPow::new(self)

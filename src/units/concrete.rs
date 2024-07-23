@@ -59,10 +59,13 @@ macro_rules! concrete_types {
         }
 
         /// Unit exponentiation.
-        impl<E: ::typenum::Integer> $crate::units::traits::CanPow<E> for $unit where
-            $crate::dimension::$unit: $crate::dimension::DimPowType<E>,
+        impl<const E: i32> $crate::units::traits::CanPow<E> for $unit where
+            $crate::dimension::ExpHack<E>: $crate::dimension::HasTypenum,
+            $crate::dimension::$unit: $crate::dimension::DimPowType<
+                <$crate::dimension::ExpHack<E> as $crate::dimension::HasTypenum>::Typenum,
+            >,
         {
-            type Output = $crate::units::UnitPow<Self, E>;
+            type Output = $crate::units::UnitPow<Self, <$crate::dimension::ExpHack<E> as $crate::dimension::HasTypenum>::Typenum>;
 
             fn pow(self) -> Self::Output {
                 $crate::units::UnitPow::new(self)
