@@ -81,9 +81,18 @@ Dimension<L, M, T, I, K, N, J> {
 }
 
 
+use private::Sealed;
+mod private {
+    pub trait Sealed {}
+}
+
+
+impl<L: Int, M: Int, T: Int, I: Int, Θ: Int, N: Int, J: Int>
+Sealed for Dimension<L, M, T, I, Θ, N, J> {}
+
+
 /// Trait specifying a type to be a [`Dimension`] with arbitrary exponents.
-//  TODO: Seal this trait.
-pub trait DimType: Copy + Default + std::fmt::Display {
+pub trait DimType: Sealed + Copy + std::fmt::Display {
     //region Definitions.
     type ExpLen: Int;
     type ExpMass: Int;
