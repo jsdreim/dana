@@ -2,6 +2,7 @@ use std::{marker::PhantomData, ops::Mul};
 use typenum::{Integer, PartialDiv};
 use crate::{dimension::*, units::traits::*};
 
+
 pub type UnitPow2<U> = UnitPow<U, typenum::P2>;
 pub type UnitPow3<U> = UnitPow<U, typenum::P3>;
 pub type UnitPow4<U> = UnitPow<U, typenum::P4>;
@@ -14,6 +15,7 @@ pub type UnitCubed<U> = UnitPow3<U>;
 /// A unit raised to an arbitrary power.
 #[derive(Clone, Copy, /*Debug,*/ Default, //Deserialize, Serialize,
 Eq, Ord, PartialOrd)]
+//  TODO: Switch `E` to `i32` const param.
 pub struct UnitPow<U: Unit, E: Integer>(pub U, pub PhantomData<E>) where
     U::Dim: DimPowType<E>,
 ;
@@ -87,14 +89,3 @@ impl<U: Unit, E, const D: i32> CanRoot<D> for UnitPow<U, E> where
     fn root(self) -> Self::Output { UnitPow::new(self.0) }
 }
 //endregion
-
-
-impl<U: Unit> Cancel for UnitPow<U, typenum::Z0> where
-    U::Dim: DimPowType<typenum::Z0>,
-{
-    fn cancel(&self) -> f64 { 1.0 }
-}
-
-// impl<U: UnitNonExp> Simplify<U> for UnitPow<U, E1> {
-//     fn simplify<S: Scalar>(self) -> Conversion<U, S> { Conversion::units(self.0) }
-// }
