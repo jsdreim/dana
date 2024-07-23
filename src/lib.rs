@@ -164,7 +164,7 @@ mod tests {
         //  Start with a basic length unit, and ensure `unit!` correctly
         //      produces one.
         let u: Length = m;
-        // assert_eq!(u, u.inv().inv());
+        assert_eq!(u.dimension(), u.inv().inv().dimension());
 
         //  Confirm that `utype!` produces types that agree.
         let _: utype!(l) = u;

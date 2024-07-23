@@ -1,4 +1,4 @@
-use crate::{Quantity, Scalar};
+use crate::{dimension::DimType, Quantity, Scalar};
 
 pub mod associative;
 pub mod commutative;
@@ -11,7 +11,7 @@ pub use transform::*;
 
 /// Trait for a type that represents a dimensional "unit".
 pub trait Unit: Copy + Default + std::fmt::Display + PartialEq {
-    type Dim: crate::dimension::DimType;
+    type Dim: DimType;
     // type ScaleType: crate::Scalar;
 
     fn scale(&self) -> f64;
@@ -24,6 +24,8 @@ pub trait Unit: Copy + Default + std::fmt::Display + PartialEq {
 
         have / want
     }
+
+    fn dimension(&self) -> Self::Dim { DimType::dimension() }
 
     fn quantity<V: Scalar>(self, value: V) -> Quantity<Self, V> {
         Quantity::new(self, value)
