@@ -24,6 +24,9 @@ pub type Torque = utype!(Length * Force);
 
 pub type GravParam = utype!(Length^3 / Time^2);
 
+pub type HeatCapacity = utype!(Energy / Temp);
+pub type HeatSpecific = utype!(HeatCapacity / Mass);
+
 
 #[test]
 pub fn test_macros() {

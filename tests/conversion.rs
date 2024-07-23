@@ -40,9 +40,10 @@ fn test_f_ma() {
 
 #[test]
 fn test_electrical() {
-    //  3V3 across a 150Ω resistor.
+    //  3V3 across a 7g 150Ω resistor.
     let v: Quantity<Voltage> = qty![3.3 V];
     let r: Quantity<Resistance> = qty![150.0 Ω];
+    let c: Quantity<HeatCapacity> = qty![[1.0 J/K/g] * [7.0 g] in J/K];
 
     //  Should measure 22mA of current through the resistor.
     let i: Quantity<Current> = qty![(v / r) in A];
@@ -56,6 +57,10 @@ fn test_electrical() {
     let t: Quantity<Time> = qty![300.0 s];
     let e: Quantity<Energy> = qty![(p * t) in J];
     assert_eq!(qty![*e in J], 21.78);
+
+    //  Resistor should now be about 3.1K hotter.
+    let delta: Quantity<Temp> = qty![(e / c) in K];
+    assert_eq!(qty![*delta in mK].round(), 3111.0);
 }
 
 

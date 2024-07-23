@@ -153,6 +153,17 @@ pub use scalar::Scalar;
 pub use units::Unit;
 
 
+impl<V: Scalar> Quantity<units::Temp, V> {
+    pub fn from_celsius(c: V) -> Self {
+        units::Temp::Kelvin.quantity(c + V::from_f64(273.15).unwrap())
+    }
+
+    pub fn to_celsius(self) -> V {
+        self.value_as(units::Temp::Kelvin) - V::from_f64(273.15).unwrap()
+    }
+}
+
+
 #[cfg(test)]
 mod tests {
     use num_traits::Inv;
