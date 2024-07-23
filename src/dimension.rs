@@ -7,6 +7,12 @@ use typenum::{
 };
 
 
+dummy!(
+    /// Trait bound for [`Dimension`] type parameters.
+    pub trait Int: Integer
+);
+
+
 /// Integer type used for dimension exponents.
 pub type Exp = i32;
 
@@ -59,21 +65,14 @@ pub mod symbols {
 
 /// Zero-size type that serves as a type-level array of exponents.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
-pub struct Dimension<
-    L: Integer, M: Integer, T: Integer,
-    I: Integer, K: Integer, N: Integer,
-    J: Integer,
-> {
+pub struct Dimension<L: Int, M: Int, T: Int, I: Int, K: Int, N: Int, J: Int> {
     _l: PhantomData<L>, _m: PhantomData<M>, _t: PhantomData<T>,
     _i: PhantomData<I>, _k: PhantomData<K>, _n: PhantomData<N>,
     _j: PhantomData<J>,
 }
 
-impl<
-    L: Integer, M: Integer, T: Integer,
-    I: Integer, K: Integer, N: Integer,
-    J: Integer,
-> Dimension<L, M, T, I, K, N, J> {
+impl<L: Int, M: Int, T: Int, I: Int, K: Int, N: Int, J: Int>
+Dimension<L, M, T, I, K, N, J> {
     pub const fn new() -> Self { Self {
         _l: PhantomData, _m: PhantomData, _t: PhantomData,
         _i: PhantomData, _k: PhantomData, _n: PhantomData,
@@ -86,13 +85,13 @@ impl<
 //  TODO: Seal this trait.
 pub trait DimType: Copy + Default + std::fmt::Display {
     //region Definitions.
-    type ExpLen: Integer;
-    type ExpMass: Integer;
-    type ExpTime: Integer;
-    type ExpCurr: Integer;
-    type ExpTemp: Integer;
-    type ExpAmt: Integer;
-    type ExpLum: Integer;
+    type ExpLen: Int;
+    type ExpMass: Int;
+    type ExpTime: Int;
+    type ExpCurr: Int;
+    type ExpTemp: Int;
+    type ExpAmt: Int;
+    type ExpLum: Int;
 
     const EXP_LEN:  Exp = <Self::ExpLen as Integer>::I32;
     const EXP_MASS: Exp = <Self::ExpMass as Integer>::I32;
@@ -131,11 +130,8 @@ pub trait DimType: Copy + Default + std::fmt::Display {
     fn dimension() -> Self;
 }
 
-impl<
-    L: Integer, M: Integer, T: Integer,
-    I: Integer, K: Integer, N: Integer,
-    J: Integer,
-> DimType for Dimension<L, M, T, I, K, N, J> {
+impl<L: Int, M: Int, T: Int, I: Int, K: Int, N: Int, J: Int> DimType
+for Dimension<L, M, T, I, K, N, J> {
     type ExpLen = L;
     type ExpMass = M;
     type ExpTime = T;
@@ -148,11 +144,8 @@ impl<
 }
 
 
-impl<
-    L: Integer, M: Integer, T: Integer,
-    I: Integer, K: Integer, N: Integer,
-    J: Integer,
-> std::fmt::Display for Dimension<L, M, T, I, K, N, J> {
+impl<L: Int, M: Int, T: Int, I: Int, K: Int, N: Int, J: Int> std::fmt::Display
+for Dimension<L, M, T, I, K, N, J> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         use std::fmt::Write;
 
@@ -181,30 +174,22 @@ impl<
 
 /// Division.
 impl<
-    L1: Integer, M1: Integer, T1: Integer,
-    I1: Integer, K1: Integer, N1: Integer,
-    J1: Integer,
-    L2: Integer, M2: Integer, T2: Integer,
-    I2: Integer, K2: Integer, N2: Integer,
-    J2: Integer,
+    L1: Int, M1: Int, T1: Int, I1: Int, K1: Int, N1: Int, J1: Int,
+    L2: Int, M2: Int, T2: Int, I2: Int, K2: Int, N2: Int, J2: Int,
 > Div<Dimension<L2, M2, T2, I2, K2, N2, J2>>
 for Dimension<L1, M1, T1, I1, K1, N1, J1> where
-    L1: Sub<L2>, <L1 as Sub<L2>>::Output: Integer,
-    M1: Sub<M2>, <M1 as Sub<M2>>::Output: Integer,
-    T1: Sub<T2>, <T1 as Sub<T2>>::Output: Integer,
-    I1: Sub<I2>, <I1 as Sub<I2>>::Output: Integer,
-    K1: Sub<K2>, <K1 as Sub<K2>>::Output: Integer,
-    N1: Sub<N2>, <N1 as Sub<N2>>::Output: Integer,
-    J1: Sub<J2>, <J1 as Sub<J2>>::Output: Integer,
+    L1: Sub<L2>, L1::Output: Int,
+    M1: Sub<M2>, M1::Output: Int,
+    T1: Sub<T2>, T1::Output: Int,
+    I1: Sub<I2>, I1::Output: Int,
+    K1: Sub<K2>, K1::Output: Int,
+    N1: Sub<N2>, N1::Output: Int,
+    J1: Sub<J2>, J1::Output: Int,
 {
     type Output = Dimension<
-        <L1 as Sub<L2>>::Output,
-        <M1 as Sub<M2>>::Output,
-        <T1 as Sub<T2>>::Output,
-        <I1 as Sub<I2>>::Output,
-        <K1 as Sub<K2>>::Output,
-        <N1 as Sub<N2>>::Output,
-        <J1 as Sub<J2>>::Output,
+        L1::Output, M1::Output, T1::Output,
+        I1::Output, K1::Output, N1::Output,
+        J1::Output,
     >;
 
     fn div(self, _: Dimension<L2, M2, T2, I2, K2, N2, J2>) -> Self::Output {
@@ -215,30 +200,22 @@ for Dimension<L1, M1, T1, I1, K1, N1, J1> where
 
 /// Multiplication.
 impl<
-    L1: Integer, M1: Integer, T1: Integer,
-    I1: Integer, K1: Integer, N1: Integer,
-    J1: Integer,
-    L2: Integer, M2: Integer, T2: Integer,
-    I2: Integer, K2: Integer, N2: Integer,
-    J2: Integer,
+    L1: Int, M1: Int, T1: Int, I1: Int, K1: Int, N1: Int, J1: Int,
+    L2: Int, M2: Int, T2: Int, I2: Int, K2: Int, N2: Int, J2: Int,
 > Mul<Dimension<L2, M2, T2, I2, K2, N2, J2>>
 for Dimension<L1, M1, T1, I1, K1, N1, J1> where
-    L1: Add<L2>, <L1 as Add<L2>>::Output: Integer,
-    M1: Add<M2>, <M1 as Add<M2>>::Output: Integer,
-    T1: Add<T2>, <T1 as Add<T2>>::Output: Integer,
-    I1: Add<I2>, <I1 as Add<I2>>::Output: Integer,
-    K1: Add<K2>, <K1 as Add<K2>>::Output: Integer,
-    N1: Add<N2>, <N1 as Add<N2>>::Output: Integer,
-    J1: Add<J2>, <J1 as Add<J2>>::Output: Integer,
+    L1: Add<L2>, L1::Output: Int,
+    M1: Add<M2>, M1::Output: Int,
+    T1: Add<T2>, T1::Output: Int,
+    I1: Add<I2>, I1::Output: Int,
+    K1: Add<K2>, K1::Output: Int,
+    N1: Add<N2>, N1::Output: Int,
+    J1: Add<J2>, J1::Output: Int,
 {
     type Output = Dimension<
-        <L1 as Add<L2>>::Output,
-        <M1 as Add<M2>>::Output,
-        <T1 as Add<T2>>::Output,
-        <I1 as Add<I2>>::Output,
-        <K1 as Add<K2>>::Output,
-        <N1 as Add<N2>>::Output,
-        <J1 as Add<J2>>::Output,
+        L1::Output, M1::Output, T1::Output,
+        I1::Output, K1::Output, N1::Output,
+        J1::Output,
     >;
 
     fn mul(self, _: Dimension<L2, M2, T2, I2, K2, N2, J2>) -> Self::Output {
@@ -249,13 +226,13 @@ for Dimension<L1, M1, T1, I1, K1, N1, J1> where
 
 /// Inversion.
 impl<
-    L: Integer + Neg, M: Integer + Neg, T: Integer + Neg,
-    I: Integer + Neg, K: Integer + Neg, N: Integer + Neg,
-    J: Integer + Neg,
+    L: Int + Neg, M: Int + Neg, T: Int + Neg,
+    I: Int + Neg, K: Int + Neg, N: Int + Neg,
+    J: Int + Neg,
 > Inv for Dimension<L, M, T, I, K, N, J> where
-    L::Output: Integer, M::Output: Integer, T::Output: Integer,
-    I::Output: Integer, K::Output: Integer, N::Output: Integer,
-    J::Output: Integer,
+    L::Output: Int, M::Output: Int, T::Output: Int,
+    I::Output: Int, K::Output: Int, N::Output: Int,
+    J::Output: Int,
 {
     type Output = Dimension<
         L::Output, M::Output, T::Output,
@@ -268,20 +245,20 @@ impl<
 
 
 /// Indicates that a [`Dimension`] may be raised to an [`Integer`] power.
-pub trait DimPowType<E: Integer>: DimType {
+pub trait DimPowType<E: Int>: DimType {
     /// The output of the operation.
     type Output: DimType;
 }
 
 impl<
-    L: Integer + Mul<E>, M: Integer + Mul<E>, T: Integer + Mul<E>,
-    I: Integer + Mul<E>, K: Integer + Mul<E>, N: Integer + Mul<E>,
-    J: Integer + Mul<E>,
-    E: Integer,
+    L: Int + Mul<E>, M: Int + Mul<E>, T: Int + Mul<E>,
+    I: Int + Mul<E>, K: Int + Mul<E>, N: Int + Mul<E>,
+    J: Int + Mul<E>,
+    E: Int,
 > DimPowType<E> for Dimension<L, M, T, I, K, N, J> where
-    L::Output: Integer, M::Output: Integer, T::Output: Integer,
-    I::Output: Integer, K::Output: Integer, N::Output: Integer,
-    J::Output: Integer,
+    L::Output: Int, M::Output: Int, T::Output: Int,
+    I::Output: Int, K::Output: Int, N::Output: Int,
+    J::Output: Int,
 {
     type Output = Dimension<
         L::Output, M::Output, T::Output,
@@ -292,20 +269,20 @@ impl<
 
 
 /// Indicates that a [`Dimension`] may be taken to a [`NonZero`] [`Integer`] root.
-pub trait DimRootType<D: Integer + NonZero>: DimType {
+pub trait DimRootType<D: Int + NonZero>: DimType {
     /// The output of the operation.
     type Output: DimType;
 }
 
 impl<
-    L: Integer + PartialDiv<D>, M: Integer + PartialDiv<D>, T: Integer + PartialDiv<D>,
-    I: Integer + PartialDiv<D>, K: Integer + PartialDiv<D>, N: Integer + PartialDiv<D>,
-    J: Integer + PartialDiv<D>,
-    D: Integer + NonZero,
+    L: Int + PartialDiv<D>, M: Int + PartialDiv<D>, T: Int + PartialDiv<D>,
+    I: Int + PartialDiv<D>, K: Int + PartialDiv<D>, N: Int + PartialDiv<D>,
+    J: Int + PartialDiv<D>,
+    D: Int + NonZero,
 > DimRootType<D> for Dimension<L, M, T, I, K, N, J> where
-    L::Output: Integer, M::Output: Integer, T::Output: Integer,
-    I::Output: Integer, K::Output: Integer, N::Output: Integer,
-    J::Output: Integer,
+    L::Output: Int, M::Output: Int, T::Output: Int,
+    I::Output: Int, K::Output: Int, N::Output: Int,
+    J::Output: Int,
 {
     type Output = Dimension<
         L::Output, M::Output, T::Output,
