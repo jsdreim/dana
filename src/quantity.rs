@@ -1,4 +1,4 @@
-use std::ops::{Add, Div, Mul, Sub};
+use std::ops::{Add, Div, Mul, Neg, Sub};
 use num_traits::{Float, Inv, NumCast, Pow, real::Real, Zero};
 use crate::{Scalar, units::traits::*};
 
@@ -227,28 +227,45 @@ impl<U: Unit, V: Scalar> Quantity<U, V> {
 
 
 //region Standard library operators.
+//region Negation.
+impl<U: Unit, V: Scalar> Neg for Quantity<U, V> where
+    V: Neg, <V as Neg>::Output: Scalar,
+{
+    type Output = Quantity<U, <V as Neg>::Output>;
+
+    fn neg(self) -> Self::Output {
+        Quantity {
+            value: self.value.neg(),
+            unit: self.unit,
+        }
+    }
+}
+//endregion
+
 //region Addition/subtraction between same-unit quantities.
-impl<U: Unit, V: Scalar, X: Scalar> Add<Quantity<U, X>> for Quantity<U, V> where
+impl<U: Unit, V: Scalar, W: Unit, X: Scalar> Add<Quantity<W, X>> for Quantity<U, V> where
+    W: ConvertInto<U>,
     V: Add<X>, <V as Add<X>>::Output: Scalar,
 {
     type Output = Quantity<U, <V as Add<X>>::Output>;
 
-    fn add(self, rhs: Quantity<U, X>) -> Self::Output {
+    fn add(self, rhs: Quantity<W, X>) -> Self::Output {
         Quantity {
-            value: self.value + rhs.value_as(self.unit),
+            value: self.value + rhs.convert_to(self.unit).value,
             unit: self.unit,
         }
     }
 }
 
-impl<U: Unit, V: Scalar, X: Scalar> Sub<Quantity<U, X>> for Quantity<U, V> where
+impl<U: Unit, V: Scalar, W: Unit, X: Scalar> Sub<Quantity<W, X>> for Quantity<U, V> where
+    W: ConvertInto<U>,
     V: Sub<X>, <V as Sub<X>>::Output: Scalar,
 {
     type Output = Quantity<U, <V as Sub<X>>::Output>;
 
-    fn sub(self, rhs: Quantity<U, X>) -> Self::Output {
+    fn sub(self, rhs: Quantity<W, X>) -> Self::Output {
         Quantity {
-            value: self.value - rhs.value_as(self.unit),
+            value: self.value - rhs.convert_to(self.unit).value,
             unit: self.unit,
         }
     }
