@@ -1,11 +1,16 @@
-use std::{marker::PhantomData, ops::{Add, Div, Mul, Sub}};
-use std::ops::Neg;
+use std::{marker::PhantomData, ops::{Add, Div, Mul, Neg, Sub}};
 use num_traits::Inv;
-use typenum::{consts::{N1, N2, N3, P1, P2, P3, P4, Z0}, Integer, NonZero, PartialDiv};
+use typenum::{
+    consts::{N1, N2, N3, P1, P2, P3, P4, Z0},
+    marker_traits::{Integer, NonZero},
+    PartialDiv,
+};
 
 
 /// Integer type used for dimension exponents.
 pub type Exp = i32;
+
+pub const LEN: usize = 7;
 
 
 pub type One          = Dimension<Z0, Z0, Z0, Z0, Z0, Z0, Z0>;
@@ -78,21 +83,25 @@ pub trait DimType: Copy + Default + std::fmt::Display {
     const EXP_AMT:  Exp = <Self::ExpAmt as Integer>::I32;
     const EXP_LUM:  Exp = <Self::ExpLum as Integer>::I32;
 
-    const ARRAY: [(char, Exp); 7] = [
-        ('L', <Self::ExpLen as Integer>::I32),
-        ('M', <Self::ExpMass as Integer>::I32),
-        ('T', <Self::ExpTime as Integer>::I32),
-        ('I', <Self::ExpCurr as Integer>::I32),
-        ('Θ', <Self::ExpTemp as Integer>::I32),
-        ('N', <Self::ExpAmt as Integer>::I32),
-        ('J', <Self::ExpLum as Integer>::I32),
+    const ARRAY: [Exp; LEN] = [
+        Self::EXP_LEN,
+        Self::EXP_MASS,
+        Self::EXP_TIME,
+        Self::EXP_CURR,
+        Self::EXP_TEMP,
+        Self::EXP_AMT,
+        Self::EXP_LUM,
     ];
 
-    // const ARRAY: [(char, Exp); 7] = [
-    //     ('L', Self::EXP_LEN),  ('M', Self::EXP_MASS), ('T', Self::EXP_TIME),
-    //     ('I', Self::EXP_CURR), ('Θ', Self::EXP_TEMP), ('N', Self::EXP_AMT),
-    //     ('J', Self::EXP_LUM),
-    // ];
+    const CHARS: [(char, Exp); LEN] = [
+        ('L', Self::EXP_LEN),
+        ('M', Self::EXP_MASS),
+        ('T', Self::EXP_TIME),
+        ('I', Self::EXP_CURR),
+        ('Θ', Self::EXP_TEMP),
+        ('N', Self::EXP_AMT),
+        ('J', Self::EXP_LUM),
+    ];
 
     fn dim() -> Self { Self::default() }
 }
@@ -101,11 +110,7 @@ impl<
     L: Integer, M: Integer, T: Integer,
     I: Integer, Θ: Integer, N: Integer,
     J: Integer,
-> DimType for Dimension<L, M, T, I, Θ, N, J> where
-    // L::Output: Integer, M::Output: Integer, T::Output: Integer,
-    // I::Output: Integer, Θ::Output: Integer, N::Output: Integer,
-    // J::Output: Integer,
-{
+> DimType for Dimension<L, M, T, I, Θ, N, J> {
     type ExpLen = L;
     type ExpMass = M;
     type ExpTime = T;
@@ -126,7 +131,7 @@ impl<
 
         let mut any = false;
 
-        for (char, exp) in Self::ARRAY {
+        for (char, exp) in Self::CHARS {
             if exp != 0 {
                 if any {
                     f.write_char('*')?;
@@ -148,10 +153,6 @@ impl<
 
 
 /// Division.
-pub trait DimDiv<D: DimType>: DimType {
-    type Output: DimType;
-}
-
 impl<
     L1: Integer, M1: Integer, T1: Integer,
     I1: Integer, Θ1: Integer, N1: Integer,
@@ -186,10 +187,6 @@ for Dimension<L1, M1, T1, I1, Θ1, N1, J1> where
 
 
 /// Multiplication.
-pub trait DimMul<D: DimType>: DimType {
-    type Output: DimType;
-}
-
 impl<
     L1: Integer, M1: Integer, T1: Integer,
     I1: Integer, Θ1: Integer, N1: Integer,
@@ -224,30 +221,6 @@ for Dimension<L1, M1, T1, I1, Θ1, N1, J1> where
 
 
 /// Inversion.
-pub trait DimInv: DimType {
-    type Output: DimType;
-}
-
-impl<D: DimType> DimInv for D where
-    D::ExpLen: Neg, <D::ExpLen as Neg>::Output: Integer,
-    D::ExpMass: Neg, <D::ExpMass as Neg>::Output: Integer,
-    D::ExpTime: Neg, <D::ExpTime as Neg>::Output: Integer,
-    D::ExpCurr: Neg, <D::ExpCurr as Neg>::Output: Integer,
-    D::ExpTemp: Neg, <D::ExpTemp as Neg>::Output: Integer,
-    D::ExpAmt: Neg, <D::ExpAmt as Neg>::Output: Integer,
-    D::ExpLum: Neg, <D::ExpLum as Neg>::Output: Integer,
-{
-    type Output = Dimension<
-        <D::ExpLen as Neg>::Output,
-        <D::ExpMass as Neg>::Output,
-        <D::ExpTime as Neg>::Output,
-        <D::ExpCurr as Neg>::Output,
-        <D::ExpTemp as Neg>::Output,
-        <D::ExpAmt as Neg>::Output,
-        <D::ExpLum as Neg>::Output,
-    >;
-}
-
 impl<
     L: Integer + Neg, M: Integer + Neg, T: Integer + Neg,
     I: Integer + Neg, Θ: Integer + Neg, N: Integer + Neg,
