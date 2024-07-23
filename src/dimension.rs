@@ -47,6 +47,7 @@ pub mod symbols {
     pub type M = super::Mass;
     pub type T = super::Time;
     pub type I = super::Current;
+    pub type K = super::Temp;
     pub type Θ = super::Temp;
     pub type N = super::Amount;
     pub type J = super::Lum;
@@ -56,11 +57,11 @@ pub mod symbols {
 #[derive(Clone, Copy, Debug, Default)]
 pub struct Dimension<
     L: Integer, M: Integer, T: Integer,
-    I: Integer, Θ: Integer, N: Integer,
+    I: Integer, K: Integer, N: Integer,
     J: Integer,
 > {
     _l: PhantomData<L>, _m: PhantomData<M>, _t: PhantomData<T>,
-    _i: PhantomData<I>, _θ: PhantomData<Θ>, _n: PhantomData<N>,
+    _i: PhantomData<I>, _k: PhantomData<K>, _n: PhantomData<N>,
     _j: PhantomData<J>,
 }
 
@@ -108,14 +109,14 @@ pub trait DimType: Copy + Default + std::fmt::Display {
 
 impl<
     L: Integer, M: Integer, T: Integer,
-    I: Integer, Θ: Integer, N: Integer,
+    I: Integer, K: Integer, N: Integer,
     J: Integer,
-> DimType for Dimension<L, M, T, I, Θ, N, J> {
+> DimType for Dimension<L, M, T, I, K, N, J> {
     type ExpLen = L;
     type ExpMass = M;
     type ExpTime = T;
     type ExpCurr = I;
-    type ExpTemp = Θ;
+    type ExpTemp = K;
     type ExpAmt = N;
     type ExpLum = J;
 }
@@ -123,9 +124,9 @@ impl<
 
 impl<
     L: Integer, M: Integer, T: Integer,
-    I: Integer, Θ: Integer, N: Integer,
+    I: Integer, K: Integer, N: Integer,
     J: Integer,
-> std::fmt::Display for Dimension<L, M, T, I, Θ, N, J> {
+> std::fmt::Display for Dimension<L, M, T, I, K, N, J> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         use std::fmt::Write;
 
@@ -155,18 +156,18 @@ impl<
 /// Division.
 impl<
     L1: Integer, M1: Integer, T1: Integer,
-    I1: Integer, Θ1: Integer, N1: Integer,
+    I1: Integer, K1: Integer, N1: Integer,
     J1: Integer,
     L2: Integer, M2: Integer, T2: Integer,
-    I2: Integer, Θ2: Integer, N2: Integer,
+    I2: Integer, K2: Integer, N2: Integer,
     J2: Integer,
-> Div<Dimension<L2, M2, T2, I2, Θ2, N2, J2>>
-for Dimension<L1, M1, T1, I1, Θ1, N1, J1> where
+> Div<Dimension<L2, M2, T2, I2, K2, N2, J2>>
+for Dimension<L1, M1, T1, I1, K1, N1, J1> where
     L1: Sub<L2>, <L1 as Sub<L2>>::Output: Integer,
     M1: Sub<M2>, <M1 as Sub<M2>>::Output: Integer,
     T1: Sub<T2>, <T1 as Sub<T2>>::Output: Integer,
     I1: Sub<I2>, <I1 as Sub<I2>>::Output: Integer,
-    Θ1: Sub<Θ2>, <Θ1 as Sub<Θ2>>::Output: Integer,
+    K1: Sub<K2>, <K1 as Sub<K2>>::Output: Integer,
     N1: Sub<N2>, <N1 as Sub<N2>>::Output: Integer,
     J1: Sub<J2>, <J1 as Sub<J2>>::Output: Integer,
 {
@@ -175,12 +176,12 @@ for Dimension<L1, M1, T1, I1, Θ1, N1, J1> where
         <M1 as Sub<M2>>::Output,
         <T1 as Sub<T2>>::Output,
         <I1 as Sub<I2>>::Output,
-        <Θ1 as Sub<Θ2>>::Output,
+        <K1 as Sub<K2>>::Output,
         <N1 as Sub<N2>>::Output,
         <J1 as Sub<J2>>::Output,
     >;
 
-    fn div(self, _: Dimension<L2, M2, T2, I2, Θ2, N2, J2>) -> Self::Output {
+    fn div(self, _: Dimension<L2, M2, T2, I2, K2, N2, J2>) -> Self::Output {
         Default::default()
     }
 }
@@ -189,18 +190,18 @@ for Dimension<L1, M1, T1, I1, Θ1, N1, J1> where
 /// Multiplication.
 impl<
     L1: Integer, M1: Integer, T1: Integer,
-    I1: Integer, Θ1: Integer, N1: Integer,
+    I1: Integer, K1: Integer, N1: Integer,
     J1: Integer,
     L2: Integer, M2: Integer, T2: Integer,
-    I2: Integer, Θ2: Integer, N2: Integer,
+    I2: Integer, K2: Integer, N2: Integer,
     J2: Integer,
-> Mul<Dimension<L2, M2, T2, I2, Θ2, N2, J2>>
-for Dimension<L1, M1, T1, I1, Θ1, N1, J1> where
+> Mul<Dimension<L2, M2, T2, I2, K2, N2, J2>>
+for Dimension<L1, M1, T1, I1, K1, N1, J1> where
     L1: Add<L2>, <L1 as Add<L2>>::Output: Integer,
     M1: Add<M2>, <M1 as Add<M2>>::Output: Integer,
     T1: Add<T2>, <T1 as Add<T2>>::Output: Integer,
     I1: Add<I2>, <I1 as Add<I2>>::Output: Integer,
-    Θ1: Add<Θ2>, <Θ1 as Add<Θ2>>::Output: Integer,
+    K1: Add<K2>, <K1 as Add<K2>>::Output: Integer,
     N1: Add<N2>, <N1 as Add<N2>>::Output: Integer,
     J1: Add<J2>, <J1 as Add<J2>>::Output: Integer,
 {
@@ -209,12 +210,12 @@ for Dimension<L1, M1, T1, I1, Θ1, N1, J1> where
         <M1 as Add<M2>>::Output,
         <T1 as Add<T2>>::Output,
         <I1 as Add<I2>>::Output,
-        <Θ1 as Add<Θ2>>::Output,
+        <K1 as Add<K2>>::Output,
         <N1 as Add<N2>>::Output,
         <J1 as Add<J2>>::Output,
     >;
 
-    fn mul(self, _: Dimension<L2, M2, T2, I2, Θ2, N2, J2>) -> Self::Output {
+    fn mul(self, _: Dimension<L2, M2, T2, I2, K2, N2, J2>) -> Self::Output {
         Default::default()
     }
 }
@@ -223,16 +224,16 @@ for Dimension<L1, M1, T1, I1, Θ1, N1, J1> where
 /// Inversion.
 impl<
     L: Integer + Neg, M: Integer + Neg, T: Integer + Neg,
-    I: Integer + Neg, Θ: Integer + Neg, N: Integer + Neg,
+    I: Integer + Neg, K: Integer + Neg, N: Integer + Neg,
     J: Integer + Neg,
-> Inv for Dimension<L, M, T, I, Θ, N, J> where
+> Inv for Dimension<L, M, T, I, K, N, J> where
     L::Output: Integer, M::Output: Integer, T::Output: Integer,
-    I::Output: Integer, Θ::Output: Integer, N::Output: Integer,
+    I::Output: Integer, K::Output: Integer, N::Output: Integer,
     J::Output: Integer,
 {
     type Output = Dimension<
         L::Output, M::Output, T::Output,
-        I::Output, Θ::Output, N::Output,
+        I::Output, K::Output, N::Output,
         J::Output,
     >;
 
@@ -247,17 +248,17 @@ pub trait DimPowType<E: Integer>: DimType {
 
 impl<
     L: Integer + Mul<E>, M: Integer + Mul<E>, T: Integer + Mul<E>,
-    I: Integer + Mul<E>, Θ: Integer + Mul<E>, N: Integer + Mul<E>,
+    I: Integer + Mul<E>, K: Integer + Mul<E>, N: Integer + Mul<E>,
     J: Integer + Mul<E>,
     E: Integer,
-> DimPowType<E> for Dimension<L, M, T, I, Θ, N, J> where
+> DimPowType<E> for Dimension<L, M, T, I, K, N, J> where
     L::Output: Integer, M::Output: Integer, T::Output: Integer,
-    I::Output: Integer, Θ::Output: Integer, N::Output: Integer,
+    I::Output: Integer, K::Output: Integer, N::Output: Integer,
     J::Output: Integer,
 {
     type Output = Dimension<
         L::Output, M::Output, T::Output,
-        I::Output, Θ::Output, N::Output,
+        I::Output, K::Output, N::Output,
         J::Output,
     >;
 }
@@ -270,17 +271,17 @@ pub trait DimRootType<D: Integer + NonZero>: DimType {
 
 impl<
     L: Integer + PartialDiv<D>, M: Integer + PartialDiv<D>, T: Integer + PartialDiv<D>,
-    I: Integer + PartialDiv<D>, Θ: Integer + PartialDiv<D>, N: Integer + PartialDiv<D>,
+    I: Integer + PartialDiv<D>, K: Integer + PartialDiv<D>, N: Integer + PartialDiv<D>,
     J: Integer + PartialDiv<D>,
     D: Integer + NonZero,
-> DimRootType<D> for Dimension<L, M, T, I, Θ, N, J> where
+> DimRootType<D> for Dimension<L, M, T, I, K, N, J> where
     L::Output: Integer, M::Output: Integer, T::Output: Integer,
-    I::Output: Integer, Θ::Output: Integer, N::Output: Integer,
+    I::Output: Integer, K::Output: Integer, N::Output: Integer,
     J::Output: Integer,
 {
     type Output = Dimension<
         L::Output, M::Output, T::Output,
-        I::Output, Θ::Output, N::Output,
+        I::Output, K::Output, N::Output,
         J::Output,
     >;
 }
