@@ -100,7 +100,6 @@
 //! - `in`: Conversion to a specific unit.
 //!
 //! These operations can also be chained:
-//  FIXME
 //! ```
 //! use dimensional::{constants::CONST_C2, qty, units::{*, symbols::*}};
 //!
