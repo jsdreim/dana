@@ -223,11 +223,10 @@ mod tests {
         // let _: qtype!(l^-4) = q.pow(4.0).inv();
         // let _: qtype!(l^-2.0) = q.pow(2.0).inv();
 
-        //  TODO
-        // //  Check powers and roots.
-        // assert_eq!(q.squared(), q.pow::<2>());
-        // assert_eq!(q.squared(), q.pow::<8>().root::<4>());
-        // assert_eq!(q.pow::<6>(), q.pow::<2>().pow::<3>());
+        //  Check powers and roots.
+        assert_eq!(q.squared(), q.pow::<2>());
+        assert_eq!(q.squared(), q.pow::<8>().root::<4>());
+        assert_eq!(q.pow::<6>(), q.pow::<2>().pow::<3>());
     }
 
     #[test]

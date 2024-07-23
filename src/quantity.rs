@@ -1,6 +1,6 @@
 use std::ops::{Add, Div, Mul, Sub};
-use num_traits::{Float, Inv, NumCast, real::Real, Zero};
-use crate::{Scalar, units::{/*compound::*,*/ traits::*}};
+use num_traits::{Float, Inv, NumCast, Pow, real::Real, Zero};
+use crate::{Scalar, units::{/*compound::*,*/ dim::{ExpHack, HasTypenum}, traits::*}};
 
 
 type ScalarDefault = f64;
@@ -124,23 +124,20 @@ impl<U: Unit, V: Scalar> Quantity<U, V> {
         }
     }
 
-    //  TODO
-    /*pub fn pow<const E: i32>(self) -> Quantity<
-        <U as CanPow<<exp::Num<E> as exp::ExpImplemented>::Exp>>::Output,
+    pub fn pow<const E: i32>(self) -> Quantity<
+        U::Output,
         <V as Pow<V>>::Output,
     > where
-        exp::Num<E>: exp::ExpImplemented,
-        U: CanPow<<exp::Num<E> as exp::ExpImplemented>::Exp>,
+        ExpHack<E>: HasTypenum,
+        U: CanPow<<ExpHack<E> as HasTypenum>::Typenum>,
         V: Pow<V>,
         <V as Pow<V>>::Output: Scalar,
     {
-        let exponent: f64 = <exp::Num<E> as exp::ExpImplemented>::Exp::VALUE;
-
         Quantity {
-            value: self.value.pow(V::from_f64(exponent).unwrap()),
+            value: self.value.pow(V::from_i32(E).unwrap()),
             unit: self.unit.pow(),
         }
-    }*/
+    }
     //endregion
 
     //region Roots.
@@ -164,23 +161,20 @@ impl<U: Unit, V: Scalar> Quantity<U, V> {
         }
     }
 
-    //  TODO
-    /*pub fn root<const D: i32>(self) -> Quantity<
-        <U as CanRoot<<exp::Num<D> as exp::ExpImplemented>::Exp>>::Output,
+    pub fn root<const D: i32>(self) -> Quantity<
+        U::Output,
         <V as Pow<<V as Inv>::Output>>::Output,
     > where
-        exp::Num<D>: exp::ExpImplemented,
-        U: CanRoot<<exp::Num<D> as exp::ExpImplemented>::Exp>,
+        ExpHack<D>: HasTypenum,
+        U: CanRoot<<ExpHack<D> as HasTypenum>::Typenum>,
         V: Inv + Pow<<V as Inv>::Output>,
         <V as Pow<<V as Inv>::Output>>::Output: Scalar,
     {
-        let degree: f64 = <exp::Num<D> as exp::ExpImplemented>::Exp::VALUE;
-
         Quantity {
-            value: self.value.pow(V::from_f64(degree).unwrap().inv()),
+            value: self.value.pow(V::from_i32(D).unwrap().inv()),
             unit: self.unit.root(),
         }
-    }*/
+    }
     //endregion
 }
 //endregion
