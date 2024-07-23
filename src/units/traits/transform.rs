@@ -1,6 +1,5 @@
 use std::ops::Mul;
-use crate::Scalar;
-use super::Unit;
+use crate::{Scalar, Unit};
 
 
 pub enum Transform<S: Scalar + 'static> {
@@ -109,45 +108,8 @@ impl<U: Unit, V: ConvertFrom<U>> ConvertInto<V> for U {
     }
 }
 
-// pub trait ConvertLeft<U: Unit>: UnitBinary {
-//     type WithLeftConverted: UnitBinary;
-//     fn convert_left<S: Scalar>(&self, unit: U)
-//         -> Conversion<Self::WithLeftConverted, S>;
-// }
-//
-// pub trait ConvertRight<U: Unit>: UnitBinary {
-//     type WithRightConverted: UnitBinary;
-//     fn convert_right<S: Scalar>(&self, unit: U)
-//         -> Conversion<Self::WithRightConverted, S>;
-// }
-
 
 pub trait Cancel: Unit {
     fn cancel(&self) -> f64;
     fn cancel_to<S: Scalar>(&self) -> S { S::from_f64(self.cancel()).unwrap() }
 }
-
-// pub trait CancelLeft: UnitBinary {
-//     type WithLeftCancelled: Unit;
-//     fn cancel_left<S: Scalar>(&self) -> Conversion<Self::WithLeftCancelled, S>;
-// }
-//
-// pub trait CancelRight: UnitBinary {
-//     type WithRightCancelled: Unit;
-//     fn cancel_right<S: Scalar>(&self) -> Conversion<Self::WithRightCancelled, S>;
-// }
-
-
-pub trait Simplify<U: Unit>: Unit {
-    fn simplify<S: Scalar>(self) -> Conversion<U, S>;
-}
-
-// pub trait SimplifyLeft<U: Unit>: UnitBinary {
-//     type WithLeftSimplified: UnitBinary;
-//     fn simplify_left<S: Scalar>(&self) -> Conversion<Self::WithLeftSimplified, S>;
-// }
-//
-// pub trait SimplifyRight<U: Unit>: UnitBinary {
-//     type WithRightSimplified: UnitBinary;
-//     fn simplify_right<S: Scalar>(&self) -> Conversion<Self::WithRightSimplified, S>;
-// }

@@ -224,50 +224,6 @@ impl<U: Unit, V: Scalar + 'static> Quantity<U, V> {
     {
         self.value * self.unit.cancel_to()
     }
-
-    /// Simplify redundant units.
-    pub fn simplify<W: Unit>(self) -> Quantity<W, V> where
-        U: Simplify<W>,
-    {
-        self.unit.simplify::<V>().quantity(self.value)
-    }
-}
-//endregion
-
-
-//region Methods for value-equivalent unit reorganization.
-/// Associative Property.
-impl<U: Unit, V: Scalar> Quantity<U, V> {
-    pub fn reassociate<W: Unit>(self) -> Quantity<W, V> where
-        U: Associative<W>,
-    { Quantity::new(self.unit.reassociate(), self.value) }
-
-    pub fn reassociate_left<W: Unit>(self) -> Quantity<U::WithLeftReassociated, V> where
-        U: AssociativeLeft<W>,
-        U::Left: Associative<W>,
-    { Quantity::new(self.unit.reassociate_left(), self.value) }
-
-    pub fn reassociate_right<W: Unit>(self) -> Quantity<U::WithRightReassociated, V> where
-        U: AssociativeRight<W>,
-        U::Right: Associative<W>,
-    { Quantity::new(self.unit.reassociate_right(), self.value) }
-}
-
-/// Commutative Property.
-impl<U: Unit, V: Scalar> Quantity<U, V> {
-    pub fn commute(self) -> Quantity<U::Commuted, V> where
-        U: Commutative,
-    { Quantity::new(self.unit.commute(), self.value) }
-
-    pub fn commute_left(self) -> Quantity<U::WithLeftCommuted, V> where
-        U: CommutativeLeft,
-        U::Left: Commutative,
-    { Quantity::new(self.unit.commute_left(), self.value) }
-
-    pub fn commute_right(self) -> Quantity<U::WithRightCommuted, V> where
-        U: CommutativeRight,
-        U::Right: Commutative,
-    { Quantity::new(self.unit.commute_right(), self.value) }
 }
 //endregion
 
