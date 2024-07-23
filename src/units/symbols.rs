@@ -98,6 +98,7 @@ define_symbols!(pub mod electrical(power, charge, current, voltage, resistance))
 // }
 
 
+//  TODO: Greek letters acceptable?
 define_symbols! {
     // use;
 
@@ -110,6 +111,7 @@ define_symbols! {
 
     pub mod length for type Length as l, L {
         const nm = NanoMeter;
+        const μm = MicroMeter;
         const um = MicroMeter;
         const mm = MilliMeter;
         const cm = CentiMeter;
@@ -132,6 +134,7 @@ define_symbols! {
     }
 
     pub mod frequency for type Frequency as f {
+        const μHz = MicroHertz;
         const uHz = MicroHertz;
         const mHz = MilliHertz;
         const  Hz = Hertz;
@@ -142,6 +145,7 @@ define_symbols! {
     }
 
     pub mod temp for type Temp as K, Θ {
+        const μK = MicroKelvin;
         const uK = MicroKelvin;
         const mK = MilliKelvin;
         const  K = Kelvin;
@@ -152,6 +156,7 @@ define_symbols! {
     }
 
     pub mod amount for type Amount as N {
+        const μmol = MicroMole;
         const umol = MicroMole;
         const mmol = MilliMole;
         const  mol = Mole;
@@ -162,6 +167,7 @@ define_symbols! {
     }
 
     pub mod intensity for type Intensity as J {
+        const μcd = MicroCandela;
         const ucd = MicroCandela;
         const mcd = MilliCandela;
         const  cd = Candela;
@@ -181,6 +187,7 @@ define_symbols! {
     pub mod energy for type Energy as E {
         const eV = ElectronVolt;
 
+        const μJ = MicroJoule;
         const uJ = MicroJoule;
         const mJ = MilliJoule;
         const  J = Joule;
@@ -194,6 +201,7 @@ define_symbols! {
     }
 
     pub mod power for type Power as P {
+        const μW = MicroWatt;
         const uW = MicroWatt;
         const mW = MilliWatt;
         const  W = Watt;
@@ -204,6 +212,7 @@ define_symbols! {
     }
 
     pub mod charge for type Charge as q, Q {
+        const μC = MicroCoulomb;
         const uC = MicroCoulomb;
         const mC = MilliCoulomb;
         const  C = Coulomb;
@@ -217,6 +226,7 @@ define_symbols! {
     }
 
     pub mod current for type Current as I {
+        const μA = MicroAmp;
         const uA = MicroAmp;
         const mA = MilliAmp;
         const  A = Amp;
@@ -227,6 +237,7 @@ define_symbols! {
     }
 
     pub mod voltage for type Voltage as V {
+        const μV = MicroVolt;
         const uV = MicroVolt;
         const mV = MilliVolt;
         const  V = Volt;
@@ -236,9 +247,8 @@ define_symbols! {
         const TV = TeraVolt;
     }
 
-    //  TODO: Greek letters acceptable?
-    //  TODO: Keep `u` as prefix for micro? Switch to `μ`? Allow both?
     pub mod resistance for type Resistance as R {
+        const μΩ = MicroOhm;
         const uΩ = MicroOhm;
         const mΩ = MilliOhm;
         const  Ω = Ohm;
@@ -247,6 +257,7 @@ define_symbols! {
         const GΩ = GigaOhm;
         const TΩ = TeraOhm;
 
+        const μO = MicroOhm;
         const uO = MicroOhm;
         const mO = MilliOhm;
         const  O = Ohm;
