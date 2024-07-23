@@ -1,6 +1,6 @@
 use std::ops::{Add, Div, Mul, Sub};
 use num_traits::{Float, Inv, NumCast, Pow, real::Real, Zero};
-use crate::{Scalar, units::{/*compound::*,*/ dim::{ExpHack, HasTypenum}, traits::*}};
+use crate::{dim::{ExpHack, HasTypenum}, Scalar, units::{/*compound::*,*/ traits::*}};
 
 
 type ScalarDefault = f64;

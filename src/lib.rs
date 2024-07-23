@@ -143,6 +143,7 @@ pub use dim_macros::{qty, /*unit,*/ /*utype*/};
 mod macros;
 
 pub mod constants;
+pub mod dim;
 pub mod equations;
 pub mod quantity;
 pub mod scalar;

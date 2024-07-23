@@ -1,6 +1,6 @@
 use std::{marker::PhantomData, ops::Mul};
 use typenum::{Integer, PartialDiv};
-use crate::{/*scalar::Scalar,*/ units::{dim::*, traits::*}};
+use crate::{dim::*, units::traits::*};
 
 pub type UnitPow2<U> = UnitPow<U, typenum::P2>;
 pub type UnitPow3<U> = UnitPow<U, typenum::P3>;

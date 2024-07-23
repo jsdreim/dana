@@ -1,5 +1,5 @@
 use num_traits::Inv;
-use crate::units::{dim::*, traits::*};
+use crate::{dim::*, units::traits::*};
 
 
 /// The reciprocal of a unit.

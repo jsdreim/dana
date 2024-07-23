@@ -11,7 +11,7 @@ pub use transform::*;
 
 /// Trait for a type that represents a dimensional "unit".
 pub trait Unit: Copy + Default + std::fmt::Display + PartialEq {
-    type Dim: super::dim::DimType;
+    type Dim: crate::dim::DimType;
     // type ScaleType: crate::Scalar;
 
     fn scale(&self) -> f64;

@@ -1,5 +1,5 @@
 use std::ops::Mul;
-use crate::units::{dim::*, traits::*};
+use crate::{dim::*, units::traits::*};
 
 
 /// Two units multiplied; For example, Newton-Meters.

@@ -13,7 +13,7 @@ pub enum Voltage {
 }
 
 impl Unit for Voltage {
-    type Dim = crate::units::dim::Voltage;
+    type Dim = crate::dim::Voltage;
     // type ScaleType = f64;
 
     fn scale(&self) -> f64 {

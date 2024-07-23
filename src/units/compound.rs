@@ -15,7 +15,7 @@ mod impl_ops {
     use std::ops::{Div, Mul};
     use num_traits::Inv;
     use typenum::Integer;
-    use crate::units::{compound::*, dim::*};
+    use crate::{dim::*, units::compound::*};
 
     //region `Div` impls.
     impl<U: Unit, W: Unit> Div<W> for PerUnit<U> where

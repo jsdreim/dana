@@ -1,5 +1,5 @@
 use std::ops::Div;
-use crate::units::{dim::*, traits::*};
+use crate::{dim::*, units::traits::*};
 
 
 /// One unit divided by another; For example, Meters per Second.
