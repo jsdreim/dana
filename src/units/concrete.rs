@@ -4,8 +4,7 @@ use super::traits::*;
 /// # New Unit Checklist
 /// 1. Source file.
 /// 2. Add to `concrete_types!` and `impl_scale!` calls below.
-/// 3. Add relevant relationships in [`crate::units::transform::convert`].
-/// 4. Add to [`crate::units::symbols`].
+/// 3. Add to [`crate::units::symbols`].
 struct _Notes;
 
 
@@ -16,9 +15,6 @@ macro_rules! concrete_types {
         pub use $module::$unit;
         )+
 
-        // impl_unit_ops!($($unit),+);
-        // impl_unit_inv!($($unit),+);
-        // impl_unit_pow!($($unit),+);
         impl_unit_concrete!($($unit),+);
 
         $(
@@ -90,7 +86,10 @@ concrete_types!(
     mass::Mass,
     time::Time,
     frequency::Frequency,
+
     temp::Temp,
+    amount::Amount,
+    intensity::Intensity,
 
     force::Force,
     energy::Energy,
@@ -109,7 +108,10 @@ impl_scale! {
     // for Mass impl (Milli, Kilo) Gram;
     for Time impl (Milli) Second;
     for Frequency impl (Micro, Milli, Kilo, Mega, Giga, Tera) Hertz;
+
     for Temp impl (Micro, Milli, Kilo, Mega, Giga, Tera) Kelvin;
+    for Amount impl (Micro, Milli, Kilo, Mega, Giga, Tera) Mole;
+    for Intensity impl (Micro, Milli, Kilo, Mega, Giga, Tera) Candela;
 
     for Force impl (Kilo, Mega, Giga) Newton;
     for Energy impl (Micro, Milli, Kilo, Mega, Giga, Tera) Joule;

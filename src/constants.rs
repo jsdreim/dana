@@ -64,14 +64,14 @@ pub const CONST_H: qtype!(Energy / Frequency) = qty![4.135_667_696_e-15 eV/Hz];
 pub const CONST_K: qtype!(Energy / Temp) = qty![8.617_333_262_e-5 eV/K];
 
 
-// /// Gas constant; Relationship between energy, temperature, and substance amount.
-// ///
-// /// Unit: [J]/[K]/[mol]
-// ///
-// /// [J]: Energy::Joule
-// /// [K]: Temperature::Kelvin
-// /// [mol]: Amount::Mole
-// pub const R: qtype!(Energy / Temperature / Amount) = qty![8.314_462_618_153_24 J/K/mol];
+/// Gas constant; Relationship between energy, temperature, and substance amount.
+///
+/// Unit: [J]/[K]/[mol]
+///
+/// [J]: Energy::Joule
+/// [K]: Temp::Kelvin
+/// [mol]: Amount::Mole
+pub const CONST_R: qtype!(E/K/N) = qty![8.314_462_618_153_24 J/K/mol];
 
 
 #[test]

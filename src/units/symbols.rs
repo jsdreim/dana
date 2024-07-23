@@ -151,6 +151,26 @@ define_symbols! {
         const TK = TeraKelvin;
     }
 
+    pub mod amount for type Amount as N {
+        const umol = MicroMole;
+        const mmol = MilliMole;
+        const  mol = Mole;
+        const kmol = KiloMole;
+        const Mmol = MegaMole;
+        const Gmol = GigaMole;
+        const Tmol = TeraMole;
+    }
+
+    pub mod intensity for type Intensity as J {
+        const ucd = MicroCandela;
+        const mcd = MilliCandela;
+        const  cd = Candela;
+        const kcd = KiloCandela;
+        const Mcd = MegaCandela;
+        const Gcd = GigaCandela;
+        const Tcd = TeraCandela;
+    }
+
     pub mod force for type Force as F {
         const  N = Newton;
         const kN = KiloNewton;

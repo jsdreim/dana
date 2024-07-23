@@ -29,7 +29,7 @@ pub type Time         = Dimension<Z0, Z0, P1, Z0, Z0, Z0, Z0>;
 pub type Current      = Dimension<Z0, Z0, Z0, P1, Z0, Z0, Z0>;
 pub type Temp         = Dimension<Z0, Z0, Z0, Z0, P1, Z0, Z0>;
 pub type Amount       = Dimension<Z0, Z0, Z0, Z0, Z0, P1, Z0>;
-pub type Lum          = Dimension<Z0, Z0, Z0, Z0, Z0, Z0, P1>;
+pub type Intensity    = Dimension<Z0, Z0, Z0, Z0, Z0, Z0, P1>;
 //                                 L   M   T   I   Θ   N   J
 pub type Frequency    = Dimension<Z0, Z0, N1, Z0, Z0, Z0, Z0>;
 pub type Velocity     = Dimension<P1, Z0, N1, Z0, Z0, Z0, Z0>;
@@ -59,7 +59,7 @@ pub mod symbols {
     pub type K = super::Temp;
     pub type Θ = super::Temp;
     pub type N = super::Amount;
-    pub type J = super::Lum;
+    pub type J = super::Intensity;
 }
 
 
