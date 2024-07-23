@@ -10,9 +10,11 @@ use typenum::{
 /// Integer type used for dimension exponents.
 pub type Exp = i32;
 
+/// Number of fundamental quantities.
 pub const LEN: usize = 7;
 
 
+/// Scalar "dimension", representing no dimension.
 pub type One          = Dimension<Z0, Z0, Z0, Z0, Z0, Z0, Z0>;
 //                                 L   M   T   I   Θ   N   J
 pub type Length       = Dimension<P1, Z0, Z0, Z0, Z0, Z0, Z0>;
@@ -42,6 +44,7 @@ pub type Capacitance  = Dimension<N2, N1, P4, P2, Z0, Z0, Z0>;
 //                                 L   M   T   I   Θ   N   J
 
 
+/// Single-character bindings to specific [`Dimension`] types.
 pub mod symbols {
     pub type L = super::Length;
     pub type M = super::Mass;
@@ -54,7 +57,8 @@ pub mod symbols {
 }
 
 
-#[derive(Clone, Copy, Debug, Default)]
+/// Zero-size type that serves as a type-level array of exponents.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub struct Dimension<
     L: Integer, M: Integer, T: Integer,
     I: Integer, K: Integer, N: Integer,
@@ -65,9 +69,23 @@ pub struct Dimension<
     _j: PhantomData<J>,
 }
 
+impl<
+    L: Integer, M: Integer, T: Integer,
+    I: Integer, K: Integer, N: Integer,
+    J: Integer,
+> Dimension<L, M, T, I, K, N, J> {
+    pub const fn new() -> Self { Self {
+        _l: PhantomData, _m: PhantomData, _t: PhantomData,
+        _i: PhantomData, _k: PhantomData, _n: PhantomData,
+        _j: PhantomData,
+    }}
+}
 
+
+/// Trait specifying a type to be a [`Dimension`] with arbitrary exponents.
 //  TODO: Seal this trait.
 pub trait DimType: Copy + Default + std::fmt::Display {
+    //region Definitions.
     type ExpLen: Integer;
     type ExpMass: Integer;
     type ExpTime: Integer;
@@ -83,7 +101,10 @@ pub trait DimType: Copy + Default + std::fmt::Display {
     const EXP_TEMP: Exp = <Self::ExpTemp as Integer>::I32;
     const EXP_AMT:  Exp = <Self::ExpAmt as Integer>::I32;
     const EXP_LUM:  Exp = <Self::ExpLum as Integer>::I32;
+    //endregion
 
+    //region Arrays.
+    /// Exponents of the seven fundamental quantities.
     const ARRAY: [Exp; LEN] = [
         Self::EXP_LEN,
         Self::EXP_MASS,
@@ -94,6 +115,7 @@ pub trait DimType: Copy + Default + std::fmt::Display {
         Self::EXP_LUM,
     ];
 
+    /// Labels of the seven fundamental quantities, paired with their exponents.
     const CHARS: [(char, Exp); LEN] = [
         ('L', Self::EXP_LEN),
         ('M', Self::EXP_MASS),
@@ -103,8 +125,10 @@ pub trait DimType: Copy + Default + std::fmt::Display {
         ('N', Self::EXP_AMT),
         ('J', Self::EXP_LUM),
     ];
+    //endregion
 
-    fn dim() -> Self { Self::default() }
+    /// Return a runtime representation of this dimension.
+    fn dimension() -> Self;
 }
 
 impl<
@@ -119,6 +143,8 @@ impl<
     type ExpTemp = K;
     type ExpAmt = N;
     type ExpLum = J;
+
+    fn dimension() -> Self { Self::new() }
 }
 
 
@@ -241,8 +267,9 @@ impl<
 }
 
 
-/// Integer powers.
+/// Indicates that a [`Dimension`] may be raised to an [`Integer`] power.
 pub trait DimPowType<E: Integer>: DimType {
+    /// The output of the operation.
     type Output: DimType;
 }
 
@@ -264,8 +291,9 @@ impl<
 }
 
 
-/// Fractional powers.
+/// Indicates that a [`Dimension`] may be taken to a [`NonZero`] [`Integer`] root.
 pub trait DimRootType<D: Integer + NonZero>: DimType {
+    /// The output of the operation.
     type Output: DimType;
 }
 
@@ -287,7 +315,10 @@ impl<
 }
 
 
+/// Zero-size generic representing a specific `i32` at the type level.
 pub struct ExpHack<const E: Exp>;
+
+/// Trait for associating a type with a specific [`typenum`] [`Integer`].
 pub trait HasTypenum {
     type Typenum: Integer;
 }
@@ -295,7 +326,9 @@ pub trait HasTypenum {
 impl_typenums!();
 
 
+/// Indicates that a [`Dimension`] may be raised to an arbitrary `i32` power.
 pub trait DimPow<const E: Exp>: DimType {
+    /// The output of the operation.
     type Output: DimType;
 }
 
@@ -307,7 +340,9 @@ impl<Dim: DimType, const E: Exp> DimPow<E> for Dim where
 }
 
 
+/// Indicates that a [`Dimension`] may be taken to an arbitrary `i32` root.
 pub trait DimRoot<const D: Exp>: DimType {
+    /// The output of the operation.
     type Output: DimType;
 }
 
@@ -326,13 +361,13 @@ mod tests {
 
     #[test]
     fn test_dimensions() {
-        assert_eq!(format!("{}", Length::dim()), "L");
-        assert_eq!(format!("{}", Velocity::dim()), "L*T^-1");
-        assert_eq!(format!("{}", Accel::dim()), "L*T^-2");
+        assert_eq!(format!("{}", Length::dimension()), "L");
+        assert_eq!(format!("{}", Velocity::dimension()), "L*T^-1");
+        assert_eq!(format!("{}", Accel::dimension()), "L*T^-2");
 
-        let _a: Accel = Velocity::dim() / Time::dim();
-        let _a: Accel = Velocity::dim() * Time::dim().inv();
-        let _a: Length = Velocity::dim() * Time::dim();
-        let _a: Torque = Length::dim() * Force::dim();
+        let _a: Accel = Velocity::dimension() / Time::dimension();
+        let _a: Accel = Velocity::dimension() * Time::dimension().inv();
+        let _a: Length = Velocity::dimension() * Time::dimension();
+        let _a: Torque = Length::dimension() * Force::dimension();
     }
 }
