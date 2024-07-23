@@ -10,5 +10,5 @@ use num_traits::{FromPrimitive, Num};
 /// - [`Clone`]
 /// - [`Debug`]
 /// - [`Display`]
-pub trait Scalar: FromPrimitive + Num + Clone + Debug + Display {}
-impl<N: FromPrimitive + Num + Clone + Debug + Display> Scalar for N {}
+pub trait Scalar: FromPrimitive + Num + Clone + Debug + Display + 'static {}
+impl<N: FromPrimitive + Num + Clone + Debug + Display + 'static> Scalar for N {}
