@@ -226,5 +226,13 @@ define_symbols! {
         const MΩ = MegaOhm;
         const GΩ = GigaOhm;
         const TΩ = TeraOhm;
+
+        const uO = MicroOhm;
+        const mO = MilliOhm;
+        const  O = Ohm;
+        const kO = KiloOhm;
+        const MO = MegaOhm;
+        const GO = GigaOhm;
+        const TO = TeraOhm;
     }
 }
