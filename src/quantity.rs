@@ -1,6 +1,6 @@
 use std::ops::{Add, Div, Mul, Sub};
 use num_traits::{Float, Inv, NumCast, Pow, real::Real, Zero};
-use crate::{dimension::{ExpHack, HasTypenum}, Scalar, units::{/*compound::*,*/ traits::*}};
+use crate::{Scalar, units::traits::*};
 
 
 type ScalarDefault = f64;
@@ -164,8 +164,7 @@ impl<U: Unit, V: Scalar> Quantity<U, V> {
         U::Output,
         <V as Pow<<V as Inv>::Output>>::Output,
     > where
-        ExpHack<D>: HasTypenum,
-        U: CanRoot<<ExpHack<D> as HasTypenum>::Typenum>,
+        U: CanRoot<D>,
         V: Inv + Pow<<V as Inv>::Output>,
         <V as Pow<<V as Inv>::Output>>::Output: Scalar,
     {

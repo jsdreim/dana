@@ -76,11 +76,12 @@ impl<U: Unit, E1, const E2: i32> CanPow<E2> for UnitPow<U, E1> where
     fn pow(self) -> Self::Output { UnitPow::new(self.0) }
 }
 
-impl<U: Unit, E, D> CanRoot<D> for UnitPow<U, E> where
-    E: Integer + PartialDiv<D>,
-    <E as PartialDiv<D>>::Output: Integer,
+impl<U: Unit, E, const D: i32> CanRoot<D> for UnitPow<U, E> where
+    ExpHack<D>: HasTypenum,
+    E: Integer + PartialDiv<<ExpHack<D> as HasTypenum>::Typenum>,
+    <E as PartialDiv<<ExpHack<D> as HasTypenum>::Typenum>>::Output: Integer,
     U::Dim: DimPowType<E>,
-    U::Dim: DimPowType<<E as PartialDiv<D>>::Output>,
+    U::Dim: DimPowType<<E as PartialDiv<<ExpHack<D> as HasTypenum>::Typenum>>::Output>,
 {
     type Output = UnitPow<U, E::Output>;
     fn root(self) -> Self::Output { UnitPow::new(self.0) }

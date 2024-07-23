@@ -101,7 +101,7 @@ impl<U: CanPow<3>> CanCube for U {
 //endregion
 
 //region Roots.
-pub trait CanRoot<E>: Unit {
+pub trait CanRoot<const D: i32>: Unit {
     type Output: Unit;
     fn root(self) -> Self::Output;
 }
@@ -111,7 +111,7 @@ pub trait CanSquareRoot: Unit {
     fn sqrt(self) -> Self::Output;
 }
 
-impl<U: CanRoot<typenum::P2>> CanSquareRoot for U {
+impl<U: CanRoot<2>> CanSquareRoot for U {
     type Output = U::Output;
     fn sqrt(self) -> Self::Output { self.root() }
 }
@@ -121,7 +121,7 @@ pub trait CanCubeRoot: Unit {
     fn cbrt(self) -> Self::Output;
 }
 
-impl<U: CanRoot<typenum::P3>> CanCubeRoot for U {
+impl<U: CanRoot<3>> CanCubeRoot for U {
     type Output = U::Output;
     fn cbrt(self) -> Self::Output { self.root() }
 }
