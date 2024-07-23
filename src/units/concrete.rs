@@ -24,9 +24,9 @@ macro_rules! concrete_types {
         $(
         /// Unit division.
         impl<U: $crate::Unit> ::std::ops::Div<U> for $unit where
-            $crate::dim::$unit: ::std::ops::Div<<U as $crate::Unit>::Dim>,
-            <$crate::dim::$unit as ::std::ops::Div<<U as $crate::Unit>::Dim>>::Output:
-                $crate::dim::DimType,
+            $crate::dimension::$unit: ::std::ops::Div<<U as $crate::Unit>::Dim>,
+            <$crate::dimension::$unit as ::std::ops::Div<<U as $crate::Unit>::Dim>>::Output:
+                $crate::dimension::DimType,
         {
             type Output = $crate::units::UnitDiv<Self, U>;
 
@@ -37,9 +37,9 @@ macro_rules! concrete_types {
 
         /// Unit multiplication.
         impl<U: $crate::Unit> ::std::ops::Mul<U> for $unit where
-            $crate::dim::$unit: ::std::ops::Mul<<U as $crate::Unit>::Dim>,
-            <$crate::dim::$unit as ::std::ops::Mul<<U as $crate::Unit>::Dim>>::Output:
-                $crate::dim::DimType,
+            $crate::dimension::$unit: ::std::ops::Mul<<U as $crate::Unit>::Dim>,
+            <$crate::dimension::$unit as ::std::ops::Mul<<U as $crate::Unit>::Dim>>::Output:
+                $crate::dimension::DimType,
         {
             type Output = $crate::units::UnitMul<Self, U>;
 
@@ -49,7 +49,7 @@ macro_rules! concrete_types {
         }
 
         impl ::num_traits::Inv for $unit where
-            $crate::dim::$unit: ::num_traits::Inv,
+            $crate::dimension::$unit: ::num_traits::Inv,
         {
             type Output = $crate::units::compound::PerUnit<Self>;
 
@@ -60,7 +60,7 @@ macro_rules! concrete_types {
 
         /// Unit exponentiation.
         impl<E: ::typenum::Integer> $crate::units::traits::CanPow<E> for $unit where
-            $crate::dim::$unit: $crate::dim::DimPowType<E>,
+            $crate::dimension::$unit: $crate::dimension::DimPowType<E>,
         {
             type Output = $crate::units::UnitPow<Self, E>;
 

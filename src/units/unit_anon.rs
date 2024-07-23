@@ -1,6 +1,6 @@
 use std::marker::PhantomData;
 use num_traits::AsPrimitive;
-use crate::{dim::*, Scalar, units::traits::*};
+use crate::{dimension::*, Scalar, units::traits::*};
 
 
 #[derive(Clone, Copy, Debug, Eq, Ord, PartialOrd)]

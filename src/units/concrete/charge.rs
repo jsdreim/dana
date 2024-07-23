@@ -13,7 +13,7 @@ pub enum Charge {
 }
 
 impl Unit for Charge {
-    type Dim = crate::dim::Charge;
+    type Dim = crate::dimension::Charge;
     // type ScaleType = f64;
 
     fn scale(&self) -> f64 {

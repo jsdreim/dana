@@ -5,7 +5,7 @@ use crate::units::{Unit, UnitConcrete};
 pub struct One;
 
 impl Unit for One {
-    type Dim = crate::dim::One;
+    type Dim = crate::dimension::One;
     // type ScaleType = f64;
 
     fn scale(&self) -> f64 { 1.0 }

@@ -10,7 +10,7 @@ pub enum Force {
 }
 
 impl Unit for Force {
-    type Dim = crate::dim::Force;
+    type Dim = crate::dimension::Force;
     // type ScaleType = f64;
 
     fn scale(&self) -> f64 {

@@ -13,7 +13,7 @@ pub enum Temp {
 }
 
 impl Unit for Temp {
-    type Dim = crate::dim::Temp;
+    type Dim = crate::dimension::Temp;
     // type ScaleType = f64;
 
     fn scale(&self) -> f64 {

@@ -10,7 +10,7 @@ pub enum Time {
 }
 
 impl Unit for Time {
-    type Dim = crate::dim::Time;
+    type Dim = crate::dimension::Time;
     // type ScaleType = f64;
 
     fn scale(&self) -> f64 {

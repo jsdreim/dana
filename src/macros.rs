@@ -2,7 +2,7 @@
 macro_rules! utype {
     //  Internal: Exponents.
     // (@@ $e:tt) => { $crate::units::exp::TypeFrac<$e, 1> };
-    (@@ $e:tt) => { <$crate::dim::ExpHack<$e> as $crate::dim::HasTypenum>::Typenum };
+    (@@ $e:tt) => { <$crate::dimension::ExpHack<$e> as $crate::dimension::HasTypenum>::Typenum };
 
     //  Internal: Unpack a group directly.
     ((@ $($t:tt)+)) => { $($t)+ };

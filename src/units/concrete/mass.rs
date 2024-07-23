@@ -10,7 +10,7 @@ pub enum Mass {
 }
 
 impl Unit for Mass {
-    type Dim = crate::dim::Mass;
+    type Dim = crate::dimension::Mass;
     // type ScaleType = f64;
 
     fn scale(&self) -> f64 {

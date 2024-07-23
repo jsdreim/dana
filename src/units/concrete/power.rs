@@ -13,7 +13,7 @@ pub enum Power {
 }
 
 impl Unit for Power {
-    type Dim = crate::dim::Power;
+    type Dim = crate::dimension::Power;
     // type ScaleType = f64;
 
     fn scale(&self) -> f64 {

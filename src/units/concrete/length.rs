@@ -12,7 +12,7 @@ pub enum Length {
 }
 
 impl Unit for Length {
-    type Dim = crate::dim::Length;
+    type Dim = crate::dimension::Length;
     // type ScaleType = f64;
 
     fn scale(&self) -> f64 {

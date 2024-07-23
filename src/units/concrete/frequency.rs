@@ -13,7 +13,7 @@ pub enum Frequency {
 }
 
 impl Unit for Frequency {
-    type Dim = crate::dim::Frequency;
+    type Dim = crate::dimension::Frequency;
     // type ScaleType = f64;
 
     fn scale(&self) -> f64 {

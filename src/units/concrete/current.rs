@@ -13,7 +13,7 @@ pub enum Current {
 }
 
 impl Unit for Current {
-    type Dim = crate::dim::Current;
+    type Dim = crate::dimension::Current;
     // type ScaleType = f64;
 
     fn scale(&self) -> f64 {
