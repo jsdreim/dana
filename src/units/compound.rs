@@ -54,14 +54,17 @@ mod impl_ops {
         }
     }
 
-    /*impl<_U: Unit, U: Unit, E: Exp> Div<_U> for UnitPow<U, E> where
+    impl<U: Unit, E: Integer, W: Unit> Div<W> for UnitPow<U, E> where
+        U::Dim: DimPowType<E>,
+        <U::Dim as DimPowType<E>>::Output: DimType + Div<W::Dim>,
+        <<U::Dim as DimPowType<E>>::Output as Div<W::Dim>>::Output: DimType,
     {
-        type Output = UnitDiv<Self, _U>;
+        type Output = UnitDiv<Self, W>;
 
-        fn div(self, rhs: _U) -> Self::Output {
+        fn div(self, rhs: W) -> Self::Output {
             UnitDiv(self, rhs)
         }
-    }*/
+    }
     //endregion
 
     //region `Mul` impls.
@@ -101,7 +104,7 @@ mod impl_ops {
         }
     }
 
-    /*impl<U: Unit, E: Integer, W: Unit> Mul<W> for UnitPow<U, E> where
+    impl<U: Unit, E: Integer, W: Unit> Mul<W> for UnitPow<U, E> where
         U::Dim: DimPowType<E>,
         <U::Dim as DimPowType<E>>::Output: DimType + Mul<W::Dim>,
         <<U::Dim as DimPowType<E>>::Output as Mul<W::Dim>>::Output: DimType,
@@ -111,7 +114,7 @@ mod impl_ops {
         fn mul(self, rhs: W) -> Self::Output {
             UnitMul(self, rhs)
         }
-    }*/
+    }
     //endregion
 
     //region `Inv` impls.
@@ -165,17 +168,41 @@ mod impl_ops {
     }
     //endregion
 
-    // impl<E: Exp, A: Unit, B: Unit> CanPow<E> for UnitMul<A, B> where
-    //     A::Dim: Mul<B::Dim>,
-    // {
-    //     type Output = UnitPow<Self, E>;
-    //     fn pow(self) -> Self::Output { UnitPow::new(self) }
-    // }
-}
+    //region `CanPow` impls.
+    impl<U: Unit, E: Integer> CanPow<E> for PerUnit<U> where
+        U::Dim: Inv,
+        <U::Dim as Inv>::Output: DimType + DimPowType<E>,
+        <<U::Dim as Inv>::Output as DimPowType<E>>::Output: DimType,
+    {
+        type Output = UnitPow<Self, E>;
 
-//region TODO
-// impl_unit_pow!(
-//     UnitDiv<A: Unit, B: Unit>,
-//     UnitMul<A: Unit, B: Unit>,
-// );
-//endregion
+        fn pow(self) -> Self::Output {
+            UnitPow::new(self)
+        }
+    }
+
+    impl<A: Unit, B: Unit, E: Integer> CanPow<E> for UnitDiv<A, B> where
+        A::Dim: Div<B::Dim>,
+        <A::Dim as Div<B::Dim>>::Output: DimType + DimPowType<E>,
+        <<A::Dim as Div<B::Dim>>::Output as DimPowType<E>>::Output: DimType,
+    {
+        type Output = UnitPow<Self, E>;
+
+        fn pow(self) -> Self::Output {
+            UnitPow::new(self)
+        }
+    }
+
+    impl<A: Unit, B: Unit, E: Integer> CanPow<E> for UnitMul<A, B> where
+        A::Dim: Mul<B::Dim>,
+        <A::Dim as Mul<B::Dim>>::Output: DimType + DimPowType<E>,
+        <<A::Dim as Mul<B::Dim>>::Output as DimPowType<E>>::Output: DimType,
+    {
+        type Output = UnitPow<Self, E>;
+
+        fn pow(self) -> Self::Output {
+            UnitPow::new(self)
+        }
+    }
+    //endregion
+}
