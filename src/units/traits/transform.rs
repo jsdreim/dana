@@ -110,6 +110,13 @@ impl<U: Unit, V: ConvertFrom<U>> ConvertInto<V> for U {
 
 
 pub trait Cancel: Unit {
-    fn cancel(&self) -> f64;
-    fn cancel_to<S: Scalar>(&self) -> S { S::from_f64(self.cancel()).unwrap() }
+    fn cancel_factor(&self) -> f64 { self.scale() }
+
+    fn cancel<S: Scalar>(&self) -> S {
+        S::from_f64(self.cancel_factor()).unwrap()
+    }
 }
+
+impl<U> Cancel for U where
+    U: Unit<Dim=crate::dimension::One>,
+{}

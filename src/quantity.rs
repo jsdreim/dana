@@ -220,7 +220,7 @@ impl<U: Unit, V: Scalar + 'static> Quantity<U, V> {
     pub fn cancel(self) -> V where
         U: Cancel,
     {
-        self.value * self.unit.cancel_to()
+        self.value * self.unit.cancel()
     }
 }
 //endregion
