@@ -10,6 +10,15 @@ use crate::units::{*, symbols::*};
 pub const CONST_C: qtype!(Speed) = qty!(299_792_458.0 m/s);
 
 
+/// Speed of light, squared; Relationship between mass and energy.
+///
+/// Unit: ([m]/[s])²
+///
+/// [m]: Length::Meter
+/// [s]: Time::Second
+pub const CONST_C2: qtype!(Speed^2) = qty!({CONST_C.value * CONST_C.value} (m/s)^2);
+
+
 /// Elementary charge; Electrical charge of a single proton.
 ///
 /// Unit: [C]
@@ -70,4 +79,6 @@ fn test_constants() {
     assert_eq!(format!("{CONST_C:.3e}"), "2.998e8 m/s");
     assert_eq!(format!("{CONST_G:.3e}"), "6.674e-11 (m^3/s^2)/kg");
     assert_eq!(format!("{GFORCE:.2}"), "9.81 (m/s)/s");
+
+    assert_eq!(CONST_C.squared(), CONST_C2);
 }

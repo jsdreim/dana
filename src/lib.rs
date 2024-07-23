@@ -101,10 +101,12 @@
 //!
 //! These operations can also be chained:
 //  FIXME
-//! ```ignore
-//! # use dimensional::{qty, units::{*, symbols::*}};
+//! ```
+//! use dimensional::{constants::CONST_C2, qty, units::{*, symbols::*}};
+//!
 //! let quantity = qty![
 //!     1.0 g // One gram.
+//!     * {CONST_C2} // Multiply by c².
 //!     as Energy // Convert to energy according to E=mc².
 //!     as P * T  // Express as the product of power and time.
 //!     in W * 1/Hz // Reinterpret time as "per Hertz".
@@ -130,9 +132,6 @@
 //! # use dimensional::{qty, units::symbols::*};
 //! assert_eq!(qty![*[3.3 V] / [150.0 Ω] in mA], 22.0);
 //! ```
-
-// #![allow(incomplete_features)]
-// #![feature(generic_const_exprs)]
 
 extern crate self as dimensional;
 

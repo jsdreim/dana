@@ -27,6 +27,16 @@ pub fn gravity(
 }
 
 
+pub fn mass_to_energy(mass: Quantity<Mass>) -> Quantity<Energy> {
+    qty![mass * {CONST_C.squared()} as Energy]
+}
+
+
+pub fn energy_to_mass(energy: Quantity<Energy>) -> Quantity<Mass> {
+    qty![energy / {CONST_C.squared()} as Mass]
+}
+
+
 pub fn photon_energy(freq: Quantity<Frequency>) -> Quantity<Energy> {
     qty![freq * CONST_H in eV]
 }
@@ -56,6 +66,16 @@ pub fn wavelength_to_frequency<V: Scalar + 'static>(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_e_mc2() {
+        let mass_0: Quantity<Mass> = qty![1.0 kg];
+        let energy: Quantity<Energy> = mass_to_energy(mass_0);
+        let mass_1: Quantity<Mass> = energy_to_mass(energy);
+
+        assert_eq!(qty![*energy in kJ].floor(), 89_875_517_873_681.0);
+        assert_eq!(mass_0, mass_1);
+    }
 
     #[test]
     fn test_gravity() {
