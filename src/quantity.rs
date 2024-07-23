@@ -199,7 +199,7 @@ impl<U: Unit, V: Scalar> Quantity<U, V> {
 
 //region Methods for unit operations.
 /// Unit conversion.
-impl<U: Unit, V: Scalar + 'static> Quantity<U, V> {
+impl<U: Unit, V: Scalar> Quantity<U, V> {
     /// Perform trait-based unit conversion to the default of a unit type. This
     ///     kind of conversion can cross between [`Unit`] types.
     pub fn convert<W: Unit>(self) -> Quantity<W, V> where
@@ -337,7 +337,7 @@ impl<U: Unit, V: Scalar> Quantity<U, V> {
 
 //region Comparison between quantities.
 //region Equivalence.
-impl<U: Unit, V: Scalar, W: Unit, X: Scalar + 'static> PartialEq<Quantity<W, X>>
+impl<U: Unit, V: Scalar, W: Unit, X: Scalar> PartialEq<Quantity<W, X>>
 for Quantity<U, V> where
     W: ConvertInto<U>,
     V: PartialEq<X>,
@@ -349,13 +349,13 @@ for Quantity<U, V> where
     }
 }
 
-impl<U: Unit, V: Scalar + Eq + 'static> Eq for Quantity<U, V> where
+impl<U: Unit, V: Scalar + Eq> Eq for Quantity<U, V> where
     Quantity<U, V>: PartialEq,
 {}
 //endregion
 
 //region Ordering.
-impl<U: Unit, V: Scalar, W: Unit, X: Scalar + 'static> PartialOrd<Quantity<W, X>>
+impl<U: Unit, V: Scalar, W: Unit, X: Scalar> PartialOrd<Quantity<W, X>>
 for Quantity<U, V> where
     W: ConvertInto<U>,
     V: PartialOrd<X>,
@@ -367,7 +367,7 @@ for Quantity<U, V> where
     }
 }
 
-impl<U: Unit, V: Scalar + Ord + 'static> Ord for Quantity<U, V> where
+impl<U: Unit, V: Scalar + Ord> Ord for Quantity<U, V> where
     U: ConvertInto<U>,
     Quantity<U, V>: PartialOrd,
 {

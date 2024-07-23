@@ -47,7 +47,7 @@ pub fn photon_frequency(energy: Quantity<Energy>) -> Quantity<Frequency> {
 }
 
 
-pub fn frequency_to_wavelength<V: Scalar + 'static>(
+pub fn frequency_to_wavelength<V: Scalar>(
     freq: Quantity<Frequency, V>,
     speed: Quantity<Speed, V>,
 ) -> Quantity<Length, V> {
@@ -55,7 +55,7 @@ pub fn frequency_to_wavelength<V: Scalar + 'static>(
 }
 
 
-pub fn wavelength_to_frequency<V: Scalar + 'static>(
+pub fn wavelength_to_frequency<V: Scalar>(
     length: Quantity<Length, V>,
     speed: Quantity<Speed, V>,
 ) -> Quantity<Frequency, V> {

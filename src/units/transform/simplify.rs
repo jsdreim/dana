@@ -135,7 +135,7 @@ macro_rules! impl_simplify {
             $($vis:vis fn $function:ident() -> $target:tt;)*
         }
     ) => {
-        impl<__V: $crate::scalar::Scalar + 'static $($(, $tvar $(: $req $(+ $reqs)*)?)+)?>
+        impl<__V: $crate::scalar::Scalar $($(, $tvar $(: $req $(+ $reqs)*)?)+)?>
         $crate::quantity::Quantity<$crate::utype!($from), __V> {
             $(
             $vis fn $function(self) -> $crate::quantity::Quantity<$crate::utype!($target), __V> {

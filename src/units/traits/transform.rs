@@ -1,7 +1,7 @@
 use crate::{Scalar, Unit};
 
 
-pub struct Conversion<U: Unit, S: Scalar + 'static> {
+pub struct Conversion<U: Unit, S: Scalar> {
     pub target: U,
     pub factor: S,
 }
