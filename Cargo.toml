@@ -32,6 +32,10 @@ bench = false
 name = "qty_basic"
 harness = false
 
+[[bench]]
+name = "qty_complex"
+harness = false
+
 
 [features]
 default = []
