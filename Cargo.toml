@@ -16,8 +16,21 @@ version = "1.0.203"
 features = ["derive"]
 optional = true
 
+
 [dev-dependencies]
 trybuild = "1.0.96"
+
+[dev-dependencies.criterion]
+version = "0.5.1"
+features = ["csv_output", "html_reports"]
+
+
+[lib]
+bench = false
+
+[[bench]]
+name = "qty_basic"
+harness = false
 
 
 [features]
