@@ -18,6 +18,7 @@ optional = true
 
 
 [dev-dependencies]
+rand = "0.8.5"
 trybuild = "1.0.96"
 
 [dev-dependencies.criterion]
@@ -35,6 +36,11 @@ harness = false
 [[bench]]
 name = "qty_complex"
 harness = false
+
+[[bench]]
+name = "qty_simd"
+harness = false
+required-features = ["simd"]
 
 
 [features]

@@ -20,9 +20,16 @@ pub struct QtySimd<U, V, const N: usize> where
 
 impl<U, V, const N: usize> QtySimd<U, V, N> where
     LaneCount<N>: SupportedLaneCount,
-    Simd<V, N>: Mul<Output=Simd<V, N>>,
     U: Unit, V: Scalar + SimdElement,
 {
+    pub fn new(units: [U; N], scalars: [V; N]) -> Self {
+        Self {
+            values: Simd::from(scalars),
+            scales: Simd::from(from_fn(|n| units[n].scale())),
+            _u: PhantomData,
+        }
+    }
+
     pub fn get(&self, index: usize) -> Quantity<UnitAnon<U::Dim>, V> {
         let value = self.values[index];
         let unit = UnitAnon::new(self.scales[index]);
