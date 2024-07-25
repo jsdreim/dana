@@ -213,6 +213,8 @@ impl ToTokens for QtyNode {
 
 #[derive(Debug)]
 pub enum Operation {
+    /// Switch a quantity to an anonymous unit.
+    Anonymous,
     /// Convert a quantity to the default of an inferred unit type.
     Convert,
     /// Convert a quantity to the default of a specified unit type.
@@ -237,13 +239,17 @@ pub enum Operation {
 impl Parse for Operation {
     fn parse(input: ParseStream) -> Result<Self> {
         if input.parse::<Token![as]>().is_ok() {
-            if input.parse::<Token![_]>().is_ok() {
+            if input.parse::<Token![?]>().is_ok() {
+                Ok(Self::Anonymous)
+            } else if input.parse::<Token![_]>().is_ok() {
                 Ok(Self::Convert)
             } else {
                 Ok(Self::ConvertType(input.parse()?))
             }
         } else if input.parse::<Token![in]>().is_ok() {
-            if input.parse::<Token![_]>().is_ok() {
+            if input.parse::<Token![?]>().is_ok() {
+                Ok(Self::Anonymous)
+            } else if input.parse::<Token![_]>().is_ok() {
                 Ok(Self::Convert)
             } else {
                 Ok(Self::ConvertUnit(input.parse()?))
@@ -299,6 +305,9 @@ impl ToTokens for QtyTree {
         match self {
             Self::Leaf(qty) => qty.to_tokens(tokens),
             Self::Branch(qty, op) => tokens.extend(match op {
+                Operation::Anonymous => {
+                    quote!(#qty.with_anonymous())
+                }
                 Operation::Convert => {
                     quote!(#qty.convert())
                 }

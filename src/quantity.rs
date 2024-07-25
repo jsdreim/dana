@@ -6,6 +6,10 @@ use crate::{Scalar, units::{traits::*, unit_anon::UnitAnon}};
 type ScalarDefault = f64;
 
 
+/// A [`Quantity`] with an [anonymous unit](UnitAnon).
+pub type QuantityAnon<D, V = ScalarDefault> = Quantity<UnitAnon<D>, V>;
+
+
 /// Dimensionless [`Scalar`] value paired with a dimensional [`Unit`].
 #[derive(Clone, Copy, Debug)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
@@ -28,6 +32,13 @@ impl<U: Unit, V: Scalar> Quantity<U, V> {
 
         self.value *= V::from_f64(factor).unwrap();
         self.unit = unit;
+    }
+
+    pub fn almost_eq<W>(self, rhs: Quantity<W, V>, limit: V) -> bool where
+        V: Float,
+        W: Unit<Dim=U::Dim>,
+    {
+        (self - rhs).abs().value <= limit
     }
 
     pub fn with_anonymous(self) -> Quantity<UnitAnon<U::Dim>, V> {

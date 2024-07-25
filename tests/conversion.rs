@@ -1,10 +1,37 @@
-use ::dimensional::{
+use num_traits::Inv;
+use dimensional::{
     constants::*,
     equations,
     qty, qtype,
-    Quantity,
+    quantity::{Quantity, QuantityAnon},
     units::{*, symbols::*},
 };
+
+
+#[test]
+fn test_anonymous() {
+    let l: QuantityAnon<_> = qty![72.0 km as ?];
+    let t: QuantityAnon<_> = qty![4.0 h as ?];
+
+    assert_eq!(qty![ 5.0  m/s  ], l / t);
+    assert_eq!(qty![ 5.0  m/s  ], l * t.inv());
+    assert_eq!(qty![36.0 km    ], l / t * qty![120.0 min]);
+    assert_eq!(qty![ 0.5  m/s^2], l / t / qty![ 10.0 s  ]);
+
+    let width: QuantityAnon<_>  = qty![40.0 cm as ?];
+    let height: QuantityAnon<_> = qty![ 1.5  m as ?];
+
+    let area_base = width.squared();
+    let volume_post = height * area_base;
+
+    assert!(qty![0.16 m^2].almost_eq(area_base, 1e-10));
+    assert!(qty![0.24 m^3].almost_eq(volume_post, 1e-10));
+
+    // assert_ne!(qty![2.0 m], qty![2.0 m^0 as ?]);
+    assert_eq!(qty![2.0 m], qty![2.0 m^1 as ?]);
+    assert_eq!(qty![2.0 m], qty![4.0 m^2 as ?].sqrt());
+    assert_eq!(qty![2.0 m], qty![8.0 m^3 as ?].cbrt());
+}
 
 
 #[test]

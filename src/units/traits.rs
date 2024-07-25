@@ -11,9 +11,9 @@ pub trait Unit: Copy + Default + std::fmt::Display + PartialEq {
 
     fn scale(&self) -> f64;
 
-    /// Given another unit of the same type, return the multiplication factor
+    /// Given a unit of the same dimension, return the multiplication factor
     ///     needed to scale from this unit to the other unit.
-    fn scale_factor(self, target: Self) -> f64 {
+    fn scale_factor<U: Unit<Dim=Self::Dim>>(self, target: U) -> f64 {
         let have = self.scale();
         let want = target.scale();
 
