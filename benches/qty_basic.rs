@@ -1,5 +1,5 @@
 use criterion::{Criterion, criterion_group, criterion_main};
-use dimensional::{constants::*, qty, Quantity, units::{*, symbols::*}};
+use dimensional::{constants::*, qty, Quantity, symbols::*, units::*};
 
 
 fn mass_energy_float(mass_kg: f64) -> f64 {

@@ -3,7 +3,7 @@
 use std::{array::from_fn, ops::{Add, Mul}, simd::*};
 use criterion::{black_box, Criterion, criterion_group, criterion_main};
 use rand::Rng;
-use dimensional::{Scalar, simd::*, units::{*, symbols::*}};
+use dimensional::{Scalar, simd::*, symbols::*, units::*};
 
 
 type Num = f32;
