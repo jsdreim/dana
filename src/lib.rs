@@ -132,6 +132,8 @@
 //! assert_eq!(qty![*[3.3 V] / [150.0 Ω] in mA], 22.0);
 //! ```
 
+#![cfg_attr(feature = "simd", feature(portable_simd))]
+
 extern crate self as dimensional;
 
 #[macro_use]
@@ -147,6 +149,9 @@ pub mod equations;
 pub mod quantity;
 pub mod scalar;
 pub mod units;
+
+#[cfg(feature = "simd")]
+pub mod simd;
 
 pub use quantity::Quantity;
 pub use scalar::Scalar;

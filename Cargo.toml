@@ -40,3 +40,4 @@ harness = false
 [features]
 default = []
 serde = ["dep:serde"]
+simd = []
