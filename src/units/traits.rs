@@ -1,4 +1,4 @@
-use crate::{dimension::DimType, Quantity, Scalar};
+use crate::{dimension::DimType, Quantity, Scalar, units::unit_anon::UnitAnon};
 
 pub mod transform;
 pub use transform::*;
@@ -18,6 +18,10 @@ pub trait Unit: Copy + Default + std::fmt::Display + PartialEq {
         let want = target.scale();
 
         have / want
+    }
+
+    fn anonymous(&self) -> UnitAnon<Self::Dim> {
+        UnitAnon::new(self.scale())
     }
 
     fn dimension(&self) -> Self::Dim { DimType::dimension() }

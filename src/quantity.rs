@@ -1,6 +1,6 @@
 use std::ops::{Add, AddAssign, Div, Mul, Neg, Sub, SubAssign};
 use num_traits::{Float, Inv, NumCast, Pow, real::Real, Zero};
-use crate::{Scalar, units::traits::*};
+use crate::{Scalar, units::{traits::*, unit_anon::UnitAnon}};
 
 
 type ScalarDefault = f64;
@@ -28,6 +28,10 @@ impl<U: Unit, V: Scalar> Quantity<U, V> {
 
         self.value *= V::from_f64(factor).unwrap();
         self.unit = unit;
+    }
+
+    pub fn with_anonymous(self) -> Quantity<UnitAnon<U::Dim>, V> {
+        self.unit.anonymous().quantity(self.value)
     }
 
     pub fn with_base(self) -> Self { self.with_unit(U::default()) }
