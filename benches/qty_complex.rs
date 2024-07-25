@@ -68,10 +68,10 @@ fn capacitor_quantity_opt(amp_hours: f64, volts: f64, ohms: f64) -> (f64, f64) {
 
 
 fn capacitor(c: &mut Criterion) {
-    const NAME: &str = "Capacitor";
+    let mut group = c.benchmark_group("Capacitor");
 
-    c.bench_function(
-        &format!("{NAME} (float)"),
+    group.bench_function(
+        "float",
         |b| b.iter(|| capacitor_float(
             black_box(7.5),
             black_box(12.0),
@@ -79,8 +79,8 @@ fn capacitor(c: &mut Criterion) {
         )),
     );
 
-    c.bench_function(
-        &format!("{NAME} (quantity)"),
+    group.bench_function(
+        "quantity",
         |b| b.iter(|| capacitor_quantity(
             black_box(7.5),
             black_box(12.0),
@@ -88,8 +88,8 @@ fn capacitor(c: &mut Criterion) {
         )),
     );
 
-    c.bench_function(
-        &format!("{NAME} (optimized float)"),
+    group.bench_function(
+        "float (optimized)",
         |b| b.iter(|| capacitor_float_opt(
             black_box(7.5),
             black_box(12.0),
@@ -97,8 +97,8 @@ fn capacitor(c: &mut Criterion) {
         )),
     );
 
-    c.bench_function(
-        &format!("{NAME} (optimized quantity)"),
+    group.bench_function(
+        "quantity (optimized)",
         |b| b.iter(|| capacitor_quantity_opt(
             black_box(7.5),
             black_box(12.0),

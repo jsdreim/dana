@@ -36,7 +36,7 @@ fn simd_quantity</*Num,*/ const N: usize>(
 
 
 fn bench_simd(c: &mut Criterion) {
-    const NAME: &str = "SIMD";
+    let mut group = c.benchmark_group("SIMD");
 
     let rng = &mut rand::thread_rng();
     let pos: [Num; WIDTH] = from_fn(|_| rng.gen_range( 1.0..=20.0));
@@ -51,8 +51,8 @@ fn bench_simd(c: &mut Criterion) {
     let vel_q: QtySimd<Speed, Num, WIDTH> = (m/s).quantity_simd(vel);
     let time_q: QtySimd<Time, Num, WIDTH> = s.quantity(time).to_simd();
 
-    c.bench_function(
-        &format!("{NAME} (float)"),
+    group.bench_function(
+        "float",
         |b| b.iter(|| simd_float(
             black_box(pos_f),
             black_box(vel_f),
@@ -60,8 +60,8 @@ fn bench_simd(c: &mut Criterion) {
         )),
     );
 
-    c.bench_function(
-        &format!("{NAME} (quantity)"),
+    group.bench_function(
+        "quantity",
         |b| b.iter(|| simd_quantity(
             black_box(pos_q),
             black_box(vel_q),
