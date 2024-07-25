@@ -3,9 +3,9 @@ use crate::{dimension::*, units::traits::*};
 
 
 /// The reciprocal of a unit.
-#[derive(Clone, Copy, Debug, Default,
-Eq, PartialEq, Ord, PartialOrd)]
+#[derive(Clone, Copy, Debug, Default, Hash, Eq, PartialEq, Ord, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
+#[repr(transparent)]
 pub struct PerUnit<U: Unit>(pub U) where
     U::Dim: Inv,
     <U::Dim as Inv>::Output: DimType,

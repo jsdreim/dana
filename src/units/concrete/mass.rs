@@ -1,7 +1,8 @@
 use crate::units::{/*si,*/ Unit, UnitConcrete};
 
 
-#[derive(Clone, Copy, Debug, PartialEq, PartialOrd, /*Eq, Ord*/)]
+#[derive(Clone, Copy, Debug, Hash, PartialEq, PartialOrd, Eq, Ord)]
+#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 pub enum Mass {
     MilliGram,
     Gram,

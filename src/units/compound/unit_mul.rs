@@ -3,8 +3,7 @@ use crate::{dimension::*, units::traits::*};
 
 
 /// Two units multiplied; For example, Newton-Meters.
-#[derive(Clone, Copy, Debug, Default,
-Eq, PartialEq, Ord, PartialOrd)]
+#[derive(Clone, Copy, Debug, Default, Hash, Eq, PartialEq, Ord, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 pub struct UnitMul<A: Unit, B: Unit>(pub A, pub B) where
     A::Dim: Mul<B::Dim>,

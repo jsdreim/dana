@@ -6,8 +6,9 @@ use crate::{dimension::*, Scalar, units::traits::*};
 dummy!(pub trait AnonScale: Copy + Scalar + AsPrimitive<f64>);
 
 
-#[derive(Clone, Copy, /*Debug,*/ Eq, Ord, PartialOrd)]
+#[derive(Clone, Copy, Hash, Eq, Ord, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
+#[repr(transparent)]
 pub struct UnitAnon<D: DimType, S: AnonScale = f64>(pub S, PhantomData<D>);
 
 impl<D: DimType, S: AnonScale> UnitAnon<D, S> {
