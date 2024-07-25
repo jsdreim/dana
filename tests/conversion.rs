@@ -4,7 +4,8 @@ use dimensional::{
     equations,
     qty, qtype,
     quantity::{Quantity, QuantityAnon},
-    units::{*, symbols::*},
+    symbols::*,
+    units::*,
 };
 
 

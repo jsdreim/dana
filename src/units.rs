@@ -2,7 +2,6 @@ pub mod _experimental;
 pub mod compound;
 pub mod concrete;
 pub mod si;
-pub mod symbols;
 pub mod traits;
 pub mod unit_anon;
 
@@ -26,12 +25,3 @@ pub type GravParam = utype!(Length^3 / Time^2);
 
 pub type HeatCapacity = utype!(Energy / Temp);
 pub type HeatSpecific = utype!(HeatCapacity / Mass);
-
-
-#[test]
-pub fn test_macros() {
-    use symbols::common::*;
-
-    let _accel_1: utype!(L/T/T) = unit!((m/s)/s);
-    let _accel_2: Accel = unit!(m/s/s);
-}

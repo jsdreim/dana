@@ -2,7 +2,8 @@ use crate::{
     constants::*,
     Quantity,
     Scalar,
-    units::{*, symbols::physical::*},
+    symbols::physical::*,
+    units::*,
 };
 
 

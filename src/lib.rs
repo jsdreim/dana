@@ -83,7 +83,7 @@
 //!     constants and type aliases, bringing the syntax very close to a pure
 //!     mathematical form:
 //! ```
-//! use dimensional::{qty, units::symbols::*};
+//! use dimensional::{qty, symbols::*};
 //!
 //! let grav = qty![9.81 m/s^2];
 //! ```
@@ -101,7 +101,7 @@
 //!
 //! These operations can also be chained:
 //! ```
-//! use dimensional::{constants::CONST_C2, qty, units::{*, symbols::*}};
+//! use dimensional::{constants::CONST_C2, qty, symbols::*, units::*};
 //!
 //! let quantity = qty![
 //!     1.0 g // One gram.
@@ -118,7 +118,7 @@
 //!     after performing any conversions. Among other things, this allows for
 //!     particularly readable assertions:
 //! ```
-//! # use dimensional::{qty, units::symbols::*};
+//! # use dimensional::{qty, symbols::*};
 //! let d = qty![30.0 km];
 //! let v = qty![45.0 km/h];
 //!
@@ -128,7 +128,7 @@
 //! Square brackets can be used to perform recursion, allowing for definition,
 //!     calculation, and conversion all in a single call:
 //! ```
-//! # use dimensional::{qty, units::symbols::*};
+//! # use dimensional::{qty, symbols::*};
 //! assert_eq!(qty![*[3.3 V] / [150.0 Ω] in mA], 22.0);
 //! ```
 
@@ -148,6 +148,7 @@ pub mod dimension;
 pub mod equations;
 pub mod quantity;
 pub mod scalar;
+pub mod symbols;
 pub mod units;
 
 #[cfg(feature = "simd")]
@@ -172,7 +173,7 @@ impl<V: Scalar> Quantity<units::Temp, V> {
 #[cfg(test)]
 mod tests {
     use num_traits::Inv;
-    use crate::{Quantity, units::{*, symbols::basic::*, traits::*}};
+    use crate::{Quantity, symbols::basic::*, units::{*, traits::*}};
 
     #[test]
     pub fn test_macros() {

@@ -252,7 +252,7 @@ impl<U, V, T, const N: usize> Mul<T> for QtySimd<U, V, N> where
 
 #[cfg(test)]
 mod tests {
-    use crate::{qty, units::symbols::*};
+    use crate::{qty, symbols::*};
     use super::*;
 
     #[test]

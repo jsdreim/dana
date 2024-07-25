@@ -9,7 +9,7 @@ fn qty_invalid() {
 #[test]
 fn qty_valid() {
     use dim_macros::qty;
-    use dimensional::{Quantity, units::{*, symbols::*}};
+    use dimensional::{Quantity, symbols::*, units::*};
 
     //  Test basic definitions against fully-explicit types.
     let _qty: Quantity<L> = qty![1.0 m];
@@ -53,7 +53,7 @@ fn qty_valid() {
 #[test]
 fn qty_ops() {
     use dim_macros::qty;
-    use dimensional::{constants::*, Quantity, units::{*, symbols::*}};
+    use dimensional::{constants::*, Quantity, symbols::*, units::*};
 
     let v: Quantity<Voltage> = qty![3.3 V];
     let r: Quantity<Resistance> = qty![150.0 Ω];
@@ -89,7 +89,7 @@ fn qty_ops() {
 #[test]
 fn qty_ops_adv() {
     use dim_macros::qty;
-    use dimensional::{Quantity, units::{*, symbols::*}};
+    use dimensional::{Quantity, symbols::*, units::*};
 
     let n = 5.0;
     let w_4: Quantity<Power> = qty![4.0 W];
@@ -128,7 +128,7 @@ fn qty_ops_adv() {
 #[test]
 fn qtype_valid() {
     use dim_macros::qtype;
-    use dimensional::units::{*, symbols::*, traits::*};
+    use dimensional::{symbols::*, units::{*, traits::*}};
 
     let u = Length::Meter / Time::Second.squared();
 

@@ -1,4 +1,4 @@
-use crate::units::{*, symbols::*};
+use crate::{symbols::*, units::*};
 
 
 /// Speed of light travelling through a perfect vacuum.
