@@ -6,8 +6,11 @@ use rand::Rng;
 use dimensional::{Scalar, simd::*, symbols::*, units::*};
 
 
-type Num = f32;
-const WIDTH: usize = 8;
+// type Num = f32;
+// const WIDTH: usize = 8;
+
+type Num = f64;
+const WIDTH: usize = 4;
 
 
 fn simd_float<V, const N: usize>(
