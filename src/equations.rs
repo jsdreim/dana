@@ -19,7 +19,7 @@ pub fn gravity(
 ) -> Quantity<Force> {
     //  F = G(M₁M₂ / r²)
 
-    let force: qtype!((l^3/t^2/m) * (m*m/l^2)) = CONST_G * (
+    let force: qtype!((L^3/T^2/M) * (M*M/L^2)) = CONST_G * (
         (mass_1 * mass_2)
         / dist.squared()
     );

@@ -44,11 +44,11 @@ fn test_ratios() {
 
     let v_f = v / qty![f as 1/t];
 
-    let fv = qty![v_f -> l];
+    let fv = qty![v_f -> L];
 
-    // let fv: qtype!((l/t) / (1/t)) = v / qty![f as 1/t];
-    // let fv: qtype!((l/t) * t) = fv.simplify();
-    // let fv: qtype!(l) = fv.simplify();
+    // let fv: qtype!((L/t) / (1/t)) = v / qty![f as 1/t];
+    // let fv: qtype!((L/t) * t) = fv.simplify();
+    // let fv: qtype!(L) = fv.simplify();
 
     assert_eq!(fv, equations::frequency_to_wavelength(f, v));
 
@@ -125,7 +125,7 @@ fn test_cancel() {
     let d: Quantity<Length> = (v * t).convert();
     assert_eq!(d, qty!(360.0 m));
 
-    let dt: qtype!(l * t) = qty![90.0 m*s];
+    let dt: qtype!(L * t) = qty![90.0 m*s];
     let t: Quantity<Time> = qty![0.5 min];
     let d: Quantity<Length> = (dt / t).convert();
     assert_eq!(d, qty!(3.0 m));
@@ -137,8 +137,8 @@ fn test_compounds() {
     let l = qty![5.0 m];
     let t = qty![2.0/s];
 
-    let q: qtype!(l * (1/t)) = l * t;
-    let v: qtype!(l / t) = q.convert();
+    let q: qtype!(L * (1/t)) = l * t;
+    let v: qtype!(L / t) = q.convert();
 
     assert_eq!(v, qty![10.0 m/s]);
 }
@@ -150,12 +150,12 @@ fn test_powers() {
     let x1: Quantity<Length> = qty![2.0 m];
 
     //  Multiply and then simplify to square.
-    let x1mul:  qtype!(l * l)   = x1*x1.with_unit(Length::MilliMeter);
-    let x2:     qtype!(l^2)     = x1mul.convert();
+    let x1mul:  qtype!(L * L)   = x1*x1.with_unit(Length::MilliMeter);
+    let x2:     qtype!(L^2)     = x1mul.convert();
 
     //  Multiply and then simplify to cube.
-    let x2mul:  qtype!(l^2 * l) = x2*x1.with_unit(Length::KiloMeter);
-    let x3:     qtype!(l^3)     = x2mul.convert();
+    let x2mul:  qtype!(L^2 * L) = x2*x1.with_unit(Length::KiloMeter);
+    let x3:     qtype!(L^3)     = x2mul.convert();
 
     //  Ensure the results match.
     assert_eq!(x2, x1.squared());
@@ -168,12 +168,12 @@ fn test_powers() {
     //  Climb back down.
 
     //  Divide and then simplify back down to square.
-    let x3div:  qtype!(l^3 / l) = x3/x1.with_unit(Length::MilliMeter);
-    let x2:     qtype!(l^2)     = x3div.convert();
+    let x3div:  qtype!(L^3 / L) = x3/x1.with_unit(Length::MilliMeter);
+    let x2:     qtype!(L^2)     = x3div.convert();
 
     //  Divide and then simplify back down to square.
-    let x2div:  qtype!(l^2 / l) = x2/x1.with_unit(Length::KiloMeter);
-    let x1:     qtype!(l^1)     = x2div.convert();
+    let x2div:  qtype!(L^2 / L) = x2/x1.with_unit(Length::KiloMeter);
+    let x1:     qtype!(L^1)     = x2div.convert();
 
     //  Ensure the results are still correct.
     assert_eq!(x2, qty![4.0 m^2]);

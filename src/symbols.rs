@@ -32,6 +32,14 @@ macro_rules! define_symbols {
             $($(pub type $uname = super::$unit;)+)?
             $(define_symbols!(@ super::$unit; $alias $(: $atype)? = $val);)*
         })*
+
+        pub mod types {
+            $($($(pub type $uname = super::$unit;)+)?)*
+        }
+
+        // pub mod units {
+        //     $($(define_symbols!(@ super::$unit; $alias $(: $atype)? = $val);)*)*
+        // }
     };
 
     //  Define type modules, and then import everything from all of them.
@@ -43,8 +51,15 @@ macro_rules! define_symbols {
     };
 
     //  Define a group module, containing symbols from other modules.
-    ($vis:vis mod $module:ident ($($import:ident),* $(,)?)) => {
+    ($(#[$attr:meta])*
+    $vis:vis mod $module:ident ($($import:ident),* $(,)?)) => {
+        $(#[$attr])*
         $vis mod $module {$(pub use super::$import::*;)*}
+    };
+
+    ($($(#[$attr:meta])*
+    $vis:vis mod $module:ident ($($import:ident),* $(,)?);)*) => {
+        $(define_symbols!($(#[$attr])* $vis mod $module ($($import),*));)*
     };
 
     //  Internal: Definitions for consts.
@@ -71,7 +86,6 @@ macro_rules! define_symbols {
 
 pub mod common {
     pub use super::{
-        accel::{a},
         length::{L, m, km},
         mass::{M, kg},
         time::{T, s, h},
@@ -79,10 +93,23 @@ pub mod common {
 }
 
 
-define_symbols!(pub mod basic(length, mass, time, speed, accel));
-// define_symbols!(pub mod geometric(length, area, volume));
-define_symbols!(pub mod physical(basic, energy, frequency, force, momentum, temp));
-define_symbols!(pub mod electrical(power, charge, current, voltage, resistance));
+define_symbols! {
+    /// Unit symbols for basic dimensions: Length, mass, time, and speed.
+    pub mod basic(length, mass, time, speed);
+
+    // /// Unit symbols for units often used in geometry.
+    // pub mod geometric(length, area, volume);
+
+    /// Unit symbols for units often used in chemistry.
+    pub mod chemical(mass, time, energy, frequency, temp, amount);
+    /// Unit symbols for units often used in physics.
+    pub mod physical(basic, energy, frequency, force, temp, intensity);
+    /// Unit symbols related to electricity.
+    pub mod electrical(power, charge, current, voltage, resistance);
+
+    /// Unit symbols for the ISQ base quantities.
+    pub mod isq(length, mass, time, current, temp, amount, intensity);
+}
 
 
 // define_symbols! {
@@ -106,10 +133,10 @@ define_symbols! {
         const kph: (Length / Time) = (km/h);
     }
 
-    pub mod accel for type Accel as a {}
-    pub mod momentum for type Momentum as p {}
+    // pub mod accel for type Accel as a {}
+    // pub mod momentum for type Momentum as p {}
 
-    pub mod length for type Length as l, L {
+    pub mod length for type Length as L {
         const nm = NanoMeter;
         const μm = MicroMeter;
         const um = MicroMeter;
@@ -119,7 +146,7 @@ define_symbols! {
         const km = KiloMeter;
     }
 
-    pub mod mass for type Mass as m, M {
+    pub mod mass for type Mass as M {
         const mg = MilliGram;
         const  g = Gram;
         const kg = KiloGram;
