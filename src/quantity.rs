@@ -115,9 +115,11 @@ impl<U: Unit, V: Scalar> Quantity<U, V> {
     }
 
     #[cfg(feature = "simd")]
-    pub fn to_simd<const N: usize>(self) -> crate::simd::QtySimd<U, V, N> where
+    pub fn to_simd<const N: usize, S>(self) -> crate::simd::QtySimd<U, V, N, S> where
         std::simd::LaneCount<N>: std::simd::SupportedLaneCount,
-        V: std::simd::SimdElement,
+        V: crate::simd::QtySimdValue,
+        S: crate::simd::QtySimdScale,
+        f64: num_traits::AsPrimitive<S>,
     {
         crate::simd::QtySimd::from([self; N])
     }

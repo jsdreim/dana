@@ -4,7 +4,7 @@ use std::{array::from_fn, ops::{Add, Mul}, simd::*};
 use criterion::{black_box, Criterion, criterion_group, criterion_main};
 use num_traits::AsPrimitive;
 use rand::Rng;
-use dimensional::{Scalar, simd::*, symbols::*, units::*};
+use dimensional::{simd::*, symbols::*, units::*};
 
 
 fn simd_float<V, const N: usize>(
@@ -20,32 +20,32 @@ fn simd_float<V, const N: usize>(
 }
 
 
-fn simd_quantity<V, const N: usize>(
-    position: QtySimd<Length, V, { N }>,
-    velocity: QtySimd<Speed, V, { N }>,
-    time: QtySimd<Time, V, { N }>,
-) -> QtySimd<Length, V, { N }> where
+fn simd_quantity<V, const N: usize, S>(
+    position: QtySimd<Length, V, { N }, S>,
+    velocity: QtySimd<Speed, V, { N }, S>,
+    time: QtySimd<Time, V, { N }, S>,
+) -> QtySimd<Length, V, { N }, S> where
     LaneCount<{ N }>: SupportedLaneCount,
-    V: Scalar + SimdElement,
-    QtySimd<Speed, V, { N }>: Mul<QtySimd<Time, V, { N }>>,
-    QtySimd<Length, V, { N }>: Add<
-        <QtySimd<Speed, V, { N }> as Mul<QtySimd<Time, V, { N }>>>::Output,
-        Output = QtySimd<Length, V, { N }>,
+    V: QtySimdValue, S: QtySimdScale,
+    QtySimd<Speed, V, { N }, S>: Mul<QtySimd<Time, V, { N }, S>>,
+    QtySimd<Length, V, { N }, S>: Add<
+        <QtySimd<Speed, V, { N }, S> as Mul<QtySimd<Time, V, { N }, S>>>::Output,
+        Output = QtySimd<Length, V, { N }, S>,
     >
 {
     position + velocity * time
 }
 
 
-fn bench_simd_group<V, const N: usize>(c: &mut Criterion, name: &str) where
+fn bench_simd_group<V, const N: usize, S>(c: &mut Criterion, name: &str) where
     LaneCount<{ N }>: SupportedLaneCount,
-    V: Scalar + SimdElement /*+ Add<Output=V> + Mul<Output=V>*/,
-    f64: AsPrimitive<V>,
+    V: QtySimdValue, S: QtySimdScale,
+    f64: AsPrimitive<V> + AsPrimitive<S>,
     Simd<V, { N }>: Add<Output=Simd<V, { N }>> + Mul<Output=Simd<V, { N }>>,
-    QtySimd<Speed, V, { N }>: Mul<QtySimd<Time, V, { N }>>,
-    QtySimd<Length, V, { N }>: Add<
-        <QtySimd<Speed, V, { N }> as Mul<QtySimd<Time, V, { N }>>>::Output,
-        Output = QtySimd<Length, V, { N }>,
+    QtySimd<Speed, V, { N }, S>: Mul<QtySimd<Time, V, { N }, S>>,
+    QtySimd<Length, V, { N }, S>: Add<
+        <QtySimd<Speed, V, { N }, S> as Mul<QtySimd<Time, V, { N }, S>>>::Output,
+        Output = QtySimd<Length, V, { N }, S>,
     >
 {
     let mut group = c.benchmark_group(name);
@@ -59,9 +59,9 @@ fn bench_simd_group<V, const N: usize>(c: &mut Criterion, name: &str) where
     let vel_f: Simd<V, { N }> = Simd::from(vel);
     let time_f: Simd<V, { N }> = Simd::from([time; N]);
 
-    let pos_q: QtySimd<Length, V, { N }> = m.quantity_simd(pos);
-    let vel_q: QtySimd<Speed, V, { N }> = (m/s).quantity_simd(vel);
-    let time_q: QtySimd<Time, V, { N }> = s.quantity(time).to_simd();
+    let pos_q: QtySimd<Length, V, { N }, S> = m.quantity_simd(pos);
+    let vel_q: QtySimd<Speed, V, { N }, S> = (m/s).quantity_simd(vel);
+    let time_q: QtySimd<Time, V, { N }, S> = s.quantity(time).to_simd();
 
     group.bench_function(
         "float",
@@ -85,7 +85,7 @@ fn bench_simd_group<V, const N: usize>(c: &mut Criterion, name: &str) where
 
 fn bench_simd(c: &mut Criterion) {
     macro_rules! bench {($c:ident, $ty:ty, $($n:literal),+ $(,)?) => {$(
-        bench_simd_group::<$ty, $n>($c, concat!("SIMD/", stringify!($ty), "x", $n));
+        bench_simd_group::<$ty, $n, $ty>($c, concat!("SIMD/", stringify!($ty), "x", $n));
     )+}}
 
     // bench!(c, f32, 1, 2, 4, 8, 16, 32);

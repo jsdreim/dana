@@ -31,10 +31,11 @@ pub trait Unit: Copy + Default + std::fmt::Display + PartialEq {
     }
 
     #[cfg(feature = "simd")]
-    fn quantity_simd<V, const N: usize>(self, scalars: [V; N])
-        -> crate::simd::QtySimd<Self, V, N> where
+    fn quantity_simd<V, const N: usize, S>(self, scalars: [V; N])
+        -> crate::simd::QtySimd<Self, V, N, S> where
         std::simd::LaneCount<N>: std::simd::SupportedLaneCount,
-        V: Scalar + std::simd::SimdElement,
+        V: crate::simd::QtySimdValue,
+        S: crate::simd::QtySimdScale,
     {
         crate::simd::QtySimd::new([self; N], scalars)
     }
