@@ -50,19 +50,6 @@ pub type Capacitance  = Dimension<N2, N1, P4, P2, Z0, Z0, Z0>;
 //                                 L   M   T   I   Θ   N   J
 
 
-/// Single-character bindings to specific [`Dimension`] types.
-pub mod symbols {
-    pub type L = super::Length;
-    pub type M = super::Mass;
-    pub type T = super::Time;
-    pub type I = super::Current;
-    pub type K = super::Temp;
-    pub type Θ = super::Temp;
-    pub type N = super::Amount;
-    pub type J = super::Intensity;
-}
-
-
 /// Zero-size type that serves as a type-level array of exponents.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub struct Dimension<L: Int, M: Int, T: Int, I: Int, K: Int, N: Int, J: Int> {

@@ -90,6 +90,45 @@ macro_rules! define_symbols {
 }
 
 
+/// Symbols for specific [`Dimension`] types.
+pub mod dim {
+    use crate::dimension::*;
+
+    //region Fundamental dimensions.
+    pub type L = Length;
+    pub type M = Mass;
+    pub type T = Time;
+    pub type I = Current;
+    pub type K = Temp;
+    pub type Θ = Temp;
+    pub type N = Amount;
+    pub type J = Intensity;
+    //endregion
+
+    //region Derived dimensions.
+    //  TODO: How many of these should be provided (if any at all)?
+    /*pub type f = Frequency;
+    pub type v = Velocity;
+    pub type a = Accel;
+    pub type F = Force;
+    // pub type p = Pressure;
+    // pub type A = Area;
+    // pub type V = Volume;
+    pub type D = Density;
+    pub type ρ = Density;
+
+    pub type Q = Charge;
+    pub type τ = Torque;
+    pub type E = Energy;
+    pub type P = Power;
+    pub type V = Voltage;
+    // pub type U = Voltage;
+    pub type R = Resistance;
+    pub type C = Capacitance;*/
+    //endregion
+}
+
+
 pub mod common {
     pub use super::{
         types::{L, M, T},
