@@ -239,6 +239,11 @@ define_symbols! {
         const GN = GigaNewton;
     }
 
+    pub mod force_imperial for type Force {
+        const ozf = Ounce;
+        const lbf = Pound;
+    }
+
     pub mod energy for type Energy as E {
         const eV = ElectronVolt;
 

@@ -7,6 +7,23 @@ use crate::{
 };
 
 
+impl<V: Scalar> Quantity<Mass, V> {
+    /// Return the gravitational force experienced by an object of this mass at
+    ///     the surface of Earth.
+    pub fn mass_as_weight(self) -> Option<Quantity<Force, V>> {
+        Some((self * GFORCE.scalar_cast()?).convert())
+    }
+}
+
+impl<V: Scalar> Quantity<Force, V> {
+    /// Return the mass that would experience this gravitational force at the
+    ///     surface of Earth.
+    pub fn weight_to_mass(self) -> Option<Quantity<Mass, V>> {
+        Some((self / GFORCE.scalar_cast()?).convert())
+    }
+}
+
+
 pub fn gravitational_parameter(mass: Quantity<Mass>) -> Quantity<GravParam> {
     (mass * CONST_G).convert()
 }

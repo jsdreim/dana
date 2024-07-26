@@ -4,7 +4,9 @@ use crate::units::{Unit, UnitConcrete};
 #[derive(Clone, Copy, Debug, Hash, PartialEq, PartialOrd, Eq, Ord)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 pub enum Force {
+    Ounce,
     Newton,
+    Pound,
     KiloNewton,
     MegaNewton,
     GigaNewton,
@@ -20,6 +22,9 @@ impl Unit for Force {
             Self::KiloNewton => 1e+3,
             Self::MegaNewton => 1e+6,
             Self::GigaNewton => 1e+9,
+
+            Self::Ounce => 0.278_013_9,
+            Self::Pound => 4.448_222,
         }
     }
 }
@@ -33,6 +38,9 @@ impl UnitConcrete for Force {
             Self::KiloNewton => "kN",
             Self::MegaNewton => "MN",
             Self::GigaNewton => "GN",
+
+            Self::Ounce => "ozf",
+            Self::Pound => "lbf",
         }
     }
 }
