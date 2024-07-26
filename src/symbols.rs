@@ -167,10 +167,18 @@ define_symbols! {
     }
 
     pub mod mass for type Mass as M {
+        const pg = PicoGram;
+        const ng = NanoGram;
+        const μg = MicroGram;
+        const ug = MicroGram;
         const mg = MilliGram;
         const  g = Gram;
         const kg = KiloGram;
+
         const  T = MetricTon;
+        const kT = KiloTon;
+        const MT = MegaTon;
+        const GT = GigaTon;
     }
 
     pub mod time for type Time as t, T {
