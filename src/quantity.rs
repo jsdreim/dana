@@ -1,5 +1,5 @@
 use std::ops::{Add, AddAssign, Div, Mul, Neg, Sub, SubAssign};
-use num_traits::{Float, Inv, NumCast, Pow, real::Real, Zero};
+use num_traits::{Inv, NumCast, Pow, real::Real, Zero};
 use crate::{Scalar, units::{traits::*, unit_anon::UnitAnon}};
 
 
@@ -35,7 +35,7 @@ impl<U: Unit, V: Scalar> Quantity<U, V> {
     }
 
     pub fn almost_eq<W>(self, rhs: Quantity<W, V>, limit: V) -> bool where
-        V: Float,
+        V: Real,
         W: Unit<Dim=U::Dim>,
     {
         (self - rhs).abs().value <= limit
@@ -70,7 +70,7 @@ impl<U: Unit, V: Scalar> Quantity<U, V> {
 
     pub fn normalize(self) -> Self where
         U: UnitScale,
-        V: Float,
+        V: Real,
     {
         if self.value.is_zero() {
             self.with_base()
@@ -442,10 +442,10 @@ impl<U: Unit, V: Scalar + Ord> Ord for Quantity<U, V> where
 
 
 //region Traits from `num_traits`.
-impl<U: Unit, V: Scalar + Float> Quantity<U, V> {
+impl<U: Unit, V: Scalar + Real> Quantity<U, V> {
     /// Cast the scalar to another type through the [`NumCast`] trait.
-    pub fn scalar_cast<X: Scalar + NumCast>(self) -> Option<Quantity<U, X>> {
-        Some(Quantity::new(self.unit, X::from(self.value)?))
+    pub fn scalar_cast<X: Scalar>(self) -> Option<Quantity<U, X>> {
+        Some(Quantity::new(self.unit, NumCast::from(self.value)?))
     }
 
     pub fn abs(self) -> Self {
