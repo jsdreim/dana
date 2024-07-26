@@ -29,14 +29,41 @@ impl<U, V, const N: usize, S> QtySimd<U, V, N, S> where
     V: QtySimdValue,
     S: QtySimdScale,
 {
-    pub fn new(units: [U; N], scalars: [V; N]) -> Self {
+    /// Construct from arrays of values and scales.
+    pub fn from_scales(values: [V; N], scales: [S; N]) -> Self {
         Self {
-            values: Simd::from(scalars),
-            scales: Simd::from(from_fn(|n| S::from_f64(units[n].scale()).unwrap())),
+            values: Simd::from(values),
+            scales: Simd::from(scales),
             _u: PhantomData,
         }
     }
 
+    /// Construct from arrays of values and units.
+    pub fn from_units(values: [V; N], units: [U; N]) -> Self {
+        Self::from_scales(
+            values,
+            from_fn(|n| S::from_f64(units[n].scale()).unwrap()),
+        )
+    }
+
+    /// Construct from a [`Quantity`] array.
+    pub fn from_qty_array(array: [Quantity<U, V>; N]) -> Self {
+        Self::from_units(
+            from_fn(|n| array[n].value),
+            from_fn(|n| array[n].unit),
+        )
+    }
+
+    /// Construct from a single [`Quantity`].
+    pub fn from_qty(qty: Quantity<U, V>) -> Self {
+        Self::from_scales(
+            [qty.value; N],
+            [S::from_f64(qty.unit.scale()).unwrap(); N],
+        )
+    }
+
+    /// Retrieve a [`Quantity`] from a given index. The Quantity will have its
+    ///     unit set as [`UnitAnon`].
     pub fn get(&self, index: usize) -> Quantity<UnitAnon<U::Dim, S>, V> {
         let value = self.values[index];
         let unit = UnitAnon::new(self.scales[index]);
@@ -44,6 +71,8 @@ impl<U, V, const N: usize, S> QtySimd<U, V, N, S> where
         unit.quantity(value)
     }
 
+    /// Retrieve a [`Quantity`] from a given index. The Quantity will have the
+    ///     unit specified.
     pub fn get_as<W: Unit>(&self, index: usize, unit: W) -> Quantity<W, V> where
         UnitAnon<U::Dim, S>: ConvertInto<W>,
     {
@@ -58,47 +87,6 @@ impl<U, V, const N: usize, S> QtySimd<U, V, N, S> where
         self.values * coeff
     }
 }
-
-
-//region `From` impls.
-impl<U, V, const N: usize, S> From<Quantity<U, V>> for QtySimd<U, V, N, S> where
-    LaneCount<N>: SupportedLaneCount,
-    U: Unit,
-    V: QtySimdValue,
-    S: QtySimdScale,
-    f64: AsPrimitive<S>,
-{
-    fn from(input: Quantity<U, V>) -> Self {
-        let values: [V; N] = [input.value; N];
-        let scales: [S; N] = [S::from_f64(input.unit.scale()).unwrap(); N];
-
-        Self {
-            values: Simd::from(values),
-            scales: Simd::from(scales),
-            _u: PhantomData,
-        }
-    }
-}
-
-impl<U, V, const N: usize, S> From<[Quantity<U, V>; N]> for QtySimd<U, V, N, S> where
-    LaneCount<N>: SupportedLaneCount,
-    U: Unit,
-    V: QtySimdValue,
-    S: QtySimdScale,
-    f64: AsPrimitive<S>,
-{
-    fn from(input: [Quantity<U, V>; N]) -> Self {
-        let values: [V; N] = from_fn(|n| input[n].value);
-        let scales: [S; N] = from_fn(|n| S::from_f64(input[n].unit.scale()).unwrap());
-
-        Self {
-            values: Simd::from(values),
-            scales: Simd::from(scales),
-            _u: PhantomData,
-        }
-    }
-}
-//endregion
 
 
 //region Mathematical operators.
@@ -218,7 +206,7 @@ impl<U, V, W, X, const N: usize, S> Div<Quantity<W, X>> for QtySimd<U, V, N, S> 
     type Output = <Self as Div<QtySimd<W, X, N, S>>>::Output;
 
     fn div(self, rhs: Quantity<W, X>) -> Self::Output {
-        self / QtySimd::from(rhs)
+        self / QtySimd::from_qty(rhs)
     }
 }
 
@@ -233,7 +221,7 @@ impl<U, V, W, X, const N: usize, S> Mul<Quantity<W, X>> for QtySimd<U, V, N, S> 
     type Output = <Self as Mul<QtySimd<W, X, N, S>>>::Output;
 
     fn mul(self, rhs: Quantity<W, X>) -> Self::Output {
-        self * QtySimd::from(rhs)
+        self * QtySimd::from_qty(rhs)
     }
 }
 //endregion
@@ -283,34 +271,37 @@ mod tests {
 
     #[test]
     fn qty_simd_add() {
-        let l1 = QtySimd::from([
+        let l1 = QtySimd::from_qty_array([
             qty![1.0 km],
             qty![50.0 m],
         ]);
-        let l2 = QtySimd::from([
+        let l2 = QtySimd::from_qty_array([
             qty![25.0 m],
             qty![2.0 km],
         ]);
 
         let sum = l1 + l2;
+
         assert_eq!(sum.get(0), qty![1025.0 m]);
         assert_eq!(sum.get(1), qty![2050.0 m]);
     }
 
     #[test]
     fn qty_simd_div() {
-        let array_l = QtySimd::from([
+        //  TODO: ...Why is this superfish required? None of the rest need it.
+        let array_l = QtySimd::<_, _, 4>::from_qty_array([
             qty![12.0 m],
             qty![24.0 m],
             qty![36.0 m],
             qty![48.0 m],
         ]);
-        let array_t = QtySimd::from([
+        let array_t = QtySimd::from_qty_array([
             qty![6.0 s],
             qty![2.0 s],
             qty![4.0 s],
             qty![3.0 s],
         ]);
+
         let array_v = array_l / array_t;
 
         assert_eq!(array_v.get(0), qty![ 2.0 m/s]);
@@ -321,13 +312,13 @@ mod tests {
 
     #[test]
     fn qty_simd_add_mul() {
-        let positions = QtySimd::from([
+        let positions = QtySimd::from_qty_array([
             qty![10.0 m],
             qty![12.0 m],
             qty![14.0 m],
             qty![16.0 m],
         ]);
-        let velocities = QtySimd::from([
+        let velocities = QtySimd::from_qty_array([
             qty![4.0 m/s],
             qty![3.0 m/s],
             qty![2.0 m/s],

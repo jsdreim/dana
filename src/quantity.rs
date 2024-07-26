@@ -121,7 +121,7 @@ impl<U: Unit, V: Scalar> Quantity<U, V> {
         S: crate::simd::QtySimdScale,
         f64: num_traits::AsPrimitive<S>,
     {
-        crate::simd::QtySimd::from([self; N])
+        crate::simd::QtySimd::from_qty(self)
     }
 }
 

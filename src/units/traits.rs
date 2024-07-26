@@ -30,14 +30,25 @@ pub trait Unit: Copy + Default + std::fmt::Display + PartialEq {
         Quantity::new(self, value)
     }
 
+    fn one<V: Scalar + num_traits::One>(self) -> Quantity<Self, V> {
+        self.quantity(num_traits::One::one())
+    }
+
+    fn zero<V: Scalar + num_traits::Zero>(self) -> Quantity<Self, V> {
+        self.quantity(num_traits::Zero::zero())
+    }
+
     #[cfg(feature = "simd")]
-    fn quantity_simd<V, const N: usize, S>(self, scalars: [V; N])
+    fn quantity_simd<V, const N: usize, S>(self, values: [V; N])
         -> crate::simd::QtySimd<Self, V, N, S> where
         std::simd::LaneCount<N>: std::simd::SupportedLaneCount,
         V: crate::simd::QtySimdValue,
         S: crate::simd::QtySimdScale,
     {
-        crate::simd::QtySimd::new([self; N], scalars)
+        crate::simd::QtySimd::from_scales(
+            values,
+            [S::from_f64(self.scale()).unwrap(); N],
+        )
     }
 
     fn default_quantity<V: Scalar>(value: V) -> Quantity<Self, V> {
