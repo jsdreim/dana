@@ -192,7 +192,7 @@ impl ToTokens for Exponent {
                 let exp = if n.is_positive() {
                     format!("P{n}")
                 } else if n.is_negative() {
-                    format!("P{n}")
+                    format!("N{n}")
                 } else {
                     format!("Z{n}")
                 };
