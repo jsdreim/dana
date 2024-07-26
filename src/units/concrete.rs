@@ -104,7 +104,7 @@ pub type Distance = Length;
 
 
 impl_scale! {
-    for Length impl (Nano, Micro, Milli, Kilo) Meter;
+    for Length impl (Pico, Nano, Micro, Milli, Kilo) Meter;
     // for Mass impl (Milli, Kilo) Gram;
     for Time impl (Milli) Second;
     for Frequency impl (Micro, Milli, Kilo, Mega, Giga, Tera) Hertz;

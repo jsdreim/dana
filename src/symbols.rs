@@ -86,7 +86,7 @@ macro_rules! define_symbols {
 
 pub mod common {
     pub use super::{
-        length::{L, m, km},
+        length_si::{L, m, km},
         mass::{M, kg},
         time::{T, s, h},
     };
@@ -95,7 +95,7 @@ pub mod common {
 
 define_symbols! {
     /// Unit symbols for basic dimensions: Length, mass, time, and speed.
-    pub mod basic(length, mass, time, speed);
+    pub mod basic(length_si, mass, time, speed);
 
     // /// Unit symbols for units often used in geometry.
     // pub mod geometric(length, area, volume);
@@ -108,7 +108,7 @@ define_symbols! {
     pub mod electrical(power, charge, current, voltage, resistance);
 
     /// Unit symbols for the ISQ base quantities.
-    pub mod isq(length, mass, time, current, temp, amount, intensity);
+    pub mod isq(length_si, mass, time, current, temp, amount, intensity);
 }
 
 
@@ -131,12 +131,13 @@ define_symbols! {
 
     pub mod speed for type Speed as v {
         const kph: (Length / Time) = (km/h);
+        const mph: (Length / Time) = (mi/h);
     }
 
     // pub mod accel for type Accel as a {}
     // pub mod momentum for type Momentum as p {}
 
-    pub mod length for type Length as L {
+    pub mod length_si for type Length as L {
         const nm = NanoMeter;
         const μm = MicroMeter;
         const um = MicroMeter;
@@ -144,6 +145,25 @@ define_symbols! {
         const cm = CentiMeter;
         const  m = Meter;
         const km = KiloMeter;
+    }
+
+    pub mod length_imperial for type Length {
+        // const in = Inch; // ...Hmm.
+        const inch = Inch;
+        const ft = Foot;
+        const yd = Yard;
+        const mi = Mile;
+    }
+
+    pub mod length_space for type Length {
+        const AU = AstroUnit;
+        const ls = LightSec;
+        const ly = LightYear;
+
+        const  pc = Parsec;
+        const kpc = KiloParsec;
+        const Mpc = MegaParsec;
+        const Gpc = GigaParsec;
     }
 
     pub mod mass for type Mass as M {

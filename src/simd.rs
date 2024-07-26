@@ -66,9 +66,9 @@ impl<U, V, const N: usize, S> QtySimd<U, V, N, S> where
     ///     unit set as [`UnitAnon`].
     pub fn get(&self, index: usize) -> Quantity<UnitAnon<U::Dim, S>, V> {
         let value = self.values[index];
-        let unit = UnitAnon::new(self.scales[index]);
+        let scale = self.scales[index];
 
-        unit.quantity(value)
+        UnitAnon::new(scale).quantity(value)
     }
 
     /// Retrieve a [`Quantity`] from a given index. The Quantity will have the
