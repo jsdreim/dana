@@ -29,10 +29,10 @@ macro_rules! define_symbols {
         $vis mod $module {
             #[allow(unused_imports)]
             use crate::units::concrete::*;
-            $($(pub type $uname = super::$unit;)+)?
             $(define_symbols!(@ super::$unit; $alias $(: $atype)? = $val);)*
         })*
 
+        pub use types::*;
         pub mod types {
             $($($(pub type $uname = super::$unit;)+)?)*
         }
@@ -52,15 +52,21 @@ macro_rules! define_symbols {
 
     //  Define a group module, containing symbols from other modules.
     ($(#[$attr:meta])*
-    $vis:vis mod $module:ident ($($import:ident),* $(,)?)) => {
+    $vis:vis mod $module:ident ($($import:tt),* $(,)?)) => {
         $(#[$attr])*
-        $vis mod $module {$(pub use super::$import::*;)*}
+        $vis mod $module {
+            $(define_symbols!(# $import);)*
+        }
     };
 
     ($($(#[$attr:meta])*
-    $vis:vis mod $module:ident ($($import:ident),* $(,)?);)*) => {
+    $vis:vis mod $module:ident ($($import:tt),* $(,)?);)*) => {
         $(define_symbols!($(#[$attr])* $vis mod $module ($($import),*));)*
     };
+
+    //  Internal: Imports.
+    (# [$($utype:ident),* $(,)?]) => { pub use super::types::{$($utype),*}; };
+    (# $module:ident) => { pub use super::$module::*; };
 
     //  Internal: Definitions for consts.
     (@ $utype:ty; $alias:ident            = $variant:ident) => {
@@ -86,29 +92,54 @@ macro_rules! define_symbols {
 
 pub mod common {
     pub use super::{
-        length_si::{L, m, km},
-        mass::{M, kg},
-        time::{T, s, h},
+        types::{L, M, T},
+        length_si::{m, km},
+        mass::{kg},
+        time::{s, h},
     };
 }
 
 
 define_symbols! {
     /// Unit symbols for basic dimensions: Length, mass, time, and speed.
-    pub mod basic(length_si, mass, time, speed);
+    pub mod basic(
+        [L],       [M],  [T],  [v],
+        length_si, mass, time, speed,
+    );
 
     // /// Unit symbols for units often used in geometry.
     // pub mod geometric(length, area, volume);
 
     /// Unit symbols for units often used in chemistry.
-    pub mod chemical(mass, time, energy, frequency, temp, amount);
+    pub mod chemical(
+        [M],  [T],  [E],    [K,Θ], [N],
+        mass, time, energy, temp,  amount,
+    );
+
     /// Unit symbols for units often used in physics.
-    pub mod physical(basic, energy, frequency, force, temp, intensity);
+    pub mod physical(
+        basic,
+        [E],    [f],       [F],      [K,Θ], [J],
+        energy, frequency, force_si, temp,  intensity,
+    );
+
     /// Unit symbols related to electricity.
-    pub mod electrical(power, charge, current, voltage, resistance);
+    pub mod electrical(
+        [P],   [Q],    [I],     [V],     [R],
+        power, charge, current, voltage, resistance,
+    );
 
     /// Unit symbols for the ISQ base quantities.
-    pub mod isq(length_si, mass, time, current, temp, amount, intensity);
+    pub mod isq(
+        [L],       [M],  [T],  [I],     [K,Θ], [N],    [J],
+        length_si, mass, time, current, temp,  amount, intensity,
+    );
+
+    /// Unit symbols for the Imperial system.
+    pub mod imperial(
+        [L],             [T],  [F],
+        length_imperial, time, force_imperial,
+    );
 }
 
 
@@ -181,7 +212,7 @@ define_symbols! {
         const GT = GigaTon;
     }
 
-    pub mod time for type Time as t, T {
+    pub mod time for type Time as T {
         const ms   = MilliSecond;
         const  s   = Second;
         const  min = Minute;
@@ -232,7 +263,7 @@ define_symbols! {
         const Tcd = TeraCandela;
     }
 
-    pub mod force for type Force as F {
+    pub mod force_si for type Force as F {
         const  N = Newton;
         const kN = KiloNewton;
         const MN = MegaNewton;

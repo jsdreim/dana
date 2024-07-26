@@ -42,7 +42,7 @@ fn test_ratios() {
     let f = qty![1.0 kHz];
     let v = qty![CONST_C in m/s];
 
-    let v_f = v / qty![f as 1/t];
+    let v_f = v / qty![f as 1/T];
 
     let fv = qty![v_f -> L];
 
@@ -108,7 +108,7 @@ fn test_electrical_charge() {
     assert_eq!(p, qty![2.88 W]);
 
     //  Battery should last for 31h15m.
-    let t: Quantity<Time> = qty![q / [i in C/s] -> t];
+    let t: Quantity<Time> = qty![q / [i in C/s] -> T];
     assert_eq!(t, qty![31.0 h, 15.0 min]);
 
     //  After that time, should have dissipated 324kJ (90Wh) in total.
@@ -125,7 +125,7 @@ fn test_cancel() {
     let d: Quantity<Length> = (v * t).convert();
     assert_eq!(d, qty!(360.0 m));
 
-    let dt: qtype!(L * t) = qty![90.0 m*s];
+    let dt: qtype!(L * T) = qty![90.0 m*s];
     let t: Quantity<Time> = qty![0.5 min];
     let d: Quantity<Length> = (dt / t).convert();
     assert_eq!(d, qty!(3.0 m));
@@ -137,8 +137,8 @@ fn test_compounds() {
     let l = qty![5.0 m];
     let t = qty![2.0/s];
 
-    let q: qtype!(L * (1/t)) = l * t;
-    let v: qtype!(L / t) = q.convert();
+    let q: qtype!(L * (1/T)) = l * t;
+    let v: qtype!(L / T) = q.convert();
 
     assert_eq!(v, qty![10.0 m/s]);
 }
