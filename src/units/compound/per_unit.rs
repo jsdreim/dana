@@ -43,6 +43,20 @@ impl<U: Unit> std::fmt::Display for PerUnit<U> where
 }
 
 
+impl<U: UnitScale> UnitScale for PerUnit<U> where
+    U::Dim: Inv,
+    <U::Dim as Inv>::Output: DimType,
+{
+    fn step_down(&self) -> Option<Self> {
+        Some(Self(self.0.step_up()?))
+    }
+
+    fn step_up(&self) -> Option<Self> {
+        Some(Self(self.0.step_down()?))
+    }
+}
+
+
 // impl<U1: ConvertInto<U2>, U2: Unit> ConvertFrom<PerUnit<U1>> for PerUnit<U2> {
 //     fn conversion_factor_from(&self, unit: PerUnit<U1>) -> f64 {
 //         1.0 / unit.0.conversion_factor_into(self.0)

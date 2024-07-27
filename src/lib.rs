@@ -173,7 +173,7 @@ impl<V: Scalar> Quantity<units::Temp, V> {
 #[cfg(test)]
 mod tests {
     use num_traits::Inv;
-    use crate::{Quantity, symbols::basic::*, units::{*, traits::*}};
+    use crate::{Quantity, symbols::*, units::{*, traits::*}};
 
     #[test]
     pub fn test_macros() {
@@ -247,36 +247,41 @@ mod tests {
 
     #[test]
     fn test_quantity_norm() {
-        fn test(l1: Quantity<L>) {
-            let l2 = l1.normalize();
+        fn test<U: UnitScale>(q1: Quantity<U>) {
+            let q2 = q1.normalize();
 
-            // eprintln!("{l1:>8e} -> {l2:>8.3}");
-            assert!((l2 - l1).abs() < qty![1e-9 nm]);
+            // eprintln!("{q1:>9e} -> {q2:>8.3}");
+            assert!(q2.almost_eq(q1, 1e-12));
         }
 
-        test(qty![4.321_e+9 mm]);
-        test(qty![4.321_e+8 mm]);
-        test(qty![4.321_e+7 mm]);
-        test(qty![4.321_e+6 mm]);
+        test(qty![4.321_e+9  mm/s]);
+        test(qty![4.321_e+8  mm/s]);
+        test(qty![4.321_e+7  mm/s]);
+        test(qty![4.321_e+6  mm/s]);
         // eprintln!();
-        test(qty![4.321_e+5 mm]);
-        test(qty![4.321_e+4 mm]);
-        test(qty![4.321_e+3 mm]);
+        test(qty![4.321_e+5  mm/s]);
+        test(qty![4.321_e+4  mm/s]);
+        test(qty![4.321_e+3  mm/s]);
         // eprintln!();
-        test(qty![4.321_e+2 mm]);
-        test(qty![4.321_e+1 mm]);
-        test(qty![4.321_e00 mm]);
+        test(qty![4.321_e+2  mm/s]);
+        test(qty![4.321_e+1  mm/s]);
+        test(qty![4.321_e00  mm/s]);
         // eprintln!();
-        test(qty![4.321_e-1 mm]);
-        test(qty![4.321_e-2 mm]);
-        test(qty![4.321_e-3 mm]);
+        test(qty![4.321_e-1  mm/s]);
+        test(qty![4.321_e-2  mm/s]);
+        test(qty![4.321_e-3  mm/s]);
         // eprintln!();
-        test(qty![4.321_e-4 mm]);
-        test(qty![4.321_e-5 mm]);
-        test(qty![4.321_e-6 mm]);
-        test(qty![4.321_e-7 mm]);
-        test(qty![4.321_e-8 mm]);
-        test(qty![4.321_e-9 mm]);
+        test(qty![4.321_e-4  mm/s]);
+        test(qty![4.321_e-5  mm/s]);
+        test(qty![4.321_e-6  mm/s]);
+        // eprintln!();
+        test(qty![4.321_e-7  mm/s]);
+        test(qty![4.321_e-8  mm/s]);
+        test(qty![4.321_e-9  mm/s]);
+        // eprintln!();
+        test(qty![4.321_e-10 mm/s]);
+        test(qty![4.321_e-11 mm/s]);
+        test(qty![4.321_e-12 mm/s]);
     }
 
     #[test]

@@ -80,6 +80,26 @@ impl<A: Unit, B: Unit> UnitBinary for UnitDiv<A, B> where
 }
 
 
+impl<A: UnitScale, B: UnitScale> UnitScale for UnitDiv<A, B> where
+    A::Dim: Div<B::Dim>,
+    <A::Dim as Div<B::Dim>>::Output: DimType,
+{
+    fn step_down(&self) -> Option<Self> {
+        match self.0.step_down() {
+            Some(next) => Some(Self(next, self.1)),
+            None => Some(Self(self.0, self.1.step_up()?)),
+        }
+    }
+
+    fn step_up(&self) -> Option<Self> {
+        match self.0.step_up() {
+            Some(next) => Some(Self(next, self.1)),
+            None => Some(Self(self.0, self.1.step_down()?)),
+        }
+    }
+}
+
+
 //region Commutative Property.
 // impl<A: Commutative, B: Unit> CommutativeLeft for UnitDiv<A, B> {
 //     type WithLeftCommuted = UnitDiv<A::Commuted, B>;

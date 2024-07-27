@@ -1,4 +1,4 @@
-use crate::units::{Unit, UnitConcrete};
+use crate::units::traits::{Unit, UnitConcrete, UnitScale};
 
 
 #[derive(Clone, Copy, Debug, Hash, PartialEq, PartialOrd, Eq, Ord)]
@@ -33,6 +33,27 @@ impl UnitConcrete for Time {
             Self::Second => "s",
             Self::Minute => "min",
             Self::Hour => "h",
+        }
+    }
+}
+
+
+impl UnitScale for Time {
+    fn step_down(&self) -> Option<Self> {
+        match self {
+            Self::MilliSecond => None,
+            Self::Second => Some(Self::MilliSecond),
+            Self::Minute => Some(Self::Second),
+            Self::Hour => Some(Self::Minute),
+        }
+    }
+
+    fn step_up(&self) -> Option<Self> {
+        match self {
+            Self::MilliSecond => Some(Self::Second),
+            Self::Second => Some(Self::Minute),
+            Self::Minute => Some(Self::Hour),
+            Self::Hour => None,
         }
     }
 }

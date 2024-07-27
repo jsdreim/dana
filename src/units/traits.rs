@@ -81,13 +81,18 @@ pub trait UnitConcrete: Unit {
 /// Concrete units by definition have an exponent of 1.
 impl<U: UnitConcrete> UnitNonExp for U {}
 
-// /// Any concrete unit can be freely converted to another of its own type.
-// impl<U: UnitConcrete> ConvertFrom<U> for U {}
 
-
+/// This trait allows a [`Unit`] type to define a scale for its variants, which
+///     can be followed up and down. This allows a [`Quantity`] to automatically
+///     [normalize](Quantity::normalize) its value.
 pub trait UnitScale: Unit {
-    fn next_down(&self) -> Option<Self>;
-    fn next_up(&self) -> Option<Self>;
+    /// Return the next unit down in the scale, or `None` if this is already the
+    ///     smallest variant.
+    fn step_down(&self) -> Option<Self>;
+
+    /// Return the next unit up in the scale, or `None` if this is already the
+    ///     largest variant.
+    fn step_up(&self) -> Option<Self>;
 }
 
 

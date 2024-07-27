@@ -90,3 +90,16 @@ impl<U: Unit, E, const D: i32> CanRoot<D> for UnitPow<U, E> where
     fn root(self) -> Self::Output { UnitPow::new(self.0) }
 }
 //endregion
+
+
+impl<U: UnitScale, E: Integer> UnitScale for UnitPow<U, E> where
+    U::Dim: DimPowType<E>,
+{
+    fn step_down(&self) -> Option<Self> {
+        Some(Self::new(self.0.step_down()?))
+    }
+
+    fn step_up(&self) -> Option<Self> {
+        Some(Self::new(self.0.step_up()?))
+    }
+}

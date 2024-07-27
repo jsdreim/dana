@@ -81,7 +81,7 @@ impl<U: Unit, V: Scalar> Quantity<U, V> {
 
             if log.is_sign_positive() {
                 while log >= limit {
-                    let Some(next) = unit.next_up() else { break };
+                    let Some(next) = unit.step_up() else { break };
 
                     let log_rel = unit.scale_factor(next).log10();
                     let log_new = log + V::from_f64(log_rel).unwrap();
@@ -95,7 +95,7 @@ impl<U: Unit, V: Scalar> Quantity<U, V> {
                 }
             } else {
                 while log < V::zero() {
-                    let Some(next) = unit.next_down() else { break };
+                    let Some(next) = unit.step_down() else { break };
 
                     let log_rel = unit.scale_factor(next).log10();
                     let log_new = log + V::from_f64(log_rel).unwrap();

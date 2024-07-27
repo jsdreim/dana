@@ -69,6 +69,26 @@ impl<A: Unit, B: Unit> UnitBinary for UnitMul<A, B> where
 }
 
 
+impl<A: UnitScale, B: UnitScale> UnitScale for UnitMul<A, B> where
+    A::Dim: Mul<B::Dim>,
+    <A::Dim as Mul<B::Dim>>::Output: DimType,
+{
+    fn step_down(&self) -> Option<Self> {
+        match self.0.step_down() {
+            Some(next) => Some(Self(next, self.1)),
+            None => Some(Self(self.0, self.1.step_down()?)),
+        }
+    }
+
+    fn step_up(&self) -> Option<Self> {
+        match self.0.step_up() {
+            Some(next) => Some(Self(next, self.1)),
+            None => Some(Self(self.0, self.1.step_up()?)),
+        }
+    }
+}
+
+
 //region Associative Property.
 // impl<A: Unit, B: Unit, C: Unit> Associative<UnitMul<A, UnitMul<B, C>>>
 // for UnitMul<UnitMul<A, B>, C> {

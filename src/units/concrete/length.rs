@@ -93,7 +93,7 @@ impl UnitConcrete for Length {
 
 
 impl UnitScale for Length {
-    fn next_down(&self) -> Option<Self> {
+    fn step_down(&self) -> Option<Self> {
         match self {
             //region Metric scale.
             Self::PicoMeter => None,
@@ -124,7 +124,7 @@ impl UnitScale for Length {
         }
     }
 
-    fn next_up(&self) -> Option<Self> {
+    fn step_up(&self) -> Option<Self> {
         match self {
             //region Metric scale.
             Self::PicoMeter => Some(Self::NanoMeter),
