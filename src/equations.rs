@@ -24,6 +24,25 @@ impl<V: Scalar> Quantity<Force, V> {
 }
 
 
+impl<V: Scalar> Quantity<Temp, V> {
+    pub fn from_celsius(c: V) -> Self {
+        Temp::Kelvin.quantity(c + V::from_f64(273.15).unwrap())
+    }
+
+    pub fn from_fahrenheit(f: V) -> Self {
+        Self::from_celsius((f - V::from_f64(32.0).unwrap()) / V::from_f64(1.8).unwrap())
+    }
+
+    pub fn to_celsius(self) -> V {
+        self.value_as(Temp::Kelvin) - V::from_f64(273.15).unwrap()
+    }
+
+    pub fn to_fahrenheit(self) -> V {
+        self.to_celsius() * V::from_f64(1.8).unwrap() + V::from_f64(32.0).unwrap()
+    }
+}
+
+
 pub fn gravitational_parameter(mass: Quantity<Mass>) -> Quantity<GravParam> {
     (mass * CONST_G).convert()
 }
@@ -141,5 +160,14 @@ mod tests {
         test(qty![685.0 nm], qty![1.810 eV]);
         test(qty![535.0 nm], qty![2.317 eV]);
         test(qty![440.0 nm], qty![2.818 eV]);
+    }
+
+    #[test]
+    fn test_temp() {
+        assert_eq!(Quantity::from_fahrenheit(212.0).to_celsius(), 100.0);
+        assert_eq!(Quantity::from_fahrenheit(32.0).to_celsius(), 0.0);
+
+        assert_eq!(Quantity::from_celsius(100.0).to_fahrenheit(), 212.0);
+        assert_eq!(Quantity::from_celsius(0.0).to_fahrenheit(), 32.0);
     }
 }
