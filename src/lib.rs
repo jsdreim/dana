@@ -79,7 +79,7 @@
 //! let grav = qty![9.81 Length::Meter / (Time::Second ^ 2)];
 //! ```
 //!
-//! Finally, the [`units::symbols`] module provides standard SI unit symbols as
+//! Finally, the [`symbols`] module provides standard SI unit symbols as
 //!     constants and type aliases, bringing the syntax very close to a pure
 //!     mathematical form:
 //! ```

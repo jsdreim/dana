@@ -1,3 +1,5 @@
+//! Functions for mathematical relationships between quantities.
+
 use crate::{
     constants::*,
     Quantity,

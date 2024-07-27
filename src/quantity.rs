@@ -1,3 +1,5 @@
+//! The link between [`Scalar`]s and [`Unit`]s.
+
 use std::ops::{Add, AddAssign, Div, Mul, Neg, Sub, SubAssign};
 use num_traits::{Inv, NumCast, Pow, real::Real, Zero};
 use crate::{Scalar, units::{traits::*, unit_anon::UnitAnon}};

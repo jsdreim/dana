@@ -1,3 +1,5 @@
+//! Module for base dimensions underlying the unit system.
+
 use std::{marker::PhantomData, ops::{Add, Div, Mul, Neg, Sub}};
 use num_traits::Inv;
 use typenum::{

@@ -1,3 +1,5 @@
+//! Constant values for use in calculations.
+
 use crate::{symbols::*, units::*};
 
 

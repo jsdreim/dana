@@ -1,3 +1,7 @@
+//! Experimental [SIMD] functionality.
+//!
+//! [SIMD]: https://en.wikipedia.org/wiki/Single_instruction,_multiple_data
+
 use std::{
     array::from_fn,
     marker::PhantomData,

@@ -1,3 +1,5 @@
+//! Core module of the units system.
+
 pub mod _experimental;
 pub mod compound;
 pub mod concrete;

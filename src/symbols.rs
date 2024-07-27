@@ -90,8 +90,9 @@ macro_rules! define_symbols {
 }
 
 
-/// Symbols for specific [`Dimension`] types.
 pub mod dim {
+    //! Symbols for specific [`Dimension`] types.
+
     use crate::dimension::*;
 
     //region Fundamental dimensions.
