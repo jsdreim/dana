@@ -23,7 +23,6 @@ impl<U: Unit> Unit for PerUnit<U> where
     <U::Dim as Inv>::Output: DimType,
 {
     type Dim = <U::Dim as Inv>::Output;
-    // type Dimension = None;
     // type ScaleType = f64;
 
     fn scale(&self) -> f64 {
@@ -55,20 +54,3 @@ impl<U: UnitScale> UnitScale for PerUnit<U> where
         Some(Self(self.0.step_down()?))
     }
 }
-
-
-// impl<U1: ConvertInto<U2>, U2: Unit> ConvertFrom<PerUnit<U1>> for PerUnit<U2> {
-//     fn conversion_factor_from(&self, unit: PerUnit<U1>) -> f64 {
-//         1.0 / unit.0.conversion_factor_into(self.0)
-//     }
-// }
-
-// impl<U: Unit> UnitNonExp for PerUnit<U> {}
-
-
-// impl<U: Unit> Inv for PerUnit<U> where
-//     <Self as Unit>::Dim: Inv<Output=U>,
-// {
-//     type Output = U;
-//     fn inv(self) -> Self::Output { self.0 }
-// }
