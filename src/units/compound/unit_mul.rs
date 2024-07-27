@@ -74,16 +74,26 @@ impl<A: UnitScale, B: UnitScale> UnitScale for UnitMul<A, B> where
     <A::Dim as Mul<B::Dim>>::Output: DimType,
 {
     fn step_down(&self) -> Option<Self> {
-        match self.0.step_down() {
-            Some(next) => Some(Self(next, self.1)),
-            None => Some(Self(self.0, self.1.step_down()?)),
+        match (self.step_lhs_down(), self.step_rhs_down()) {
+            (Some(lhs), Some(rhs)) => if lhs.scale() < rhs.scale() {
+                Some(rhs)
+            } else {
+                Some(lhs)
+            }
+            (lhs, None) => lhs,
+            (None, rhs) => rhs,
         }
     }
 
     fn step_up(&self) -> Option<Self> {
-        match self.0.step_up() {
-            Some(next) => Some(Self(next, self.1)),
-            None => Some(Self(self.0, self.1.step_up()?)),
+        match (self.step_lhs_up(), self.step_rhs_up()) {
+            (Some(lhs), Some(rhs)) => if lhs.scale() > rhs.scale() {
+                Some(rhs)
+            } else {
+                Some(lhs)
+            }
+            (lhs, None) => lhs,
+            (None, rhs) => rhs,
         }
     }
 }

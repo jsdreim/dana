@@ -205,4 +205,20 @@ pub trait UnitBinary: UnitCompound {
     {
         V::new(self.left(), f(self.right()))
     }
+
+    fn step_lhs_down(&self) -> Option<Self> where Self::Left: UnitScale {
+        Some(Self::new(self.left().step_down()?, self.right()))
+    }
+
+    fn step_lhs_up(&self) -> Option<Self> where Self::Left: UnitScale {
+        Some(Self::new(self.left().step_up()?, self.right()))
+    }
+
+    fn step_rhs_down(&self) -> Option<Self> where Self::Right: UnitScale {
+        Some(Self::new(self.left(), self.right().step_down()?))
+    }
+
+    fn step_rhs_up(&self) -> Option<Self> where Self::Right: UnitScale {
+        Some(Self::new(self.left(), self.right().step_up()?))
+    }
 }
