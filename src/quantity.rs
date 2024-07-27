@@ -1,6 +1,6 @@
 //! The link between [`Scalar`]s and [`Unit`]s.
 
-use std::ops::{Add, AddAssign, Div, Mul, Neg, Sub, SubAssign};
+use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign};
 use num_traits::{Inv, NumCast, Pow, real::Real, Zero};
 use crate::{Scalar, units::{traits::*, unit_anon::UnitAnon}};
 
@@ -28,7 +28,7 @@ impl<U: Unit, V: Scalar> Quantity<U, V> {
     // pub fn set_base(&mut self) { self.set_unit(U::default()) }
 
     pub fn set_unit(&mut self, unit: U) where
-        V: std::ops::MulAssign,
+        V: MulAssign,
     {
         let factor = self.unit.scale_factor(unit);
 
@@ -133,7 +133,6 @@ impl<U: Unit, V: Scalar> Quantity<U, V> {
     //region Positive exponents.
     pub fn squared(self) -> Quantity<<U as CanSquare>::Output, <V as Mul<V>>::Output> where
         U: CanSquare,
-        V: Mul<V> + Clone,
     {
         Quantity {
             value: self.value.clone() * self.value,
@@ -143,7 +142,6 @@ impl<U: Unit, V: Scalar> Quantity<U, V> {
 
     pub fn cubed(self) -> Quantity<<U as CanCube>::Output, <V as Mul<V>>::Output> where
         U: CanCube,
-        V: Mul<V> + Clone,
     {
         Quantity {
             value: self.value.clone() * self.value.clone() * self.value,
@@ -373,6 +371,22 @@ impl<U: Unit, V: Scalar, X: Scalar> Mul<X> for Quantity<U, V> where
         }
     }
 }
+
+impl<U: Unit, V: Scalar, X: Scalar> DivAssign<X> for Quantity<U, V> where
+    V: DivAssign<X>,
+{
+    fn div_assign(&mut self, rhs: X) {
+        self.value /= rhs;
+    }
+}
+
+impl<U: Unit, V: Scalar, X: Scalar> MulAssign<X> for Quantity<U, V> where
+    V: MulAssign<X>,
+{
+    fn mul_assign(&mut self, rhs: X) {
+        self.value *= rhs;
+    }
+}
 //endregion
 
 //region Division/multiplication between quantities and pure units.
@@ -403,7 +417,6 @@ impl<U: Unit, V: Scalar, W: Unit, X: Scalar> PartialEq<Quantity<W, X>>
 for Quantity<U, V> where
     W: ConvertInto<U>,
     V: PartialEq<X>,
-    X: Clone,
 {
     fn eq(&self, other: &Quantity<W, X>) -> bool {
         let comp = other.clone().convert_to(self.unit);
@@ -421,7 +434,6 @@ impl<U: Unit, V: Scalar, W: Unit, X: Scalar> PartialOrd<Quantity<W, X>>
 for Quantity<U, V> where
     W: ConvertInto<U>,
     V: PartialOrd<X>,
-    X: Clone,
 {
     fn partial_cmp(&self, other: &Quantity<W, X>) -> Option<std::cmp::Ordering> {
         let comp = other.clone().convert_to(self.unit);
