@@ -35,6 +35,7 @@ impl CallDebug {
         Some(Self { span, text, line, column })
     }
 
+    #[allow(unexpected_cfgs)]
     pub fn print(&self, output: impl ToTokens) {
         use std::io::Write;
 
