@@ -1,6 +1,6 @@
 #[test]
 fn dim() {
-    use dim_macros::{dim, qty};
+    use dana_macros::{dim, qty};
     use dana::{quantity::QuantityAnon, symbols::*};
 
     //  Scalar.
@@ -35,7 +35,7 @@ fn qty_invalid() {
 
 #[test]
 fn qty_valid() {
-    use dim_macros::qty;
+    use dana_macros::qty;
     use dana::{Quantity, symbols::*, units::*};
 
     //  Test basic definitions against fully-explicit types.
@@ -79,7 +79,7 @@ fn qty_valid() {
 
 #[test]
 fn qty_ops() {
-    use dim_macros::qty;
+    use dana_macros::qty;
     use dana::{constants::*, Quantity, symbols::*, units::*};
 
     let v: Quantity<Voltage> = qty![3.3 V];
@@ -115,7 +115,7 @@ fn qty_ops() {
 
 #[test]
 fn qty_ops_adv() {
-    use dim_macros::qty;
+    use dana_macros::qty;
     use dana::{Quantity, symbols::*, units::*};
 
     let n = 5.0;
@@ -154,7 +154,7 @@ fn qty_ops_adv() {
 
 #[test]
 fn qtype_valid() {
-    use dim_macros::qtype;
+    use dana_macros::qtype;
     use dana::{symbols::*, units::{*, traits::*}};
 
     let u = Length::Meter / Time::Second.squared();

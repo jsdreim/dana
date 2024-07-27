@@ -8,8 +8,8 @@ edition = "2021"
 num-traits = "0.2.19"
 typenum = "1.17.0"
 
-[dependencies.dim_macros]
-path = "dim_macros"
+[dependencies.dana_macros]
+path = "dana_macros"
 
 [dependencies.serde]
 version = "1.0.203"

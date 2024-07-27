@@ -137,8 +137,8 @@
 extern crate self as dana;
 
 #[macro_use]
-extern crate dim_macros;
-pub use dim_macros::{dim, qty, /*unit,*/ /*utype*/};
+extern crate dana_macros;
+pub use dana_macros::{dim, qty, /*unit,*/ /*utype*/};
 
 #[macro_use]
 mod macros;

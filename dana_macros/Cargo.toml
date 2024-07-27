@@ -1,5 +1,5 @@
 [package]
-name = "dim_macros"
+name = "dana_macros"
 version = "0.1.0"
 edition = "2021"
 publish = false
