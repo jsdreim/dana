@@ -74,7 +74,7 @@ fn bench_simd_group<V, const N: usize, S>(c: &mut Criterion, name: &str) where
     );
 
     group.bench_function(
-        "quantity",
+        "qty",
         |b| b.iter(|| simd_quantity(
             black_box(pos_q),
             black_box(vel_q),

@@ -71,7 +71,7 @@ fn capacitor(c: &mut Criterion) {
     let mut group = c.benchmark_group("Capacitor");
 
     group.bench_function(
-        "float",
+        "native",
         |b| b.iter(|| capacitor_float(
             black_box(7.5),
             black_box(12.0),
@@ -80,7 +80,7 @@ fn capacitor(c: &mut Criterion) {
     );
 
     group.bench_function(
-        "quantity",
+        "qty",
         |b| b.iter(|| capacitor_quantity(
             black_box(7.5),
             black_box(12.0),
@@ -89,7 +89,7 @@ fn capacitor(c: &mut Criterion) {
     );
 
     group.bench_function(
-        "float (optimized)",
+        "native (opt)",
         |b| b.iter(|| capacitor_float_opt(
             black_box(7.5),
             black_box(12.0),
@@ -98,7 +98,7 @@ fn capacitor(c: &mut Criterion) {
     );
 
     group.bench_function(
-        "quantity (optimized)",
+        "qty (opt)",
         |b| b.iter(|| capacitor_quantity_opt(
             black_box(7.5),
             black_box(12.0),

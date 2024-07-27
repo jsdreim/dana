@@ -23,20 +23,20 @@ fn mass_energy_quantity_methods(mass_kg: f64) -> f64 {
 
 
 fn mass_energy(c: &mut Criterion) {
-    let mut group = c.benchmark_group("Basic Mass-Energy");
+    let mut group = c.benchmark_group("Basic");
 
     group.bench_function(
-        "float",
+        "native",
         |b| b.iter(|| mass_energy_float(criterion::black_box(20.0))),
     );
 
     group.bench_function(
-        "macro",
+        "qty macro",
         |b| b.iter(|| mass_energy_qty_macro(criterion::black_box(20.0))),
     );
 
     group.bench_function(
-        "methods",
+        "qty methods",
         |b| b.iter(|| mass_energy_quantity_methods(criterion::black_box(20.0))),
     );
 }

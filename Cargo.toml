@@ -34,7 +34,7 @@ name = "qty_basic"
 harness = false
 
 [[bench]]
-name = "qty_complex"
+name = "qty_capacitor"
 harness = false
 
 [[bench]]
