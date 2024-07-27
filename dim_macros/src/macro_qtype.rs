@@ -68,8 +68,8 @@ impl ToTokens for MacroQType {
         let dim = self.dim.as_type();
 
         tokens.extend(match &self.scalar {
-            Some(scalar) => quote!(::dimensional::Quantity<#dim, #scalar>),
-            None => quote!(::dimensional::Quantity<#dim>),
+            Some(scalar) => quote!(::dana::Quantity<#dim, #scalar>),
+            None => quote!(::dana::Quantity<#dim>),
         });
     }
 }

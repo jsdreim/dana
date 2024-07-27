@@ -168,7 +168,7 @@ impl ToTokens for MacroDim {
         let Self { exp_l, exp_m, exp_t, exp_i, exp_k, exp_n, exp_j } = self;
 
         tokens.extend(quote! {
-            ::dimensional::dimension::Dimension<
+            ::dana::dimension::Dimension<
                 #exp_l, #exp_m, #exp_t, #exp_i, #exp_k, #exp_n, #exp_j,
             >
         });

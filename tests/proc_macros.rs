@@ -1,7 +1,7 @@
 #[test]
 fn dim() {
     use dim_macros::{dim, qty};
-    use dimensional::{quantity::QuantityAnon, symbols::*};
+    use dana::{quantity::QuantityAnon, symbols::*};
 
     //  Scalar.
     let _qty: QuantityAnon<dim!(1)> = qty![1.0 m/m as ?];
@@ -36,7 +36,7 @@ fn qty_invalid() {
 #[test]
 fn qty_valid() {
     use dim_macros::qty;
-    use dimensional::{Quantity, symbols::*, units::*};
+    use dana::{Quantity, symbols::*, units::*};
 
     //  Test basic definitions against fully-explicit types.
     let _qty: Quantity<L> = qty![1.0 m];
@@ -80,7 +80,7 @@ fn qty_valid() {
 #[test]
 fn qty_ops() {
     use dim_macros::qty;
-    use dimensional::{constants::*, Quantity, symbols::*, units::*};
+    use dana::{constants::*, Quantity, symbols::*, units::*};
 
     let v: Quantity<Voltage> = qty![3.3 V];
     let r: Quantity<Resistance> = qty![150.0 Ω];
@@ -103,9 +103,9 @@ fn qty_ops() {
 
     let _qty: Quantity<Force> = qty![
         1.0 kg, 50.0 g,
-        * {CONST_C2} as (::dimensional::units::Energy)
+        * {CONST_C2} as (::dana::units::Energy)
         + {added} TJ
-        / {CONST_C2} in (::dimensional::units::Mass::MetricTon)
+        / {CONST_C2} in (::dana::units::Mass::MetricTon)
         * {accel} as Force
         + 3.0 N
         + 1.0 Force::Newton
@@ -116,7 +116,7 @@ fn qty_ops() {
 #[test]
 fn qty_ops_adv() {
     use dim_macros::qty;
-    use dimensional::{Quantity, symbols::*, units::*};
+    use dana::{Quantity, symbols::*, units::*};
 
     let n = 5.0;
     let w_4: Quantity<Power> = qty![4.0 W];
@@ -155,7 +155,7 @@ fn qty_ops_adv() {
 #[test]
 fn qtype_valid() {
     use dim_macros::qtype;
-    use dimensional::{symbols::*, units::{*, traits::*}};
+    use dana::{symbols::*, units::{*, traits::*}};
 
     let u = Length::Meter / Time::Second.squared();
 

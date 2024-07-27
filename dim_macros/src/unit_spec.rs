@@ -370,20 +370,20 @@ impl<U: UnitCore> UnitSpec<U> {
             Self::Div(left, right) => {
                 let ts_l = left.as_type();
                 let ts_r = right.as_type();
-                quote!(::dimensional::units::UnitDiv<#ts_l, #ts_r>)
+                quote!(::dana::units::UnitDiv<#ts_l, #ts_r>)
             }
             Self::Mul(left, right) => {
                 let ts_l = left.as_type();
                 let ts_r = right.as_type();
-                quote!(::dimensional::units::UnitMul<#ts_l, #ts_r>)
+                quote!(::dana::units::UnitMul<#ts_l, #ts_r>)
             }
             Self::Inv(unit) => {
                 let ts = unit.as_type();
-                quote!(::dimensional::units::PerUnit<#ts>)
+                quote!(::dana::units::PerUnit<#ts>)
             }
             Self::Pow(base, exp) => {
                 let ts = base.as_type();
-                quote!(::dimensional::units::UnitPow<#ts, #exp>)
+                quote!(::dana::units::UnitPow<#ts, #exp>)
             }
         }
     }
@@ -395,20 +395,20 @@ impl<U: UnitCore> UnitSpec<U> {
             Self::Div(left, right) => {
                 let ts_l = left.as_expr();
                 let ts_r = right.as_expr();
-                quote!(::dimensional::units::UnitDiv(#ts_l, #ts_r))
+                quote!(::dana::units::UnitDiv(#ts_l, #ts_r))
             }
             Self::Mul(left, right) => {
                 let ts_l = left.as_expr();
                 let ts_r = right.as_expr();
-                quote!(::dimensional::units::UnitMul(#ts_l, #ts_r))
+                quote!(::dana::units::UnitMul(#ts_l, #ts_r))
             }
             Self::Inv(unit) => {
                 let ts = unit.as_expr();
-                quote!(::dimensional::units::PerUnit(#ts))
+                quote!(::dana::units::PerUnit(#ts))
             }
             Self::Pow(base, exp) => {
                 let ts = base.as_expr();
-                quote!(::dimensional::units::UnitPow::<_, #exp>::new(#ts))
+                quote!(::dana::units::UnitPow::<_, #exp>::new(#ts))
             }
         }
     }

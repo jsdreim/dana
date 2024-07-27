@@ -27,7 +27,7 @@
 //!     amount of time it took to move that distance, and calculates the average
 //!     speed of the object:
 //! ```
-//! use dimensional::{Quantity, units::*};
+//! use dana::{Quantity, units::*};
 //!
 //! fn speed(dist: Quantity<Length>, time: Quantity<Time>) -> Quantity<Speed> {
 //!     dist / time
@@ -38,7 +38,7 @@
 //!     the time taken. Attempting to perform the wrong operation will produce
 //!     the wrong type, resulting in a "mismatched types" error:
 //! ```compile_fail
-//! # use dimensional::{Quantity, units::*};
+//! # use dana::{Quantity, units::*};
 //! fn speed(dist: Quantity<Length>, time: Quantity<Time>) -> Quantity<Speed> {
 //!     time / dist
 //! }
@@ -49,7 +49,7 @@
 //!
 //! Using the full syntax is verbose to the point of near-unreadability:
 //! ```
-//! use dimensional::{Quantity, units::*};
+//! use dana::{Quantity, units::*};
 //!
 //! let grav: Quantity<UnitDiv<Length, UnitSquared<Time>>> = Quantity {
 //!     unit: UnitDiv(Length::Meter, UnitSquared::new(Time::Second)),
@@ -62,7 +62,7 @@
 //!     unit traits. The result is better, but still difficult to read for more
 //!     complex expressions:
 //! ```
-//! use dimensional::{Quantity, units::{concrete::*, traits::CanSquare}};
+//! use dana::{Quantity, units::{concrete::*, traits::CanSquare}};
 //!
 //! let grav = Quantity::new(
 //!     Length::Meter / Time::Second.squared(),
@@ -74,7 +74,7 @@
 //!     of units using a wider range of operators than the standard library
 //!     traits provide:
 //! ```
-//! use dimensional::{qty, units::concrete::*};
+//! use dana::{qty, units::concrete::*};
 //!
 //! let grav = qty![9.81 Length::Meter / (Time::Second ^ 2)];
 //! ```
@@ -83,7 +83,7 @@
 //!     constants and type aliases, bringing the syntax very close to a pure
 //!     mathematical form:
 //! ```
-//! use dimensional::{qty, symbols::*};
+//! use dana::{qty, symbols::*};
 //!
 //! let grav = qty![9.81 m/s^2];
 //! ```
@@ -101,7 +101,7 @@
 //!
 //! These operations can also be chained:
 //! ```
-//! use dimensional::{constants::CONST_C2, qty, symbols::*, units::*};
+//! use dana::{constants::CONST_C2, qty, symbols::*, units::*};
 //!
 //! let quantity = qty![
 //!     1.0 g // One gram.
@@ -118,7 +118,7 @@
 //!     after performing any conversions. Among other things, this allows for
 //!     particularly readable assertions:
 //! ```
-//! # use dimensional::{qty, symbols::*};
+//! # use dana::{qty, symbols::*};
 //! let d = qty![30.0 km];
 //! let v = qty![45.0 km/h];
 //!
@@ -128,13 +128,13 @@
 //! Square brackets can be used to perform recursion, allowing for definition,
 //!     calculation, and conversion all in a single call:
 //! ```
-//! # use dimensional::{qty, symbols::*};
+//! # use dana::{qty, symbols::*};
 //! assert_eq!(qty![*[3.3 V] / [150.0 Ω] in mA], 22.0);
 //! ```
 
 #![cfg_attr(feature = "simd", feature(portable_simd))]
 
-extern crate self as dimensional;
+extern crate self as dana;
 
 #[macro_use]
 extern crate dim_macros;

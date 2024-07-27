@@ -66,13 +66,13 @@ impl<U: UnitCore> ToTokens for ImplReorg<'_, U> {
         }
 
         tokens.extend(quote! {
-            ::dimensional::units::traits::transform::Simplify<#type_into> for #type_from {
+            ::dana::units::traits::transform::Simplify<#type_into> for #type_from {
                 fn simplify<__S: crate::Scalar>(self)
-                    -> ::dimensional::units::traits::transform::Conversion<#type_into, __S>
+                    -> ::dana::units::traits::transform::Conversion<#type_into, __S>
                 {
                     #[allow(non_snake_case)]
                     let #bind_from = self;
-                    ::dimensional::units::traits::transform::Conversion::units(#unit_into)
+                    ::dana::units::traits::transform::Conversion::units(#unit_into)
                 }
             }
         });

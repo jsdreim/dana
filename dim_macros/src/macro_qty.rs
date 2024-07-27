@@ -93,7 +93,7 @@ impl ToTokens for QtyNew {
         let value = &self.value;
         let unit = self.unit.as_expr();
 
-        tokens.extend(quote!(::dimensional::Quantity {
+        tokens.extend(quote!(::dana::Quantity {
             value: #sign #value,
             unit: #unit,
         }));

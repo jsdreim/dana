@@ -1,5 +1,5 @@
 use num_traits::Inv;
-use dimensional::{
+use dana::{
     constants::*,
     equations,
     qty, qtype,
