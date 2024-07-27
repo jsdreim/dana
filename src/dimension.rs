@@ -1,7 +1,6 @@
 use std::{marker::PhantomData, ops::{Add, Div, Mul, Neg, Sub}};
 use num_traits::Inv;
 use typenum::{
-    consts::{N1, N2, N3, P1, P2, P3, P4, Z0},
     marker_traits::{Integer, NonZero},
     PartialDiv,
 };
@@ -21,33 +20,33 @@ pub const LEN: usize = 7;
 
 
 /// Scalar "dimension", representing no dimension.
-pub type One          = Dimension<Z0, Z0, Z0, Z0, Z0, Z0, Z0>;
-//                                 L   M   T   I   Θ   N   J
-pub type Length       = Dimension<P1, Z0, Z0, Z0, Z0, Z0, Z0>;
-pub type Mass         = Dimension<Z0, P1, Z0, Z0, Z0, Z0, Z0>;
-pub type Time         = Dimension<Z0, Z0, P1, Z0, Z0, Z0, Z0>;
-pub type Current      = Dimension<Z0, Z0, Z0, P1, Z0, Z0, Z0>;
-pub type Temp         = Dimension<Z0, Z0, Z0, Z0, P1, Z0, Z0>;
-pub type Amount       = Dimension<Z0, Z0, Z0, Z0, Z0, P1, Z0>;
-pub type Intensity    = Dimension<Z0, Z0, Z0, Z0, Z0, Z0, P1>;
-//                                 L   M   T   I   Θ   N   J
-pub type Frequency    = Dimension<Z0, Z0, N1, Z0, Z0, Z0, Z0>;
-pub type Velocity     = Dimension<P1, Z0, N1, Z0, Z0, Z0, Z0>;
-pub type Accel        = Dimension<P1, Z0, N2, Z0, Z0, Z0, Z0>;
-pub type Force        = Dimension<P1, P1, N2, Z0, Z0, Z0, Z0>;
-pub type Pressure     = Dimension<N1, P1, N2, Z0, Z0, Z0, Z0>;
-pub type Area         = Dimension<P2, Z0, Z0, Z0, Z0, Z0, Z0>;
-pub type Volume       = Dimension<P3, Z0, Z0, Z0, Z0, Z0, Z0>;
-pub type Density      = Dimension<N3, P1, Z0, Z0, Z0, Z0, Z0>;
-//                                 L   M   T   I   Θ   N   J
-pub type Charge       = Dimension<Z0, Z0, P1, P1, Z0, Z0, Z0>;
-pub type Torque       = Dimension<P2, P1, N2, Z0, Z0, Z0, Z0>;
-pub type Energy       = Dimension<P2, P1, N2, Z0, Z0, Z0, Z0>;
-pub type Power        = Dimension<P2, P1, N3, Z0, Z0, Z0, Z0>;
-pub type Voltage      = Dimension<P2, P1, N3, N1, Z0, Z0, Z0>;
-pub type Resistance   = Dimension<P2, P1, N3, N2, Z0, Z0, Z0>;
-pub type Capacitance  = Dimension<N2, N1, P4, P2, Z0, Z0, Z0>;
-//                                 L   M   T   I   Θ   N   J
+pub type One          = dim!(< 0, 0, 0, 0, 0, 0, 0>);
+//                             L  M  T  I  Θ  N  J
+pub type Length       = dim!(< 1, 0, 0, 0, 0, 0, 0>);
+pub type Mass         = dim!(< 0, 1, 0, 0, 0, 0, 0>);
+pub type Time         = dim!(< 0, 0, 1, 0, 0, 0, 0>);
+pub type Current      = dim!(< 0, 0, 0, 1, 0, 0, 0>);
+pub type Temp         = dim!(< 0, 0, 0, 0, 1, 0, 0>);
+pub type Amount       = dim!(< 0, 0, 0, 0, 0, 1, 0>);
+pub type Intensity    = dim!(< 0, 0, 0, 0, 0, 0, 1>);
+//                             L  M  T  I  Θ  N  J
+pub type Frequency    = dim!(< 0, 0,-1, 0, 0, 0, 0>);
+pub type Velocity     = dim!(< 1, 0,-1, 0, 0, 0, 0>);
+pub type Accel        = dim!(< 1, 0,-2, 0, 0, 0, 0>);
+pub type Force        = dim!(< 1, 1,-2, 0, 0, 0, 0>);
+pub type Pressure     = dim!(<-1, 1,-2, 0, 0, 0, 0>);
+pub type Area         = dim!(< 2, 0, 0, 0, 0, 0, 0>);
+pub type Volume       = dim!(< 3, 0, 0, 0, 0, 0, 0>);
+pub type Density      = dim!(<-3, 1, 0, 0, 0, 0, 0>);
+//                             L  M  T  I  Θ  N  J
+pub type Charge       = dim!(< 0, 0, 1, 1, 0, 0, 0>);
+pub type Torque       = dim!(< 2, 1,-2, 0, 0, 0, 0>);
+pub type Energy       = dim!(< 2, 1,-2, 0, 0, 0, 0>);
+pub type Power        = dim!(< 2, 1,-3, 0, 0, 0, 0>);
+pub type Voltage      = dim!(< 2, 1,-3,-1, 0, 0, 0>);
+pub type Resistance   = dim!(< 2, 1,-3,-2, 0, 0, 0>);
+pub type Capacitance  = dim!(<-2,-1, 4, 2, 0, 0, 0>);
+//                             L  M  T  I  Θ  N  J
 
 
 /// Zero-size type that serves as a type-level array of exponents.
