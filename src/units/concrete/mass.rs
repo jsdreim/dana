@@ -1,4 +1,4 @@
-use crate::units::{/*si,*/ Unit, UnitConcrete};
+use crate::units::traits::{Unit, UnitConcrete, UnitScale};
 
 
 #[derive(Clone, Copy, Debug, Hash, PartialEq, PartialOrd, Eq, Ord)]
@@ -85,3 +85,45 @@ impl UnitConcrete for Mass {
 //     const KILO: Self = Self::KiloGram;
 //     const SCALE: f64 = 1e0;
 // }
+
+impl UnitScale for Mass {
+    fn step_down(&self) -> Option<Self> {
+        match self {
+            Self::PicoGram      => None,
+            Self::NanoGram      => Some(Self::PicoGram),
+            Self::MicroGram     => Some(Self::NanoGram),
+            Self::MilliGram     => Some(Self::MicroGram),
+            Self::Gram          => Some(Self::MilliGram),
+            Self::KiloGram      => Some(Self::Gram),
+
+            Self::MetricTon     => Some(Self::KiloGram),
+            Self::KiloTon       => Some(Self::MetricTon),
+            Self::MegaTon       => Some(Self::KiloTon),
+            Self::GigaTon       => Some(Self::MegaTon),
+
+            Self::EarthMass     => Some(Self::GigaTon),
+            Self::JupiterMass   => Some(Self::EarthMass),
+            Self::SolarMass     => Some(Self::JupiterMass),
+        }
+    }
+
+    fn step_up(&self) -> Option<Self> {
+        match self {
+            Self::PicoGram      => Some(Self::NanoGram),
+            Self::NanoGram      => Some(Self::MicroGram),
+            Self::MicroGram     => Some(Self::MilliGram),
+            Self::MilliGram     => Some(Self::Gram),
+            Self::Gram          => Some(Self::KiloGram),
+            Self::KiloGram      => Some(Self::MetricTon),
+
+            Self::MetricTon     => Some(Self::KiloTon),
+            Self::KiloTon       => Some(Self::MegaTon),
+            Self::MegaTon       => Some(Self::GigaTon),
+            Self::GigaTon       => Some(Self::EarthMass),
+
+            Self::EarthMass     => Some(Self::JupiterMass),
+            Self::JupiterMass   => Some(Self::SolarMass),
+            Self::SolarMass     => None,
+        }
+    }
+}

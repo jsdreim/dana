@@ -1,4 +1,4 @@
-use crate::units::{Unit, UnitConcrete};
+use crate::units::traits::{Unit, UnitConcrete, UnitScale};
 
 
 #[derive(Clone, Copy, Debug, Hash, PartialEq, PartialOrd, Eq, Ord)]
@@ -42,6 +42,32 @@ impl UnitConcrete for Power {
             Self::MegaWatt => "MW",
             Self::GigaWatt => "GW",
             Self::TeraWatt => "TW",
+        }
+    }
+}
+
+impl UnitScale for Power {
+    fn step_down(&self) -> Option<Self> {
+        match self {
+            Self::MicroWatt => None,
+            Self::MilliWatt => Some(Self::MicroWatt),
+            Self::Watt      => Some(Self::MilliWatt),
+            Self::KiloWatt  => Some(Self::Watt),
+            Self::MegaWatt  => Some(Self::KiloWatt),
+            Self::GigaWatt  => Some(Self::MegaWatt),
+            Self::TeraWatt  => Some(Self::GigaWatt),
+        }
+    }
+
+    fn step_up(&self) -> Option<Self> {
+        match self {
+            Self::MicroWatt => Some(Self::MilliWatt),
+            Self::MilliWatt => Some(Self::Watt),
+            Self::Watt      => Some(Self::KiloWatt),
+            Self::KiloWatt  => Some(Self::MegaWatt),
+            Self::MegaWatt  => Some(Self::GigaWatt),
+            Self::GigaWatt  => Some(Self::TeraWatt),
+            Self::TeraWatt  => None,
         }
     }
 }

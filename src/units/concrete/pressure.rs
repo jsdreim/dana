@@ -1,4 +1,4 @@
-use crate::units::{Unit, UnitConcrete};
+use crate::units::traits::{Unit, UnitConcrete, UnitScale};
 
 
 #[derive(Clone, Copy, Debug, Hash, PartialEq, PartialOrd, Eq, Ord)]
@@ -42,6 +42,32 @@ impl UnitConcrete for Pressure {
             Self::MegaPascal => "MPa",
             Self::GigaPascal => "GPa",
             Self::TeraPascal => "TPa",
+        }
+    }
+}
+
+impl UnitScale for Pressure {
+    fn step_down(&self) -> Option<Self> {
+        match self {
+            Self::MicroPascal => None,
+            Self::MilliPascal => Some(Self::MicroPascal),
+            Self::Pascal      => Some(Self::MilliPascal),
+            Self::KiloPascal  => Some(Self::Pascal),
+            Self::MegaPascal  => Some(Self::KiloPascal),
+            Self::GigaPascal  => Some(Self::MegaPascal),
+            Self::TeraPascal  => Some(Self::GigaPascal),
+        }
+    }
+
+    fn step_up(&self) -> Option<Self> {
+        match self {
+            Self::MicroPascal => Some(Self::MilliPascal),
+            Self::MilliPascal => Some(Self::Pascal),
+            Self::Pascal      => Some(Self::KiloPascal),
+            Self::KiloPascal  => Some(Self::MegaPascal),
+            Self::MegaPascal  => Some(Self::GigaPascal),
+            Self::GigaPascal  => Some(Self::TeraPascal),
+            Self::TeraPascal  => None,
         }
     }
 }

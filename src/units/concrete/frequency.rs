@@ -1,4 +1,4 @@
-use crate::units::{Unit, UnitConcrete};
+use crate::units::traits::{Unit, UnitConcrete, UnitScale};
 
 
 #[derive(Clone, Copy, Debug, Hash, PartialEq, PartialOrd, Eq, Ord)]
@@ -42,6 +42,32 @@ impl UnitConcrete for Frequency {
             Self::MegaHertz => "MHz",
             Self::GigaHertz => "GHz",
             Self::TeraHertz => "THz",
+        }
+    }
+}
+
+impl UnitScale for Frequency {
+    fn step_down(&self) -> Option<Self> {
+        match self {
+            Self::MicroHertz => None,
+            Self::MilliHertz => Some(Self::MicroHertz),
+            Self::Hertz      => Some(Self::MilliHertz),
+            Self::KiloHertz  => Some(Self::Hertz),
+            Self::MegaHertz  => Some(Self::KiloHertz),
+            Self::GigaHertz  => Some(Self::MegaHertz),
+            Self::TeraHertz  => Some(Self::GigaHertz),
+        }
+    }
+
+    fn step_up(&self) -> Option<Self> {
+        match self {
+            Self::MicroHertz => Some(Self::MilliHertz),
+            Self::MilliHertz => Some(Self::Hertz),
+            Self::Hertz      => Some(Self::KiloHertz),
+            Self::KiloHertz  => Some(Self::MegaHertz),
+            Self::MegaHertz  => Some(Self::GigaHertz),
+            Self::GigaHertz  => Some(Self::TeraHertz),
+            Self::TeraHertz  => None,
         }
     }
 }

@@ -1,4 +1,4 @@
-use crate::units::{Unit, UnitConcrete};
+use crate::units::traits::{Unit, UnitConcrete, UnitScale};
 
 
 #[derive(Clone, Copy, Debug, Hash, PartialEq, PartialOrd, Eq, Ord)]
@@ -42,6 +42,32 @@ impl UnitConcrete for Resistance {
             Self::MegaOhm => "MΩ",
             Self::GigaOhm => "GΩ",
             Self::TeraOhm => "TΩ",
+        }
+    }
+}
+
+impl UnitScale for Resistance {
+    fn step_down(&self) -> Option<Self> {
+        match self {
+            Self::MicroOhm => None,
+            Self::MilliOhm => Some(Self::MicroOhm),
+            Self::Ohm      => Some(Self::MilliOhm),
+            Self::KiloOhm  => Some(Self::Ohm),
+            Self::MegaOhm  => Some(Self::KiloOhm),
+            Self::GigaOhm  => Some(Self::MegaOhm),
+            Self::TeraOhm  => Some(Self::GigaOhm),
+        }
+    }
+
+    fn step_up(&self) -> Option<Self> {
+        match self {
+            Self::MicroOhm => Some(Self::MilliOhm),
+            Self::MilliOhm => Some(Self::Ohm),
+            Self::Ohm      => Some(Self::KiloOhm),
+            Self::KiloOhm  => Some(Self::MegaOhm),
+            Self::MegaOhm  => Some(Self::GigaOhm),
+            Self::GigaOhm  => Some(Self::TeraOhm),
+            Self::TeraOhm  => None,
         }
     }
 }

@@ -1,4 +1,4 @@
-use crate::units::{Unit, UnitConcrete};
+use crate::units::traits::{Unit, UnitConcrete, UnitScale};
 
 
 #[derive(Clone, Copy, Debug, Hash, PartialEq, PartialOrd, Eq, Ord)]
@@ -42,6 +42,32 @@ impl UnitConcrete for Voltage {
             Self::MegaVolt => "MV",
             Self::GigaVolt => "GV",
             Self::TeraVolt => "TV",
+        }
+    }
+}
+
+impl UnitScale for Voltage {
+    fn step_down(&self) -> Option<Self> {
+        match self {
+            Self::MicroVolt => None,
+            Self::MilliVolt => Some(Self::MicroVolt),
+            Self::Volt      => Some(Self::MilliVolt),
+            Self::KiloVolt  => Some(Self::Volt),
+            Self::MegaVolt  => Some(Self::KiloVolt),
+            Self::GigaVolt  => Some(Self::MegaVolt),
+            Self::TeraVolt  => Some(Self::GigaVolt),
+        }
+    }
+
+    fn step_up(&self) -> Option<Self> {
+        match self {
+            Self::MicroVolt => Some(Self::MilliVolt),
+            Self::MilliVolt => Some(Self::Volt),
+            Self::Volt      => Some(Self::KiloVolt),
+            Self::KiloVolt  => Some(Self::MegaVolt),
+            Self::MegaVolt  => Some(Self::GigaVolt),
+            Self::GigaVolt  => Some(Self::TeraVolt),
+            Self::TeraVolt  => None,
         }
     }
 }

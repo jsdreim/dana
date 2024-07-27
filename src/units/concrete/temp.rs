@@ -1,4 +1,4 @@
-use crate::units::{Unit, UnitConcrete};
+use crate::units::traits::{Unit, UnitConcrete, UnitScale};
 
 
 #[derive(Clone, Copy, Debug, Hash, PartialEq, PartialOrd, Eq, Ord)]
@@ -42,6 +42,32 @@ impl UnitConcrete for Temp {
             Self::MegaKelvin => "MK",
             Self::GigaKelvin => "GK",
             Self::TeraKelvin => "TK",
+        }
+    }
+}
+
+impl UnitScale for Temp {
+    fn step_down(&self) -> Option<Self> {
+        match self {
+            Self::MicroKelvin => None,
+            Self::MilliKelvin => Some(Self::MicroKelvin),
+            Self::Kelvin      => Some(Self::MilliKelvin),
+            Self::KiloKelvin  => Some(Self::Kelvin),
+            Self::MegaKelvin  => Some(Self::KiloKelvin),
+            Self::GigaKelvin  => Some(Self::MegaKelvin),
+            Self::TeraKelvin  => Some(Self::GigaKelvin),
+        }
+    }
+
+    fn step_up(&self) -> Option<Self> {
+        match self {
+            Self::MicroKelvin => Some(Self::MilliKelvin),
+            Self::MilliKelvin => Some(Self::Kelvin),
+            Self::Kelvin      => Some(Self::KiloKelvin),
+            Self::KiloKelvin  => Some(Self::MegaKelvin),
+            Self::MegaKelvin  => Some(Self::GigaKelvin),
+            Self::GigaKelvin  => Some(Self::TeraKelvin),
+            Self::TeraKelvin  => None,
         }
     }
 }

@@ -1,4 +1,4 @@
-use crate::units::{Unit, UnitConcrete};
+use crate::units::traits::{Unit, UnitConcrete, UnitScale};
 
 
 #[derive(Clone, Copy, Debug, Hash, PartialEq, PartialOrd, Eq, Ord)]
@@ -42,6 +42,32 @@ impl UnitConcrete for Current {
             Self::MegaAmp => "MA",
             Self::GigaAmp => "GA",
             Self::TeraAmp => "TA",
+        }
+    }
+}
+
+impl UnitScale for Current {
+    fn step_down(&self) -> Option<Self> {
+        match self {
+            Self::MicroAmp => None,
+            Self::MilliAmp => Some(Self::MicroAmp),
+            Self::Amp      => Some(Self::MilliAmp),
+            Self::KiloAmp  => Some(Self::Amp),
+            Self::MegaAmp  => Some(Self::KiloAmp),
+            Self::GigaAmp  => Some(Self::MegaAmp),
+            Self::TeraAmp  => Some(Self::GigaAmp),
+        }
+    }
+
+    fn step_up(&self) -> Option<Self> {
+        match self {
+            Self::MicroAmp => Some(Self::MilliAmp),
+            Self::MilliAmp => Some(Self::Amp),
+            Self::Amp      => Some(Self::KiloAmp),
+            Self::KiloAmp  => Some(Self::MegaAmp),
+            Self::MegaAmp  => Some(Self::GigaAmp),
+            Self::GigaAmp  => Some(Self::TeraAmp),
+            Self::TeraAmp  => None,
         }
     }
 }

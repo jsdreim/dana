@@ -1,4 +1,4 @@
-use crate::units::{Unit, UnitConcrete};
+use crate::units::traits::{Unit, UnitConcrete, UnitScale};
 
 
 #[derive(Clone, Copy, Debug, Hash, PartialEq, PartialOrd, Eq, Ord)]
@@ -42,6 +42,32 @@ impl UnitConcrete for Charge {
             Self::MegaCoulomb => "MC",
             Self::GigaCoulomb => "GC",
             Self::TeraCoulomb => "TC",
+        }
+    }
+}
+
+impl UnitScale for Charge {
+    fn step_down(&self) -> Option<Self> {
+        match self {
+            Self::MicroCoulomb => None,
+            Self::MilliCoulomb => Some(Self::MicroCoulomb),
+            Self::Coulomb      => Some(Self::MilliCoulomb),
+            Self::KiloCoulomb  => Some(Self::Coulomb),
+            Self::MegaCoulomb  => Some(Self::KiloCoulomb),
+            Self::GigaCoulomb  => Some(Self::MegaCoulomb),
+            Self::TeraCoulomb  => Some(Self::GigaCoulomb),
+        }
+    }
+
+    fn step_up(&self) -> Option<Self> {
+        match self {
+            Self::MicroCoulomb => Some(Self::MilliCoulomb),
+            Self::MilliCoulomb => Some(Self::Coulomb),
+            Self::Coulomb      => Some(Self::KiloCoulomb),
+            Self::KiloCoulomb  => Some(Self::MegaCoulomb),
+            Self::MegaCoulomb  => Some(Self::GigaCoulomb),
+            Self::GigaCoulomb  => Some(Self::TeraCoulomb),
+            Self::TeraCoulomb  => None,
         }
     }
 }

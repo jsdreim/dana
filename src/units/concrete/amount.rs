@@ -1,4 +1,4 @@
-use crate::units::{Unit, UnitConcrete};
+use crate::units::traits::{Unit, UnitConcrete, UnitScale};
 
 
 #[derive(Clone, Copy, Debug, Hash, PartialEq, PartialOrd, Eq, Ord)]
@@ -42,6 +42,32 @@ impl UnitConcrete for Amount {
             Self::MegaMole => "Mmol",
             Self::GigaMole => "Gmol",
             Self::TeraMole => "Tmol",
+        }
+    }
+}
+
+impl UnitScale for Amount {
+    fn step_down(&self) -> Option<Self> {
+        match self {
+            Self::MicroMole => None,
+            Self::MilliMole => Some(Self::MicroMole),
+            Self::Mole      => Some(Self::MilliMole),
+            Self::KiloMole  => Some(Self::Mole),
+            Self::MegaMole  => Some(Self::KiloMole),
+            Self::GigaMole  => Some(Self::MegaMole),
+            Self::TeraMole  => Some(Self::GigaMole),
+        }
+    }
+
+    fn step_up(&self) -> Option<Self> {
+        match self {
+            Self::MicroMole => Some(Self::MilliMole),
+            Self::MilliMole => Some(Self::Mole),
+            Self::Mole      => Some(Self::KiloMole),
+            Self::KiloMole  => Some(Self::MegaMole),
+            Self::MegaMole  => Some(Self::GigaMole),
+            Self::GigaMole  => Some(Self::TeraMole),
+            Self::TeraMole  => None,
         }
     }
 }

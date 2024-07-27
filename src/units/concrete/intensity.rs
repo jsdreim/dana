@@ -1,4 +1,4 @@
-use crate::units::{Unit, UnitConcrete};
+use crate::units::traits::{Unit, UnitConcrete, UnitScale};
 
 
 #[derive(Clone, Copy, Debug, Hash, PartialEq, PartialOrd, Eq, Ord)]
@@ -42,6 +42,32 @@ impl UnitConcrete for Intensity {
             Self::MegaCandela => "Mcd",
             Self::GigaCandela => "Gcd",
             Self::TeraCandela => "Tcd",
+        }
+    }
+}
+
+impl UnitScale for Intensity {
+    fn step_down(&self) -> Option<Self> {
+        match self {
+            Self::MicroCandela => None,
+            Self::MilliCandela => Some(Self::MicroCandela),
+            Self::Candela      => Some(Self::MilliCandela),
+            Self::KiloCandela  => Some(Self::Candela),
+            Self::MegaCandela  => Some(Self::KiloCandela),
+            Self::GigaCandela  => Some(Self::MegaCandela),
+            Self::TeraCandela  => Some(Self::GigaCandela),
+        }
+    }
+
+    fn step_up(&self) -> Option<Self> {
+        match self {
+            Self::MicroCandela => Some(Self::MilliCandela),
+            Self::MilliCandela => Some(Self::Candela),
+            Self::Candela      => Some(Self::KiloCandela),
+            Self::KiloCandela  => Some(Self::MegaCandela),
+            Self::MegaCandela  => Some(Self::GigaCandela),
+            Self::GigaCandela  => Some(Self::TeraCandela),
+            Self::TeraCandela  => None,
         }
     }
 }

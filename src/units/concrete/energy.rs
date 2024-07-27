@@ -1,4 +1,4 @@
-use crate::units::{Unit, UnitConcrete};
+use crate::units::traits::{Unit, UnitConcrete, UnitScale};
 
 
 #[derive(Clone, Copy, Debug, Hash, PartialEq, PartialOrd, Eq, Ord)]
@@ -45,6 +45,34 @@ impl UnitConcrete for Energy {
             Self::MegaJoule => "MJ",
             Self::GigaJoule => "GJ",
             Self::TeraJoule => "TJ",
+        }
+    }
+}
+
+impl UnitScale for Energy {
+    fn step_down(&self) -> Option<Self> {
+        match self {
+            Self::ElectronVolt => None,
+            Self::MicroJoule => Some(Self::ElectronVolt),
+            Self::MilliJoule => Some(Self::MicroJoule),
+            Self::Joule      => Some(Self::MilliJoule),
+            Self::KiloJoule  => Some(Self::Joule),
+            Self::MegaJoule  => Some(Self::KiloJoule),
+            Self::GigaJoule  => Some(Self::MegaJoule),
+            Self::TeraJoule  => Some(Self::GigaJoule),
+        }
+    }
+
+    fn step_up(&self) -> Option<Self> {
+        match self {
+            Self::ElectronVolt => Some(Self::MicroJoule),
+            Self::MicroJoule => Some(Self::MilliJoule),
+            Self::MilliJoule => Some(Self::Joule),
+            Self::Joule      => Some(Self::KiloJoule),
+            Self::KiloJoule  => Some(Self::MegaJoule),
+            Self::MegaJoule  => Some(Self::GigaJoule),
+            Self::GigaJoule  => Some(Self::TeraJoule),
+            Self::TeraJoule  => None,
         }
     }
 }
