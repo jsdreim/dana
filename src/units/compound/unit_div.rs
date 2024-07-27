@@ -44,19 +44,6 @@ impl<A: Unit, B: Unit> std::fmt::Display for UnitDiv<A, B> where
 }
 
 
-/*impl<A1, B1, A2, B2> ConvertFrom<UnitDiv<A1, B1>> for UnitDiv<A2, B2> where
-    A1: ConvertInto<A2>, A2: Unit,
-    B1: ConvertInto<B2>, B2: Unit,
-    A1::Dim: Div<B1::Dim>,
-    A2::Dim: Div<B2::Dim>,
-    <A1::Dim as Div<B1::Dim>>::Output: DimType,
-    <A2::Dim as Div<B2::Dim>>::Output: DimType,
-{
-    fn conversion_factor_from(&self, unit: UnitDiv<A1, B1>) -> f64 {
-        unit.0.conversion_factor_into(self.0) / unit.1.conversion_factor_into(self.1)
-    }
-}*/
-
 impl<A: Unit, B: Unit> UnitCompound for UnitDiv<A, B> where
     A::Dim: Div<B::Dim>,
     <A::Dim as Div<B::Dim>>::Output: DimType,
@@ -108,22 +95,3 @@ impl<A: UnitScale, B: UnitScale> UnitScale for UnitDiv<A, B> where
         }
     }
 }
-
-
-//region Commutative Property.
-// impl<A: Commutative, B: Unit> CommutativeLeft for UnitDiv<A, B> {
-//     type WithLeftCommuted = UnitDiv<A::Commuted, B>;
-//
-//     fn commute_left(&self) -> Self::WithLeftCommuted {
-//         UnitDiv(self.0.commute(), self.1)
-//     }
-// }
-//
-// impl<A: Unit, B: Commutative> CommutativeRight for UnitDiv<A, B> {
-//     type WithRightCommuted = UnitDiv<A, B::Commuted>;
-//
-//     fn commute_right(&self) -> Self::WithRightCommuted {
-//         UnitDiv(self.0, self.1.commute())
-//     }
-// }
-//endregion

@@ -36,16 +36,6 @@ impl<A: Unit, B: Unit> std::fmt::Display for UnitMul<A, B> where
 }
 
 
-/*impl<A1, B1, A2, B2> ConvertFrom<UnitMul<A1, B1>> for UnitMul<A2, B2> where
-    A1: ConvertInto<A2>,
-    B1: ConvertInto<B2>,
-    A2: Unit, B2: Unit,
-{
-    fn conversion_factor_from(&self, unit: UnitMul<A1, B1>) -> f64 {
-        unit.0.conversion_factor_into(self.0) * unit.1.conversion_factor_into(self.1)
-    }
-}*/
-
 impl<A: Unit, B: Unit> UnitCompound for UnitMul<A, B> where
     A::Dim: Mul<B::Dim>,
     <A::Dim as Mul<B::Dim>>::Output: DimType,
@@ -97,45 +87,3 @@ impl<A: UnitScale, B: UnitScale> UnitScale for UnitMul<A, B> where
         }
     }
 }
-
-
-//region Associative Property.
-// impl<A: Unit, B: Unit, C: Unit> Associative<UnitMul<A, UnitMul<B, C>>>
-// for UnitMul<UnitMul<A, B>, C> {
-//     fn reassociate(self) -> UnitMul<A, UnitMul<B, C>> {
-//         let UnitMul(UnitMul(a, b), c) = self;
-//         UnitMul(a, UnitMul(b, c))
-//     }
-// }
-//
-// impl<A: Unit, B: Unit, C: Unit> Associative<UnitMul<UnitMul<A, B>, C>>
-// for UnitMul<A, UnitMul<B, C>> {
-//     fn reassociate(self) -> UnitMul<UnitMul<A, B>, C> {
-//         let UnitMul(a, UnitMul(b, c)) = self;
-//         UnitMul(UnitMul(a, b), c)
-//     }
-// }
-
-// impl<A: Associative, B: Unit> AssociativeLeft for UnitMul<A, B> {
-//     type WithLeftReassociated = UnitMul<A::Reassociated, B>;
-// }
-//
-// impl<A: Unit, B: Associative> AssociativeRight for UnitMul<A, B> {
-//     type WithRightReassociated = UnitMul<A, B::Reassociated>;
-// }
-//endregion
-
-
-//region Commutative Property.
-// impl<A: Unit, B: Unit> Commutative for UnitMul<A, B> {
-//     type Commuted = UnitMul<B, A>;
-// }
-//
-// impl<A: Commutative, B: Unit> CommutativeLeft for UnitMul<A, B> {
-//     type WithLeftCommuted = UnitMul<A::Commuted, B>;
-// }
-//
-// impl<A: Unit, B: Commutative> CommutativeRight for UnitMul<A, B> {
-//     type WithRightCommuted = UnitMul<A, B::Commuted>;
-// }
-//endregion
