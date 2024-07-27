@@ -68,6 +68,46 @@ impl Parse for MacroDim {
         let mut total = Self::default();
         let mut first = true;
 
+        //  Check for an angle-bracketed section. This allows specifying a
+        //      dimension as a sequence of plain integer literals.
+        if input.parse::<Token![<]>().is_ok() {
+            first = false;
+
+            let mut i = 0;
+            let array = [
+                &mut total.exp_l,
+                &mut total.exp_m,
+                &mut total.exp_t,
+                &mut total.exp_i,
+                &mut total.exp_k,
+                &mut total.exp_n,
+                &mut total.exp_j,
+            ];
+
+            while let Ok(literal) = input.parse::<syn::LitInt>() {
+                if array.len() <= i {
+                    return Err(syn::Error::new(
+                        literal.span(),
+                        &format!("too many dimensions specified, expected at \
+                        most {}", array.len()),
+                        // "too many dimensions specified",
+                    ));
+                }
+
+                let exp: i32 = literal.base10_parse()?;
+                array[i].sum += exp;
+                array[i].spans.push(literal.span());
+                i += 1;
+
+                if input.parse::<Token![,]>().is_err() {
+                    break;
+                }
+            }
+
+            input.parse::<Token![>]>()?;
+        }
+
+        //  Read multiplied dimensions with exponents.
         while first || input.parse::<Token![*]>().is_ok() {
             first = false;
 
