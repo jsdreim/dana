@@ -28,7 +28,7 @@ macro_rules! define_symbols {
         $($vis use self::$module::*;
         $vis mod $module {
             #[allow(unused_imports)]
-            use crate::units::concrete::*;
+            use crate::units::*;
             $(define_symbols!(@ super::$unit; $alias $(: $atype)? = $val);)*
         })*
 
@@ -158,8 +158,8 @@ define_symbols! {
     /// Unit symbols for units often used in physics.
     pub mod physical(
         basic,
-        [E],    [f],       [F],      [K,Θ], [J],
-        energy, frequency, force_si, temp,  intensity,
+        [E],    [f],       [F],                [K,Θ], [J],
+        energy, frequency, force_si, pressure, temp,  intensity,
     );
 
     /// Unit symbols related to electricity.
@@ -312,6 +312,19 @@ define_symbols! {
     pub mod force_imperial for type Force {
         const ozf = Ounce;
         const lbf = Pound;
+    }
+
+    pub mod pressure for type Pressure {
+        const μPa = MicroPascal;
+        const uPa = MicroPascal;
+        const mPa = MilliPascal;
+        const  Pa = Pascal;
+        const kPa = KiloPascal;
+        const MPa = MegaPascal;
+        const GPa = GigaPascal;
+        const TPa = TeraPascal;
+
+        const psi: (Force / Area) = (lbf / inch^2);
     }
 
     pub mod energy for type Energy as E {

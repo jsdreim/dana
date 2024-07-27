@@ -4,7 +4,7 @@ use super::traits::*;
 /// # New Unit Checklist
 /// 1. Source file.
 /// 2. Add to `concrete_types!` and `impl_scale!` calls below.
-/// 3. Add to [`crate::units::symbols`].
+/// 3. Add to [`crate::symbols`].
 struct _Notes;
 
 
@@ -92,6 +92,8 @@ concrete_types!(
     intensity::Intensity,
 
     force::Force,
+    pressure::Pressure,
+
     energy::Energy,
     power::Power,
     charge::Charge,
@@ -114,8 +116,9 @@ impl_scale! {
     for Intensity impl (Micro, Milli, Kilo, Mega, Giga, Tera) Candela;
 
     for Force impl (Kilo, Mega, Giga) Newton;
-    for Energy impl (Micro, Milli, Kilo, Mega, Giga, Tera) Joule;
+    for Pressure impl (Micro, Milli, Kilo, Mega, Giga, Tera) Pascal;
 
+    for Energy impl (Micro, Milli, Kilo, Mega, Giga, Tera) Joule;
     for Power impl (Micro, Milli, Kilo, Mega, Giga, Tera) Watt;
     for Charge impl (Micro, Milli, Kilo, Mega, Giga, Tera) Coulomb;
     for Current impl (Micro, Milli, Kilo, Mega, Giga, Tera) Amp;
