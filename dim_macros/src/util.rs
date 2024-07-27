@@ -1,3 +1,5 @@
+use std::cmp::Ordering;
+use num_traits::{PrimInt, Signed};
 use proc_macro2::TokenStream;
 use quote::ToTokens;
 use syn::{
@@ -5,6 +7,22 @@ use syn::{
     Result,
     Token,
 };
+
+
+pub fn typenum_int<N: std::fmt::Display + PrimInt + Signed>(n: N) -> String {
+    let prefix = match n.cmp(&N::zero()) {
+        Ordering::Less => 'N',
+        Ordering::Equal => 'Z',
+        Ordering::Greater => 'P',
+    };
+
+    format!("{prefix}{}", n.abs())
+}
+
+
+// pub fn typenum_uint<N: std::fmt::Display + PrimInt + Unsigned>(n: N) -> String {
+//     format!("U{n}")
+// }
 
 
 #[derive(Debug)]

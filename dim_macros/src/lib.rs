@@ -25,10 +25,8 @@ pub fn impl_typenums(_: TokenStream) -> TokenStream {
     let lim: i32 = 64;
 
     for i in -lim..=lim {
-        let pre = if i.is_negative() { 'N' } else if i.is_positive() { 'P' } else { 'Z' };
-
         let ident = syn::Ident::new(
-            &format!("{}{}", pre, i.abs()),
+            &util::typenum_int(i),
             proc_macro2::Span::call_site(),
         );
 

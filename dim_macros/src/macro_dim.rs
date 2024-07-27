@@ -1,4 +1,3 @@
-use std::cmp::Ordering;
 use proc_macro2::{Span, TokenStream};
 use quote::{quote, ToTokens};
 use syn::{parse::{Parse, ParseStream}, Result, Token};
@@ -15,16 +14,8 @@ impl DimExp {
         Self { sum, spans: Vec::new() }
     }
 
-    pub fn prefix(&self) -> char {
-        match self.sum.cmp(&0) {
-            Ordering::Less => 'N',
-            Ordering::Equal => 'Z',
-            Ordering::Greater => 'P',
-        }
-    }
-
     pub fn label(&self) -> String {
-        format!("{}{}", self.prefix(), self.sum.abs())
+        crate::util::typenum_int(self.sum)
     }
 
     pub fn add(&mut self, exp: i32, span: Span) {

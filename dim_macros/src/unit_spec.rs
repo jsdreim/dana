@@ -6,7 +6,7 @@ use syn::{
     Result,
     Token,
 };
-use crate::util::PathSep;
+use crate::util::{PathSep, typenum_int};
 
 
 /// Unit specifier ultimately destined to be used as an expression.
@@ -189,15 +189,7 @@ impl ToTokens for Exponent {
 
         match a.base10_parse::<i32>() {
             Ok(n) => {
-                let exp = if n.is_positive() {
-                    format!("P{n}")
-                } else if n.is_negative() {
-                    format!("N{n}")
-                } else {
-                    format!("Z{n}")
-                };
-
-                let ident = syn::Ident::new(&exp, a.span());
+                let ident = syn::Ident::new(&typenum_int(n), a.span());
                 tokens.extend(quote!(::typenum::consts::#ident));
             }
             Err(e) => e.to_compile_error().to_tokens(tokens),
