@@ -1,8 +1,8 @@
-//! This module defines symbols: Shortcut labels to dimensions and units. These
-//!     serve to make definitions clearer to read and easier to write. Examples
-//!     include `m` for [`Length::Meter`] and `E` for [`Energy`].
+//! Module for shortcut labels to dimensions and units, based on SI symbols.
 //!
-//! Also included are symbols for standard compound units, such as [`kWh`] for
+//! These serve to make complex definitions clearer to read and easier to write.
+//!     Examples include `m` for [`Length::Meter`] and `E` for [`Energy`]. Also
+//!     included are symbols for standard compound units, such as [`kWh`] for
 //!     Kilowatt-hours (energy as the product of power and time).
 //!
 //! Symbols for dimensions are implemented as type aliases, and those for units
