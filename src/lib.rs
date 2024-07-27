@@ -274,6 +274,39 @@ mod tests {
     }
 
     #[test]
+    fn test_unit_scale() {
+        fn test<U: UnitScale + PartialOrd + std::fmt::Debug>() {
+            let base = U::base();
+
+            assert_eq!(
+                1.0, base.scale(),
+                "base unit `{base:?}` has the wrong scale",
+            );
+
+            assert!(base >= base.step_to_bottom());
+            assert!(base <= base.step_to_top());
+        }
+
+        test::<Length>();
+        test::<Mass>();
+        test::<Time>();
+        test::<Current>();
+        test::<Temp>();
+        test::<Amount>();
+        test::<Intensity>();
+
+        test::<Charge>();
+        test::<Energy>();
+        test::<Force>();
+        test::<Frequency>();
+        test::<One>();
+        test::<Power>();
+        test::<Pressure>();
+        test::<Resistance>();
+        test::<Voltage>();
+    }
+
+    #[test]
     fn test_scale() {
         let dist = Length::MilliMeter.quantity(50.0);
 

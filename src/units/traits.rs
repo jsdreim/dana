@@ -20,6 +20,9 @@ pub trait Unit: Copy + Default + std::fmt::Display + PartialEq {
         have / want
     }
 
+    /// Return the base unit of this type, with a scale of 1.
+    fn base() -> Self { Default::default() }
+
     fn anonymous(&self) -> UnitAnon<Self::Dim> {
         UnitAnon::new(self.scale())
     }
@@ -49,10 +52,6 @@ pub trait Unit: Copy + Default + std::fmt::Display + PartialEq {
             values,
             [S::from_f64(self.scale()).unwrap(); N],
         )
-    }
-
-    fn default_quantity<V: Scalar>(value: V) -> Quantity<Self, V> {
-        Self::default().quantity(value)
     }
 
     fn convert_from<U, V>(self, qty: Quantity<U, V>) -> Quantity<Self, V> where

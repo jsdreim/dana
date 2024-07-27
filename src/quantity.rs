@@ -47,7 +47,7 @@ impl<U: Unit, V: Scalar> Quantity<U, V> {
         self.unit.anonymous().quantity(self.value)
     }
 
-    pub fn with_base(self) -> Self { self.with_unit(U::default()) }
+    pub fn with_base(self) -> Self { self.with_unit(U::base()) }
 
     pub fn with_unit(self, unit: U) -> Self {
         if unit == self.unit {
@@ -67,7 +67,7 @@ impl<U: Unit, V: Scalar> Quantity<U, V> {
     }
 
     pub fn value_as_base(self) -> V {
-        self.value_as(U::default())
+        self.value_as(U::base())
     }
 
     pub fn normalize(self) -> Self where
@@ -232,7 +232,7 @@ impl<U: Unit, V: Scalar> Quantity<U, V> {
     pub fn convert<W: Unit>(self) -> Quantity<W, V> where
         U: ConvertInto<W>,
     {
-        self.convert_to(W::default())
+        self.convert_to(W::base())
     }
 
     /// Perform trait-based unit conversion to a specific unit. This kind of
@@ -487,7 +487,7 @@ impl<U: Unit, V: Scalar> Inv for Quantity<U, V> where
 
 impl<U: Unit, V: Scalar> Zero for Quantity<U, V> {
     fn zero() -> Self {
-        Self { value: V::zero(), unit: U::default() }
+        U::base().zero()
     }
 
     fn is_zero(&self) -> bool {
