@@ -11,6 +11,10 @@ typenum = "1.17.0"
 [dependencies.dana_macros]
 path = "dana_macros"
 
+[dependencies.rand]
+version = "0.8.5"
+optional = true
+
 [dependencies.serde]
 version = "1.0.203"
 features = ["derive"]
@@ -18,7 +22,6 @@ optional = true
 
 
 [dev-dependencies]
-rand = "0.8.5"
 trybuild = "1.0.96"
 
 [dev-dependencies.criterion]
@@ -40,10 +43,11 @@ harness = false
 [[bench]]
 name = "qty_simd"
 harness = false
-required-features = ["simd"]
+required-features = ["rand", "simd"]
 
 
 [features]
 default = []
+rand = ["dep:rand"]
 serde = ["dep:serde"]
 simd = []

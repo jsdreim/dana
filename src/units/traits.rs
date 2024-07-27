@@ -33,12 +33,30 @@ pub trait Unit: Copy + Default + std::fmt::Display + PartialEq {
         Quantity::new(self, value)
     }
 
-    fn one<V: Scalar + num_traits::One>(self) -> Quantity<Self, V> {
+    fn one<V: Scalar>(self) -> Quantity<Self, V> {
         self.quantity(num_traits::One::one())
     }
 
-    fn zero<V: Scalar + num_traits::Zero>(self) -> Quantity<Self, V> {
+    fn zero<V: Scalar>(self) -> Quantity<Self, V> {
         self.quantity(num_traits::Zero::zero())
+    }
+
+    #[cfg(feature = "rand")]
+    fn random<V, R>(self, rng: &mut R) -> Quantity<Self, V> where
+        rand::distributions::Standard: rand::prelude::Distribution<V>,
+        R: rand::Rng,
+        V: Scalar,
+    {
+        self.random_in(rng, rand::distributions::Standard)
+    }
+
+    #[cfg(feature = "rand")]
+    fn random_in<V, R, D>(self, rng: &mut R, dist: D) -> Quantity<Self, V> where
+        D: rand::prelude::Distribution<V>,
+        R: rand::Rng,
+        V: Scalar,
+    {
+        self.quantity(dist.sample(rng))
     }
 
     #[cfg(feature = "simd")]
