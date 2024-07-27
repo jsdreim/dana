@@ -1,4 +1,31 @@
 #[test]
+fn dim() {
+    use dim_macros::{dim, qty};
+    use dimensional::{quantity::QuantityAnon, symbols::*};
+
+    //  Scalar.
+    let _qty: QuantityAnon<dim!(1)> = qty![1.0 m/m as ?];
+    let _qty: QuantityAnon<dim!(1*1)> = qty![1.0 m/m as ?];
+    let _qty: QuantityAnon<dim!(L^0)> = qty![1.0 m/m as ?];
+    let _qty: QuantityAnon<dim!(1*L^0)> = qty![1.0 m/m as ?];
+
+    //  Positive exponents.
+    let _qty: QuantityAnon<dim!(L)> = qty![1.0 m as ?];
+    let _qty: QuantityAnon<dim!(L^1)> = qty![1.0 m as ?];
+    let _qty: QuantityAnon<dim!(L^2)> = qty![1.0 m^2 as ?];
+    let _qty: QuantityAnon<dim!(L*L)> = qty![1.0 m^2 as ?];
+
+    //  Negative exponents.
+    let _qty: QuantityAnon<dim!(L^-1)> = qty![1.0/m as ?];
+    let _qty: QuantityAnon<dim!(L^-1)> = qty![1.0 m^-1 as ?];
+    let _qty: QuantityAnon<dim!(L^-2)> = qty![1.0 m^-2 as ?];
+    let _qty: QuantityAnon<dim!(L^-2)> = qty![1.0/m^2 as ?];
+
+    // let _qty: QuantityAnon<dim!(L^-2)> = qty![1.0/m/m as ?]; // FIXME
+}
+
+
+#[test]
 fn qty_invalid() {
     let test = trybuild::TestCases::new();
 

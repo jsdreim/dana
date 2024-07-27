@@ -138,7 +138,7 @@ extern crate self as dimensional;
 
 #[macro_use]
 extern crate dim_macros;
-pub use dim_macros::{qty, /*unit,*/ /*utype*/};
+pub use dim_macros::{dim, qty, /*unit,*/ /*utype*/};
 
 #[macro_use]
 mod macros;

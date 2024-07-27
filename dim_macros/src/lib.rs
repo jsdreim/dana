@@ -1,5 +1,6 @@
 #[macro_use]
 mod debug;
+mod macro_dim;
 mod macro_qty;
 mod macro_qtype;
 mod macro_reorg;
@@ -9,6 +10,7 @@ mod util;
 
 use proc_macro::TokenStream;
 use quote::ToTokens;
+use macro_dim::MacroDim;
 use macro_qty::MacroQty;
 use macro_qtype::MacroQType;
 use macro_reorg::Reorg;
@@ -61,6 +63,18 @@ pub fn impl_scale(stream: TokenStream) -> TokenStream {
 }
 
 
+#[proc_macro]
+pub fn dim(stream: TokenStream) -> TokenStream {
+    wrap_dbg!(MacroDim as MacroDimTop);
+
+    let dim = macro_dbg! {
+        as macro "dim" for stream if debug;
+        syn::parse_macro_input!(stream as MacroDimTop)
+    };
+    dim.into_token_stream().into()
+}
+
+
 /// Quantity macro.
 ///
 /// See the crate-level documentation for examples.
@@ -101,7 +115,7 @@ pub fn unit(stream: TokenStream) -> TokenStream {
 
 
 #[proc_macro]
-pub fn dim(stream: TokenStream) -> TokenStream {
+pub fn utype(stream: TokenStream) -> TokenStream {
     wrap_dbg!(UnitSpecType::as_type as UnitDefTop);
 
     let dim = macro_dbg! {
