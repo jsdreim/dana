@@ -280,7 +280,7 @@ define_symbols! {
         const GJ = GigaJoule;
         const TJ = TeraJoule;
 
-        const Wh: (Power * Time) = (W * h);
+        const  Wh: (Power * Time) = (W * h);
         const kWh: (Power * Time) = (kW * h);
     }
 
@@ -305,7 +305,7 @@ define_symbols! {
         const GC = GigaCoulomb;
         const TC = TeraCoulomb;
 
-        const Ah: (Current * Time) = (A * h);
+        const  Ah: (Current * Time) = (A * h);
         const mAh: (Current * Time) = (mA * h);
     }
 
