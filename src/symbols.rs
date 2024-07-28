@@ -25,21 +25,32 @@ macro_rules! define_symbols {
     ($($vis:vis mod $module:ident for type $unit:tt $(as $($uname:ident),+)? {
         $(const $alias:ident $(: $atype:tt)? = $val:tt);*   $(;)?
     })*) => {
-        $($vis use self::$module::*;
+        $(
+        #[allow(unused_imports)] $vis use self::$module::types::*;
+        #[allow(unused_imports)] $vis use self::$module::units::*;
+        #[allow(unused_imports)]
         $vis mod $module {
-            #[allow(unused_imports)]
-            use crate::units::*;
-            $(define_symbols!(@ super::$unit; $alias $(: $atype)? = $val);)*
-        })*
+            pub use types::*;
+            pub use units::*;
 
-        pub use types::*;
-        pub mod types {
-            $($($(pub type $uname = super::$unit;)+)?)*
+            /// Type aliases.
+            pub mod types {
+                $($(pub type $uname = super::super::$unit;)+)?
+            }
+
+            /// Unit consts.
+            pub mod units {
+                use super::super::*;
+
+                $(define_symbols!(@ super::super::$unit; $alias $(: $atype)? = $val);)*
+            }
         }
+        )*
 
-        // pub mod units {
-        //     $($(define_symbols!(@ super::$unit; $alias $(: $atype)? = $val);)*)*
-        // }
+        /// All type aliases.
+        pub mod types {
+            $($(pub use super::$module::types::{$($uname),+};)?)*
+        }
     };
 
     //  Define type modules, and then import everything from all of them.
@@ -66,26 +77,21 @@ macro_rules! define_symbols {
 
     //  Internal: Imports.
     (# [$($utype:ident),* $(,)?]) => { pub use super::types::{$($utype),*}; };
-    (# $module:ident) => { pub use super::$module::*; };
+    (# ($module:ident)) => { pub use super::$module::*; };
+    (# $module:ident) => { pub use super::$module::units::*; };
 
     //  Internal: Definitions for consts.
     (@ $utype:ty; $alias:ident            = $variant:ident) => {
         pub const $alias: $utype = <$utype>::$variant;
     };
     (@ $utype:ty; $alias:ident            = [$($unit:tt)*]) => {
-        pub const $alias: $utype = {
-            use super::*;
-            $crate::unit!($($unit)*)
-        };
+        pub const $alias: $utype = $crate::unit!($($unit)*);
     };
     (@ $utype:ty; $alias:ident            = $value:expr) => {
         pub const $alias: $utype = $value;
     };
     (@ $utype:ty; $alias:ident: $atype:tt = $($unit:tt)*) => {
-        pub const $alias: $crate::utype!($atype) = {
-            use super::*;
-            $crate::unit!($($unit)*)
-        };
+        pub const $alias: $crate::utype!($atype) = $crate::unit!($($unit)*);
     };
 }
 
@@ -132,10 +138,9 @@ pub mod dim {
 
 pub mod common {
     pub use super::{
-        types::{L, M, T},
-        length_si::{m, km},
-        mass_si::{kg},
-        time::{s, h},
+        length_si::{L, m, km},
+        mass_si::{M, kg},
+        time::{T, s, h},
     };
 }
 
@@ -147,9 +152,6 @@ define_symbols! {
         length_si, mass_si, time, speed,
     );
 
-    // /// Unit symbols for units often used in geometry.
-    // pub mod geometric(length, area, volume);
-
     /// Unit symbols for units often used in chemistry.
     pub mod chemical(
         [M],     [T],  [E],    [K,Θ], [N],
@@ -158,14 +160,14 @@ define_symbols! {
 
     /// Unit symbols for units often used in physics.
     pub mod physical(
-        basic,
+        (basic),
         [E],    [f],       [F],                [K,Θ], [J],
         energy, frequency, force_si, pressure, temp,  intensity,
     );
 
     /// Unit symbols related to electricity.
     pub mod electrical(
-        [P],   [Q],    [I],     [V],     [R],
+        [P],   [Q],    [I],     [U,V],   [R],
         power, charge, current, voltage, resistance,
     );
 
@@ -185,15 +187,11 @@ define_symbols! {
 
 //  TODO: Greek letters acceptable?
 define_symbols! {
-    // use;
-
     pub mod speed for type Speed as v {
-        const kph: (Length / Time) = (km/h);
-        const mph: (Length / Time) = (mi/h);
+        const kph: Speed = (km/h);
+        const mph: Speed = (mi/h);
+        // const fps: Speed = (ft/s);
     }
-
-    // pub mod accel for type Accel as a {}
-    // pub mod momentum for type Momentum as p {}
 
     pub mod length_si for type Length as L {
         const nm = NanoMeter;
@@ -396,7 +394,7 @@ define_symbols! {
         const TA = TeraAmp;
     }
 
-    pub mod voltage for type Voltage as V {
+    pub mod voltage for type Voltage as U, V {
         const μV = MicroVolt;
         const uV = MicroVolt;
         const mV = MilliVolt;
