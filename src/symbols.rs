@@ -134,7 +134,7 @@ pub mod common {
     pub use super::{
         types::{L, M, T},
         length_si::{m, km},
-        mass::{kg},
+        mass_si::{kg},
         time::{s, h},
     };
 }
@@ -143,8 +143,8 @@ pub mod common {
 define_symbols! {
     /// Unit symbols for basic dimensions: Length, mass, time, and speed.
     pub mod basic(
-        [L],       [M],  [T],  [v],
-        length_si, mass, time, speed,
+        [L],       [M],     [T],  [v],
+        length_si, mass_si, time, speed,
     );
 
     // /// Unit symbols for units often used in geometry.
@@ -152,8 +152,8 @@ define_symbols! {
 
     /// Unit symbols for units often used in chemistry.
     pub mod chemical(
-        [M],  [T],  [E],    [K,Θ], [N],
-        mass, time, energy, temp,  amount,
+        [M],     [T],  [E],    [K,Θ], [N],
+        mass_si, time, energy, temp,  amount,
     );
 
     /// Unit symbols for units often used in physics.
@@ -171,14 +171,14 @@ define_symbols! {
 
     /// Unit symbols for the ISQ base quantities.
     pub mod isq(
-        [L],       [M],  [T],  [I],     [K,Θ], [N],    [J],
-        length_si, mass, time, current, temp,  amount, intensity,
+        [L],       [M],     [T],  [I],     [K,Θ], [N],    [J],
+        length_si, mass_si, time, current, temp,  amount, intensity,
     );
 
     /// Unit symbols for the Imperial system.
     pub mod imperial(
-        [L],             [T],  [F],
-        length_imperial, time, force_imperial,
+        [L],             [M],           [T],  [F],
+        length_imperial, mass_imperial, time, force_imperial,
     );
 }
 
@@ -237,7 +237,7 @@ define_symbols! {
         const Gpc = GigaParsec;
     }
 
-    pub mod mass for type Mass as M {
+    pub mod mass_si for type Mass as M {
         const pg = PicoGram;
         const ng = NanoGram;
         const μg = MicroGram;
@@ -250,6 +250,11 @@ define_symbols! {
         const kT = KiloTon;
         const MT = MegaTon;
         const GT = GigaTon;
+    }
+
+    pub mod mass_imperial for type Mass {
+        const oz = Ounce;
+        const lb = Pound;
     }
 
     pub mod time for type Time as T {

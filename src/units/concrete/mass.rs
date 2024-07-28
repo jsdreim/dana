@@ -9,6 +9,8 @@ pub enum Mass {
     MicroGram,
     MilliGram,
     Gram,
+    Ounce,
+    Pound,
     KiloGram,
 
     MetricTon,
@@ -34,6 +36,9 @@ impl Unit for Mass {
             Self::Gram      => 1e-3,
             Self::KiloGram  => 1e0,
 
+            Self::Ounce     => 028.349_523_125_e-3,
+            Self::Pound     => 453.592_370_e-3,
+
             Self::MetricTon => 1e+3,
             Self::KiloTon   => 1e+6,
             Self::MegaTon   => 1e+9,
@@ -57,6 +62,9 @@ impl UnitConcrete for Mass {
             Self::MilliGram => "mg",
             Self::Gram      =>  "g",
             Self::KiloGram  => "kg",
+
+            Self::Ounce     => "oz",
+            Self::Pound     => "lb",
 
             Self::MetricTon =>  "T",
             Self::KiloTon   => "kT",
@@ -96,6 +104,9 @@ impl UnitScale for Mass {
             Self::Gram          => Some(Self::MilliGram),
             Self::KiloGram      => Some(Self::Gram),
 
+            Self::Ounce         => Some(Self::Gram),
+            Self::Pound         => Some(Self::Ounce),
+
             Self::MetricTon     => Some(Self::KiloGram),
             Self::KiloTon       => Some(Self::MetricTon),
             Self::MegaTon       => Some(Self::KiloTon),
@@ -115,6 +126,9 @@ impl UnitScale for Mass {
             Self::MilliGram     => Some(Self::Gram),
             Self::Gram          => Some(Self::KiloGram),
             Self::KiloGram      => Some(Self::MetricTon),
+
+            Self::Ounce         => Some(Self::Pound),
+            Self::Pound         => Some(Self::MetricTon),
 
             Self::MetricTon     => Some(Self::KiloTon),
             Self::KiloTon       => Some(Self::MegaTon),
