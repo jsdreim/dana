@@ -27,7 +27,7 @@ macro_rules! concrete_types {
             type Output = $crate::units::UnitDiv<Self, U>;
 
             fn div(self, rhs: U) -> Self::Output {
-                $crate::units::UnitDiv(self, rhs)
+                $crate::units::UnitDiv::new(self, rhs)
             }
         }
 
@@ -40,7 +40,7 @@ macro_rules! concrete_types {
             type Output = $crate::units::UnitMul<Self, U>;
 
             fn mul(self, rhs: U) -> Self::Output {
-                $crate::units::UnitMul(self, rhs)
+                $crate::units::UnitMul::new(self, rhs)
             }
         }
 
@@ -50,7 +50,7 @@ macro_rules! concrete_types {
             type Output = $crate::units::compound::PerUnit<Self>;
 
             fn inv(self) -> Self::Output {
-                $crate::units::compound::PerUnit(self)
+                $crate::units::compound::PerUnit::new(self)
             }
         }
 

@@ -10,6 +10,13 @@ pub struct UnitMul<A: Unit, B: Unit>(pub A, pub B) where
     <A::Dim as Mul<B::Dim>>::Output: DimType,
 ;
 
+impl<A: Unit, B: Unit> UnitMul<A, B> where
+    A::Dim: Mul<B::Dim>,
+    <A::Dim as Mul<B::Dim>>::Output: DimType,
+{
+    pub const fn new(lhs: A, rhs: B) -> Self { Self(lhs, rhs) }
+}
+
 impl<A: Unit, B: Unit> Unit for UnitMul<A, B> where
     A::Dim: Mul<B::Dim>,
     <A::Dim as Mul<B::Dim>>::Output: DimType,

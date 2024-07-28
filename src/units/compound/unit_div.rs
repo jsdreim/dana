@@ -14,6 +14,8 @@ impl<A: Unit, B: Unit> UnitDiv<A, B> where
     A::Dim: Div<B::Dim>,
     <A::Dim as Div<B::Dim>>::Output: DimType,
 {
+    pub const fn new(lhs: A, rhs: B) -> Self { Self(lhs, rhs) }
+
     pub const fn numerator(&self) -> A { self.0 }
     pub const fn denominator(&self) -> B { self.1 }
 }

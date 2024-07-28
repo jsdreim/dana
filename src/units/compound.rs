@@ -11,6 +11,7 @@ pub use unit_mul::UnitMul;
 pub use unit_pow::*;
 
 
+/// Operator implementations grouped together, to compare them more easily.
 mod impl_ops {
     use std::ops::{Div, Mul};
     use num_traits::Inv;
@@ -26,7 +27,7 @@ mod impl_ops {
         type Output = UnitDiv<Self, W>;
 
         fn div(self, rhs: W) -> Self::Output {
-            UnitDiv(self, rhs)
+            UnitDiv::new(self, rhs)
         }
     }
 
@@ -38,7 +39,7 @@ mod impl_ops {
         type Output = UnitDiv<Self, W>;
 
         fn div(self, rhs: W) -> Self::Output {
-            UnitDiv(self, rhs)
+            UnitDiv::new(self, rhs)
         }
     }
 
@@ -50,7 +51,7 @@ mod impl_ops {
         type Output = UnitDiv<Self, W>;
 
         fn div(self, rhs: W) -> Self::Output {
-            UnitDiv(self, rhs)
+            UnitDiv::new(self, rhs)
         }
     }
 
@@ -62,7 +63,7 @@ mod impl_ops {
         type Output = UnitDiv<Self, W>;
 
         fn div(self, rhs: W) -> Self::Output {
-            UnitDiv(self, rhs)
+            UnitDiv::new(self, rhs)
         }
     }
     //endregion
@@ -76,7 +77,7 @@ mod impl_ops {
         type Output = UnitMul<Self, W>;
 
         fn mul(self, rhs: W) -> Self::Output {
-            UnitMul(self, rhs)
+            UnitMul::new(self, rhs)
         }
     }
 
@@ -88,7 +89,7 @@ mod impl_ops {
         type Output = UnitMul<Self, W>;
 
         fn mul(self, rhs: W) -> Self::Output {
-            UnitMul(self, rhs)
+            UnitMul::new(self, rhs)
         }
     }
 
@@ -100,7 +101,7 @@ mod impl_ops {
         type Output = UnitMul<Self, W>;
 
         fn mul(self, rhs: W) -> Self::Output {
-            UnitMul(self, rhs)
+            UnitMul::new(self, rhs)
         }
     }
 
@@ -112,7 +113,7 @@ mod impl_ops {
         type Output = UnitMul<Self, W>;
 
         fn mul(self, rhs: W) -> Self::Output {
-            UnitMul(self, rhs)
+            UnitMul::new(self, rhs)
         }
     }
     //endregion
@@ -126,7 +127,7 @@ mod impl_ops {
         type Output = PerUnit<Self>;
 
         fn inv(self) -> Self::Output {
-            PerUnit(self)
+            PerUnit::new(self)
         }
     }
 
@@ -139,7 +140,7 @@ mod impl_ops {
         type Output = UnitDiv<B, A>;
 
         fn inv(self) -> Self::Output {
-            UnitDiv(self.1, self.0)
+            UnitDiv::new(self.1, self.0)
         }
     }
 
@@ -151,7 +152,7 @@ mod impl_ops {
         type Output = PerUnit<UnitMul<A, B>>;
 
         fn inv(self) -> Self::Output {
-            PerUnit(self)
+            PerUnit::new(self)
         }
     }
 
@@ -163,7 +164,7 @@ mod impl_ops {
         type Output = PerUnit<Self>;
 
         fn inv(self) -> Self::Output {
-            PerUnit(self)
+            PerUnit::new(self)
         }
     }
     //endregion

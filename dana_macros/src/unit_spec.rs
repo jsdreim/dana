@@ -395,16 +395,16 @@ impl<U: UnitCore> UnitSpec<U> {
             Self::Div(left, right) => {
                 let ts_l = left.as_expr();
                 let ts_r = right.as_expr();
-                quote!(::dana::units::UnitDiv(#ts_l, #ts_r))
+                quote!(::dana::units::UnitDiv::new(#ts_l, #ts_r))
             }
             Self::Mul(left, right) => {
                 let ts_l = left.as_expr();
                 let ts_r = right.as_expr();
-                quote!(::dana::units::UnitMul(#ts_l, #ts_r))
+                quote!(::dana::units::UnitMul::new(#ts_l, #ts_r))
             }
             Self::Inv(unit) => {
                 let ts = unit.as_expr();
-                quote!(::dana::units::PerUnit(#ts))
+                quote!(::dana::units::PerUnit::new(#ts))
             }
             Self::Pow(base, exp) => {
                 let ts = base.as_expr();

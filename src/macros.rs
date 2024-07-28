@@ -96,15 +96,15 @@ macro_rules! unit {
         $crate::units::UnitPow::<_, $crate::utype!(@@ $e)>::new($crate::unit!($a $(::$b)*))
     };
     //  Signed exponents.
-    ($a:tt $(::$b:tt)* ^-$e:tt) => { $crate::units::PerUnit     ($crate::unit!($a $(::$b)* ^ $e)) };
+    ($a:tt $(::$b:tt)* ^-$e:tt) => { $crate::units::PerUnit::new($crate::unit!($a $(::$b)* ^ $e)) };
     ($a:tt $(::$b:tt)* ^+$e:tt) => {                             $crate::unit!($a $(::$b)* ^ $e)  };
 
     //  Inverted term.
     (1 / $a:tt $(::$b:tt)* ^ $e:tt $($z:tt)*) => { $crate::unit!(
-        (@ $crate::units::PerUnit($crate::unit!($a $(::$b)* ^ $e))) $($z)*
+        (@ $crate::units::PerUnit::new($crate::unit!($a $(::$b)* ^ $e))) $($z)*
     )};
     (1 / $a:tt $(::$b:tt)* $($z:tt)*) => { $crate::unit!(
-        (@ $crate::units::PerUnit($crate::unit!($a $(::$b)*))) $($z)*
+        (@ $crate::units::PerUnit::new($crate::unit!($a $(::$b)*))) $($z)*
     )};
 
     //  Div/mul where the second unit has an exponent.
@@ -112,7 +112,7 @@ macro_rules! unit {
         $a1:tt $(::$b1:tt)* $(^ $e1:tt)? /
         $a2:tt $(::$b2:tt)*   ^ $e2:tt   $($z:tt)*
     ) => { $crate::unit!(
-        (@ $crate::units::UnitDiv(
+        (@ $crate::units::UnitDiv::new(
             $crate::unit!($a1 $(::$b1)* $(^ $e1)?),
             $crate::unit!($a2 $(::$b2)* ^ $e2),
         ))
@@ -122,7 +122,7 @@ macro_rules! unit {
         $a1:tt $(::$b1:tt)* $(^ $e1:tt)? *
         $a2:tt $(::$b2:tt)*   ^ $e2:tt   $($z:tt)*
     ) => { $crate::unit!(
-        (@ $crate::units::UnitMul(
+        (@ $crate::units::UnitMul::new(
             $crate::unit!($a1 $(::$b1)* $(^ $e1)?),
             $crate::unit!($a2 $(::$b2)* ^ $e2),
         ))
@@ -134,7 +134,7 @@ macro_rules! unit {
         $a1:tt $(::$b1:tt)* $(^ $e1:tt)? /
         $a2:tt $(::$b2:tt)*              $($z:tt)*
     ) => { $crate::unit!(
-        (@ $crate::units::UnitDiv(
+        (@ $crate::units::UnitDiv::new(
             $crate::unit!($a1 $(::$b1)* $(^ $e1)?),
             $crate::unit!($a2 $(::$b2)*),
         ))
@@ -144,7 +144,7 @@ macro_rules! unit {
         $a1:tt $(::$b1:tt)* $(^ $e1:tt)? *
         $a2:tt $(::$b2:tt)*              $($z:tt)*
     ) => { $crate::unit!(
-        (@ $crate::units::UnitMul(
+        (@ $crate::units::UnitMul::new(
             $crate::unit!($a1 $(::$b1)* $(^ $e1)?),
             $crate::unit!($a2 $(::$b2)*),
         ))

@@ -15,6 +15,8 @@ impl<U: Unit> PerUnit<U> where
     U::Dim: Inv,
     <U::Dim as Inv>::Output: DimType,
 {
+    pub const fn new(unit: U) -> Self { Self(unit) }
+
     pub const fn denominator(&self) -> U { self.0 }
 }
 

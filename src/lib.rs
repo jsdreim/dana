@@ -52,7 +52,7 @@
 //! use dana::{Quantity, units::*};
 //!
 //! let grav: Quantity<UnitDiv<Length, UnitSquared<Time>>> = Quantity {
-//!     unit: UnitDiv(Length::Meter, UnitSquared::new(Time::Second)),
+//!     unit: UnitDiv::new(Length::Meter, UnitSquared::new(Time::Second)),
 //!     value: 9.81,
 //! };
 //! ```
