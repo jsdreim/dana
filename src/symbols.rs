@@ -70,7 +70,7 @@ pub mod common {
 define_groups! {
     /// Unit symbols for basic dimensions: Length, mass, time, and speed.
     pub mod basic(
-        [L],       [M],     [T],  [v],
+        [L],       [M],     [T],  /*[v],*/
         length_si, mass_si, time, speed,
     );
 
@@ -109,10 +109,10 @@ define_groups! {
 
 //  TODO: Greek letters acceptable?
 define_symbols! {
-    pub mod speed for type Speed as v {
-        const kph: Speed = (km/h);
-        const mph: Speed = (mi/h);
-        // const fps: Speed = (ft/s);
+    pub mod speed for type Speed /*as v*/ {
+        const kph = (km/h);
+        const mph = (mi/h);
+        // const fps = (ft/s);
     }
 
     pub mod length_si for type Length as L {

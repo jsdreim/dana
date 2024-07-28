@@ -1,25 +1,34 @@
+/// Define groups of related symbols.
 macro_rules! define_groups {
     //  Define a group module, containing symbols from other modules.
-    ($(#[$attr:meta])*
-    $vis:vis mod $module:ident ($($import:tt),* $(,)?)) => {
-        $(#[$attr])*
-        $vis mod $module {
-            $(define_groups!(@ $import);)*
-        }
-    };
-
     ($($(#[$attr:meta])*
     $vis:vis mod $module:ident ($($import:tt),* $(,)?);)*) => {
-        $(define_groups!($(#[$attr])* $vis mod $module ($($import),*));)*
+        $($(#[$attr])*
+        $vis mod $module {
+            $(define_groups!(@ $import);)*
+        })*
     };
 
-    //  Internal: Imports.
-    (@ [$($utype:ident),* $(,)?]) => { pub use super::types::{$($utype),*}; };
-    (@ ($group:ident)) => { pub use super::$group::*; };
-    (@ $module:ident) => { pub use super::$module::units::*; };
+    //region Internal.
+    //  Export specific type aliases.
+    (@ [$($utype:ident),* $(,)?]) => {
+        pub use super::types::{$($utype),*};
+    };
+
+    //  Export all unit consts from a symbols submodule.
+    (@ $module:ident) => {
+        pub use super::$module::units::*;
+    };
+
+    //  Export everything from another group.
+    (@ ($group:ident)) => {
+        pub use super::$group::*;
+    };
+    //endregion
 }
 
 
+/// Define symbols for units and types. This macro should only be invoked once.
 macro_rules! define_symbols {
     //  Define type modules, with symbols for types and their variants.
     ($($vis:vis mod $module:ident for type $unit:tt $(as $($uname:ident),+)? {
@@ -42,7 +51,10 @@ macro_rules! define_symbols {
             pub mod units {
                 use super::super::*;
 
-                $(define_symbols!(@ super::super::$unit; $alias $(: $atype)? = $val);)*
+                $(define_symbols!(
+                    @ super::super::$unit;
+                    $alias $(: $atype)? = $val
+                );)*
             }
         }
         )*
@@ -53,17 +65,25 @@ macro_rules! define_symbols {
         }
     };
 
-    //  Internal: Definitions for consts.
+    //region Internal.
+    /*//  Debug.
+    (@ $($t:tt)*) => {compile_error!(stringify!($($t)*));};*/
+
+    //  Define an alias as an enum variant.
     (@ $utype:ty; $alias:ident            = $variant:ident) => {
         pub const $alias: $utype = <$utype>::$variant;
     };
-    (@ $utype:ty; $alias:ident            = [$($unit:tt)*]) => {
-        pub const $alias: $utype = $crate::unit!($($unit)*);
+    //  Define an alias with a unit expression.
+    (@ $utype:ty; $alias:ident            = ($($unit:tt)*)) => {
+        pub const $alias: $utype = unit!($($unit)*);
     };
+    //  Define an alias as an arbitrary expression.
     (@ $utype:ty; $alias:ident            = $value:expr) => {
         pub const $alias: $utype = $value;
     };
+    //  Define an alias with a type expression AND a unit expression.
     (@ $utype:ty; $alias:ident: $atype:tt = $($unit:tt)*) => {
-        pub const $alias: $crate::utype!($atype) = $crate::unit!($($unit)*);
+        pub const $alias: utype!($atype) = unit!($($unit)*);
     };
+    //endregion
 }
