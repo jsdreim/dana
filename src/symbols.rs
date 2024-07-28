@@ -67,7 +67,7 @@ pub mod common {
 }
 
 
-define_symbols! {
+define_groups! {
     /// Unit symbols for basic dimensions: Length, mass, time, and speed.
     pub mod basic(
         [L],       [M],     [T],  [v],

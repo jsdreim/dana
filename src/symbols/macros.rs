@@ -1,9 +1,26 @@
-macro_rules! define_symbols {
-    //  Define only type symbols.
-    ($($vis:vis type $unit:ident as $($uname:ident),+;)*) => {
-        $($($vis type $uname = $unit;)+)*
+macro_rules! define_groups {
+    //  Define a group module, containing symbols from other modules.
+    ($(#[$attr:meta])*
+    $vis:vis mod $module:ident ($($import:tt),* $(,)?)) => {
+        $(#[$attr])*
+        $vis mod $module {
+            $(define_groups!(@ $import);)*
+        }
     };
 
+    ($($(#[$attr:meta])*
+    $vis:vis mod $module:ident ($($import:tt),* $(,)?);)*) => {
+        $(define_groups!($(#[$attr])* $vis mod $module ($($import),*));)*
+    };
+
+    //  Internal: Imports.
+    (@ [$($utype:ident),* $(,)?]) => { pub use super::types::{$($utype),*}; };
+    (@ ($group:ident)) => { pub use super::$group::*; };
+    (@ $module:ident) => { pub use super::$module::units::*; };
+}
+
+
+macro_rules! define_symbols {
     //  Define type modules, with symbols for types and their variants.
     ($($vis:vis mod $module:ident for type $unit:tt $(as $($uname:ident),+)? {
         $(const $alias:ident $(: $atype:tt)? = $val:tt);*   $(;)?
@@ -35,33 +52,6 @@ macro_rules! define_symbols {
             $($(pub use super::$module::types::{$($uname),+};)?)*
         }
     };
-
-    //  Define type modules, and then import everything from all of them.
-    (use; $($vis:vis mod $module:ident for type $u:tt $(as $($n:ident),+)? {$($b:tt)*})*) => {
-        $(
-        $vis use self::$module::*;
-        define_symbols!($vis mod $module for type $u $(as $($n),+)? {$($b)*});
-        )*
-    };
-
-    //  Define a group module, containing symbols from other modules.
-    ($(#[$attr:meta])*
-    $vis:vis mod $module:ident ($($import:tt),* $(,)?)) => {
-        $(#[$attr])*
-        $vis mod $module {
-            $(define_symbols!(# $import);)*
-        }
-    };
-
-    ($($(#[$attr:meta])*
-    $vis:vis mod $module:ident ($($import:tt),* $(,)?);)*) => {
-        $(define_symbols!($(#[$attr])* $vis mod $module ($($import),*));)*
-    };
-
-    //  Internal: Imports.
-    (# [$($utype:ident),* $(,)?]) => { pub use super::types::{$($utype),*}; };
-    (# ($module:ident)) => { pub use super::$module::*; };
-    (# $module:ident) => { pub use super::$module::units::*; };
 
     //  Internal: Definitions for consts.
     (@ $utype:ty; $alias:ident            = $variant:ident) => {
