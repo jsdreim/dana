@@ -253,6 +253,10 @@ define_symbols! {
     }
 
     pub mod time for type Time as T {
+        const ps   = PicoSecond;
+        const ns   = NanoSecond;
+        const μs   = MicroSecond;
+        const us   = MicroSecond;
         const ms   = MilliSecond;
         const  s   = Second;
         const  min = Minute;
