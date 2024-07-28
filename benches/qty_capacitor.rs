@@ -1,5 +1,5 @@
 use criterion::{black_box, Criterion, criterion_group, criterion_main};
-use dana::{qty, Quantity, symbols::*, units::*};
+use dana::{qty, Quantity, symbols::electrical::*, units::*};
 
 
 fn capacitor_float(amp_hours: f64, volts: f64, ohms: f64) -> (f64, f64) {

@@ -1,5 +1,5 @@
 use criterion::{Criterion, criterion_group, criterion_main};
-use dana::{constants::*, qty, Quantity, symbols::*, units::*};
+use dana::{constants::*, qty, Quantity, symbols::physical::*, units::*};
 
 
 fn mass_energy_float(mass_kg: f64) -> f64 {

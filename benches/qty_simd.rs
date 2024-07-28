@@ -4,7 +4,7 @@ use std::{array::from_fn, ops::{Add, Mul}, simd::*};
 use criterion::{black_box, Criterion, criterion_group, criterion_main};
 use num_traits::AsPrimitive;
 use rand::Rng;
-use dana::{simd::*, symbols::*, units::*};
+use dana::{simd::*, symbols::common::*, units::*};
 
 
 fn simd_float<V, const N: usize>(
