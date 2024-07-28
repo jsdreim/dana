@@ -183,19 +183,6 @@ define_symbols! {
 }
 
 
-// define_symbols! {
-//     pub mod area for type Area as A {}
-//     pub mod volume for type Volume as V {}
-//     pub mod density for type Density as D {}
-//     pub mod pressure for type Pressure as P {
-//         const  Pa = [ N / m^2];
-//         const kPa = [kN / m^2];
-//         const MPa = [MN / m^2];
-//         const GPa = [GN / m^2];
-//     }
-// }
-
-
 //  TODO: Greek letters acceptable?
 define_symbols! {
     // use;
@@ -322,6 +309,26 @@ define_symbols! {
     pub mod force_imperial for type Force {
         const ozf = Ounce;
         const lbf = Pound;
+    }
+
+    pub mod volume_si for type Volume {
+        const μL = MicroLiter;
+        const uL = MicroLiter;
+        const mL = MilliLiter;
+        const  L = Liter;
+        const kL = KiloLiter;
+        const ML = MegaLiter;
+        const GL = GigaLiter;
+        const TL = TeraLiter;
+    }
+
+    pub mod volume_us for type Volume {
+        const fl_dr = Dram;
+        const fl_oz = FlOunce;
+        const c     = Cup;
+        const pt    = Pint;
+        const qt    = Quart;
+        const gal   = Gallon;
     }
 
     pub mod pressure for type Pressure {

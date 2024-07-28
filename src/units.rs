@@ -17,7 +17,6 @@ pub type Accel = utype!(Speed / Time);
 pub type Momentum = utype!(Mass * Speed);
 
 pub type Area = utype!(Length^2);
-pub type Volume = utype!(Length^3);
 
 pub type Density = utype!(Mass / Volume);
 pub type Torque = utype!(Length * Force);

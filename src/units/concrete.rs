@@ -92,6 +92,7 @@ concrete_types!(
     intensity::Intensity,
 
     force::Force,
+    volume::Volume,
     pressure::Pressure,
 
     energy::Energy,
@@ -116,6 +117,7 @@ impl_scale! {
     for Intensity impl (Micro, Milli, Kilo, Mega, Giga, Tera) Candela;
 
     for Force impl (Kilo, Mega, Giga) Newton;
+    for Volume impl (Micro, Milli, Kilo, Mega, Giga, Tera) Liter;
     for Pressure impl (Micro, Milli, Kilo, Mega, Giga, Tera) Pascal;
 
     for Energy impl (Micro, Milli, Kilo, Mega, Giga, Tera) Joule;
