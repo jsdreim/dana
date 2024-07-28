@@ -202,41 +202,41 @@ impl<U: CanRoot<3>> CanCubeRoot for U {
 
 /// A compound Unit type with two sides.
 pub trait UnitBinary: UnitCompound {
-    type Left: Unit;
-    type Right: Unit;
+    type Lhs: Unit;
+    type Rhs: Unit;
 
-    fn left(&self) -> Self::Left;
-    fn right(&self) -> Self::Right;
+    fn lhs(&self) -> Self::Lhs;
+    fn rhs(&self) -> Self::Rhs;
 
-    fn new(left: Self::Left, right: Self::Right) -> Self;
+    fn binary(lhs: Self::Lhs, rhs: Self::Rhs) -> Self;
 
-    fn modify_left<F, L, V>(&self, f: F) -> V where
-        F: FnOnce(Self::Left) -> L,
-        V: UnitBinary<Left=L, Right=Self::Right>,
+    fn modify_lhs<F, L, V>(&self, f: F) -> V where
+        F: FnOnce(Self::Lhs) -> L,
+        V: UnitBinary<Lhs=L, Rhs=Self::Rhs>,
     {
-        V::new(f(self.left()), self.right())
+        V::binary(f(self.lhs()), self.rhs())
     }
 
-    fn modify_right<F, R, V>(&self, f: F) -> V where
-        F: FnOnce(Self::Right) -> R,
-        V: UnitBinary<Left=Self::Left, Right=R>,
+    fn modify_rhs<F, R, V>(&self, f: F) -> V where
+        F: FnOnce(Self::Rhs) -> R,
+        V: UnitBinary<Lhs=Self::Lhs, Rhs=R>,
     {
-        V::new(self.left(), f(self.right()))
+        V::binary(self.lhs(), f(self.rhs()))
     }
 
-    fn step_lhs_down(&self) -> Option<Self> where Self::Left: UnitScale {
-        Some(Self::new(self.left().step_down()?, self.right()))
+    fn step_lhs_down(&self) -> Option<Self> where Self::Lhs: UnitScale {
+        Some(Self::binary(self.lhs().step_down()?, self.rhs()))
     }
 
-    fn step_lhs_up(&self) -> Option<Self> where Self::Left: UnitScale {
-        Some(Self::new(self.left().step_up()?, self.right()))
+    fn step_lhs_up(&self) -> Option<Self> where Self::Lhs: UnitScale {
+        Some(Self::binary(self.lhs().step_up()?, self.rhs()))
     }
 
-    fn step_rhs_down(&self) -> Option<Self> where Self::Right: UnitScale {
-        Some(Self::new(self.left(), self.right().step_down()?))
+    fn step_rhs_down(&self) -> Option<Self> where Self::Rhs: UnitScale {
+        Some(Self::binary(self.lhs(), self.rhs().step_down()?))
     }
 
-    fn step_rhs_up(&self) -> Option<Self> where Self::Right: UnitScale {
-        Some(Self::new(self.left(), self.right().step_up()?))
+    fn step_rhs_up(&self) -> Option<Self> where Self::Rhs: UnitScale {
+        Some(Self::binary(self.lhs(), self.rhs().step_up()?))
     }
 }

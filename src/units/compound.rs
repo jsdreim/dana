@@ -139,7 +139,7 @@ mod impl_ops {
         type Output = UnitDiv<B, A>;
 
         fn inv(self) -> Self::Output {
-            UnitDiv::new(self.1, self.0)
+            UnitDiv(self.1, self.0)
         }
     }
 

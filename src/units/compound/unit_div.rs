@@ -57,13 +57,13 @@ impl<A: Unit, B: Unit> UnitBinary for UnitDiv<A, B> where
     A::Dim: Div<B::Dim>,
     <A::Dim as Div<B::Dim>>::Output: DimType,
 {
-    type Left = A;
-    type Right = B;
+    type Lhs = A;
+    type Rhs = B;
 
-    fn left(&self) -> Self::Left { self.0 }
-    fn right(&self) -> Self::Right { self.1 }
+    fn lhs(&self) -> Self::Lhs { self.0 }
+    fn rhs(&self) -> Self::Rhs { self.1 }
 
-    fn new(left: Self::Left, right: Self::Right) -> Self { Self(left, right) }
+    fn binary(lhs: Self::Lhs, rhs: Self::Rhs) -> Self { Self(lhs, rhs) }
 }
 
 
