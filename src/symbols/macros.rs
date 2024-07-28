@@ -31,29 +31,43 @@ macro_rules! define_groups {
 /// Define symbols for units and types. This macro should only be invoked once.
 macro_rules! define_symbols {
     //  Define type modules, with symbols for types and their variants.
-    ($($vis:vis mod $module:ident for type $unit:tt $(as $($uname:ident),+)? {
-        $(const $alias:ident $(: $atype:tt)? = $val:tt);*   $(;)?
-    })*) => {
+    ($(
+    $(#[$attr_mod:meta])*
+    $vis:vis mod $module:ident // Define module name.
+    for type $utype:tt // Specify unit type this module focuses on.
+    $(in mod $parent:ident)? // Specify a "parent" to borrow type aliases from.
+    $(as $($alias_type:ident),+)? // Define type aliases to go in this module.
+    {
+        $($(type $alias_priv:ident = $upriv:tt;)+)? // New non-global types.
+        $($(use $import_from:ident;)+)? // Reuse consts from another module.
+        $(const $alias_const:ident $(: $atype:tt)? = $val:tt;)* // New consts.
+    }
+    )*) => {
         $(
         #[allow(unused_imports)] $vis use self::$module::types::*;
         #[allow(unused_imports)] $vis use self::$module::units::*;
         #[allow(unused_imports)]
+        $(#[$attr_mod])*
         $vis mod $module {
             pub use types::*;
             pub use units::*;
 
             /// Type aliases.
             pub mod types {
-                $($(pub type $uname = super::super::$unit;)+)?
+                $(pub use super::super::$parent::types::*;)*
+
+                $($(pub type $alias_priv = super::super::$upriv;)+)?
+                $($(pub type $alias_type = super::super::$utype;)+)?
             }
 
             /// Unit consts.
             pub mod units {
+                $($(pub use super::super::$import_from::units::*;)+)?
                 use super::super::*;
 
                 $(define_symbols!(
-                    @ super::super::$unit;
-                    $alias $(: $atype)? = $val
+                    @ super::super::$utype;
+                    $alias_const $(: $atype)? = $val
                 );)*
             }
         }
@@ -61,7 +75,7 @@ macro_rules! define_symbols {
 
         /// All type aliases.
         pub mod types {
-            $($(pub use super::$module::types::{$($uname),+};)?)*
+            $($(pub use super::$module::types::{$($alias_type),+};)?)*
         }
     };
 

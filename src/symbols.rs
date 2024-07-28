@@ -125,7 +125,7 @@ define_symbols! {
         const km = KiloMeter;
     }
 
-    pub mod length_imperial for type Length {
+    pub mod length_imperial for type Length in mod length_si {
         // const in = Inch; // ...Hmm.
         const inch = Inch;
         const ft = Foot;
@@ -133,7 +133,9 @@ define_symbols! {
         const mi = Mile;
     }
 
-    pub mod length_space for type Length {
+    pub mod length_space for type Length in mod length_si {
+        use length_si;
+
         const AU = AstroUnit;
         const ls = LightSec;
         const ly = LightYear;
@@ -159,7 +161,7 @@ define_symbols! {
         const GT = GigaTon;
     }
 
-    pub mod mass_imperial for type Mass {
+    pub mod mass_imperial for type Mass in mod mass_si {
         const oz = Ounce;
         const lb = Pound;
     }
@@ -226,12 +228,14 @@ define_symbols! {
         const GN = GigaNewton;
     }
 
-    pub mod force_imperial for type Force {
+    pub mod force_imperial for type Force in mod force_si {
         const ozf = Ounce;
         const lbf = Pound;
     }
 
     pub mod volume_si for type Volume {
+        // type V = Volume; // TODO
+
         const μL = MicroLiter;
         const uL = MicroLiter;
         const mL = MilliLiter;
@@ -242,7 +246,7 @@ define_symbols! {
         const TL = TeraLiter;
     }
 
-    pub mod volume_us for type Volume {
+    pub mod volume_us for type Volume in mod volume_si {
         const fl_dr = Dram;
         const fl_oz = FlOunce;
         const c     = Cup;
