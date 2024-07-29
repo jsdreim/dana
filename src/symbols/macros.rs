@@ -40,7 +40,8 @@ macro_rules! define_symbols {
     {
         $($(type $alias_priv:ident = $upriv:tt;)+)? // New non-global types.
         $($(use $import_from:ident;)+)? // Reuse consts from another module.
-        $(const $alias_const:ident $(: $atype:tt)? = $val:tt;)* // New consts.
+        $($(#[$attr_const:meta])*
+        const $alias_const:ident $(: $atype:tt)? = $val:tt;)* // New consts.
     }
     )*) => {
         $(
@@ -57,23 +58,33 @@ macro_rules! define_symbols {
                 $(pub use super::super::$parent::types::*;)*
 
                 $($(pub type $alias_priv = super::super::$upriv;)+)?
-                $($(pub type $alias_type = super::super::$utype;)+)?
+                $($(
+                #[doc = concat!(
+                    "Type alias for [`",
+                    stringify!($utype),
+                    "`](super::super::",
+                    stringify!($utype),
+                    ")."
+                )]
+                pub type $alias_type = super::super::$utype;
+                )+)?
             }
 
-            /// Unit consts.
+            /// Unit alias constants.
             pub mod units {
                 $($(pub use super::super::$import_from::units::*;)+)?
                 use super::super::*;
 
                 $(define_symbols!(
-                    @ super::super::$utype;
+                    @ $utype;
+                    $(#[$attr_const])*
                     $alias_const $(: $atype)? = $val
                 );)*
             }
         }
         )*
 
-        /// All type aliases.
+        /// Unique module containing **all** type aliases.
         pub mod types {
             $($(pub use super::$module::types::{$($alias_type),+};)?)*
         }
@@ -83,21 +94,28 @@ macro_rules! define_symbols {
     /*//  Debug.
     (@ $($t:tt)*) => {compile_error!(stringify!($($t)*));};*/
 
-    //  Define an alias as an enum variant.
-    (@ $utype:ty; $alias:ident            = $variant:ident) => {
-        pub const $alias: $utype = <$utype>::$variant;
+    //  Define an alias as an enum variant. Doc comment will be procedural.
+    (@ $utype:tt; $(#[$attr:meta])* $alias:ident            = $variant:ident) => {
+        #[doc = concat!(
+            "Unit alias for [`", stringify!($variant), "`]",
+            "(super::super::", stringify!($utype), "::", stringify!($variant), ")."
+        )]
+        pub const $alias: super::super::$utype = <$utype>::$variant;
     };
-    //  Define an alias with a unit expression.
-    (@ $utype:ty; $alias:ident            = ($($unit:tt)*)) => {
-        pub const $alias: $utype = unit!($($unit)*);
+    //  Define an alias with a unit expression. Manual doc.
+    (@ $utype:tt; $(#[$attr:meta])* $alias:ident            = ($($unit:tt)*)) => {
+        $(#[$attr])*
+        pub const $alias: super::super::$utype = unit!($($unit)*);
     };
-    //  Define an alias as an arbitrary expression.
-    (@ $utype:ty; $alias:ident            = $value:expr) => {
-        pub const $alias: $utype = $value;
+    //  Define an alias as an arbitrary expression. Manual doc.
+    (@ $utype:tt; $(#[$attr:meta])* $alias:ident            = $value:expr) => {
+        $(#[$attr])*
+        pub const $alias: super::super::$utype =       $value;
     };
-    //  Define an alias with a type expression AND a unit expression.
-    (@ $utype:ty; $alias:ident: $atype:tt = $($unit:tt)*) => {
-        pub const $alias: utype!($atype) = unit!($($unit)*);
+    //  Define an alias with a type expression AND unit expression. Manual doc.
+    (@ $utype:tt; $(#[$attr:meta])* $alias:ident: $atype:tt = $($unit:tt)*) => {
+        $(#[$attr])*
+        pub const $alias: utype!($atype) =       unit!($($unit)*);
     };
     //endregion
 }

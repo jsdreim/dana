@@ -134,6 +134,7 @@
 
 #![cfg_attr(feature = "simd", feature(portable_simd))]
 
+//  NOTE: Hack to allow proc macros to work both inside and outside the crate.
 extern crate self as dana;
 
 #[macro_use]
@@ -148,6 +149,7 @@ pub mod dimension;
 pub mod equations;
 pub mod quantity;
 pub mod scalar;
+#[warn(missing_docs)]
 pub mod symbols;
 pub mod units;
 
