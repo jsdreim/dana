@@ -144,6 +144,8 @@ pub use dana_macros::{dim, qty, /*unit,*/ /*utype*/};
 #[macro_use]
 mod macros;
 
+pub mod prelude;
+
 pub mod constants;
 pub mod dimension;
 pub mod equations;
