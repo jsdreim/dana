@@ -3,13 +3,11 @@ use typenum::{Integer, PartialDiv};
 use crate::{dimension::*, units::traits::*};
 
 
-pub type UnitPow2<U> = UnitPow<U, typenum::P2>;
-pub type UnitPow3<U> = UnitPow<U, typenum::P3>;
-pub type UnitPow4<U> = UnitPow<U, typenum::P4>;
-pub type UnitPow5<U> = UnitPow<U, typenum::P5>;
+/// Type alias allowing specification of a [`UnitPow`] by integer parameter.
+pub type UnitPowN<U, const E: i32> = UnitPow<U, <ExpHack<E> as HasTypenum>::Typenum>;
 
-pub type UnitSquared<U> = UnitPow2<U>;
-pub type UnitCubed<U> = UnitPow3<U>;
+pub type UnitSquared<U> = UnitPowN<U, 2>;
+pub type UnitCubed<U> = UnitPowN<U, 3>;
 
 
 /// A unit raised to an arbitrary power.
