@@ -35,12 +35,20 @@ impl<V: Scalar> Quantity<Temp, V> {
         Self::from_celsius((f - V::from_f64(32.0).unwrap()) / V::from_f64(1.8).unwrap())
     }
 
+    pub fn from_rankine(r: V) -> Self {
+        Temp::Kelvin.quantity(r / V::from_f64(1.8).unwrap())
+    }
+
     pub fn to_celsius(self) -> V {
         self.value_as(Temp::Kelvin) - V::from_f64(273.15).unwrap()
     }
 
     pub fn to_fahrenheit(self) -> V {
         self.to_celsius() * V::from_f64(1.8).unwrap() + V::from_f64(32.0).unwrap()
+    }
+
+    pub fn to_rankine(self) -> V {
+        self.value_as(Temp::Kelvin) * V::from_f64(1.8).unwrap()
     }
 }
 
@@ -171,5 +179,14 @@ mod tests {
 
         assert_eq!(Quantity::from_celsius(100.0).to_fahrenheit(), 212.0);
         assert_eq!(Quantity::from_celsius(0.0).to_fahrenheit(), 32.0);
+
+        assert_eq!(Temp::Kelvin.quantity(0.0).to_rankine(), 0.0);
+        assert_eq!(Quantity::from_rankine(0f64).value_as(Temp::Kelvin), 0.0);
+
+        assert_eq!(Quantity::from_fahrenheit(0f64).to_rankine().round(), 460.0);
+        assert_eq!(Quantity::from_rankine(460f64).to_fahrenheit().round(), 0.0);
+
+        assert_eq!(Quantity::from_celsius(0f64).to_rankine().round(), 492.0);
+        assert_eq!(Quantity::from_rankine(492f64).to_celsius().round(), 0.0);
     }
 }
