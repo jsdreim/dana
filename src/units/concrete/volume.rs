@@ -2,9 +2,9 @@ use crate::units::traits::{Unit, UnitConcrete, UnitScale};
 
 
 #[allow(dead_code)]
-const GAL_IMP: f64 = 4.546_09;
+const GAL_IMP: f64 = 4.546_090_e-3;
 #[allow(dead_code)]
-const GAL_USA: f64 = 3.785_411_784;
+const GAL_USA: f64 = 3.785_411_784_e-3;
 
 const GAL: f64 = GAL_USA;
 
@@ -35,13 +35,13 @@ impl Unit for Volume {
 
     fn scale(&self) -> f64 {
         match self {
-            Self::MicroLiter => 1e-6,
-            Self::MilliLiter => 1e-3,
-            Self::Liter      => 1e0,
-            Self::KiloLiter  => 1e+3,
-            Self::MegaLiter  => 1e+6,
-            Self::GigaLiter  => 1e+9,
-            Self::TeraLiter  => 1e+12,
+            Self::MicroLiter => 1e-9,
+            Self::MilliLiter => 1e-6,
+            Self::Liter      => 1e-3,
+            Self::KiloLiter  => 1e00,
+            Self::MegaLiter  => 1e+3,
+            Self::GigaLiter  => 1e+6,
+            Self::TeraLiter  => 1e+9,
 
             Self::Dram       => GAL / 1_280.0,
             Self::FlOunce    => GAL / 160.0,

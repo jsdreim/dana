@@ -179,3 +179,14 @@ fn test_powers() {
     assert_eq!(x2, qty![4.0 m^2]);
     assert_eq!(x1, qty![2.0 m^1]);
 }
+
+
+#[test]
+fn test_volume() {
+    use dana::symbols::{volume_si::*, volume_us::*};
+
+    assert_eq!(qty![*[1.0 L] in m^3], 1e-3);
+
+    let density_water: Quantity<Density> = qty![0.997_048 kg/L];
+    assert_eq!(qty![*[1.0 gal] * density_water in mg].round(), 3_774_237.0);
+}
