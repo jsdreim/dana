@@ -140,9 +140,8 @@ extern crate self as dana;
 
 #[macro_use]
 extern crate dana_macros;
-pub use dana_macros::{dim, qty, /*unit,*/ /*utype*/};
+pub use dana_macros::{dim, qty, qtype, unit, utype};
 
-#[allow(missing_docs)]
 #[macro_use]
 mod macros;
 

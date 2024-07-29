@@ -24,9 +24,17 @@ macro_rules! concrete_types {
             pub use super::{$($module::$unit,)+};
         }
 
-        impl_unit_concrete!($($unit),+);
-
         $(
+        impl Default for $unit {
+            fn default() -> Self { Self::BASE }
+        }
+
+        impl ::std::fmt::Display for $unit {
+            fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+                <str as std::fmt::Display>::fmt(self.symbol(), f)
+            }
+        }
+
         /// Unit division.
         impl<U: $crate::Unit> ::std::ops::Div<U> for $unit where
             $crate::dimension::$unit: ::std::ops::Div<<U as $crate::Unit>::Dim>,
