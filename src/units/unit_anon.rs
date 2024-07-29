@@ -1,9 +1,9 @@
 use std::{marker::PhantomData, ops::{Div, Mul}};
 use num_traits::{AsPrimitive, Inv, real::Real};
-use crate::{dimension::*, Scalar, units::traits::*};
+use crate::{dimension::*, units::traits::*, Value};
 
 
-dummy!(pub trait AnonScale: Copy + Scalar + AsPrimitive<f64>);
+dummy!(pub trait AnonScale: Copy + Value + AsPrimitive<f64>);
 
 
 #[derive(Clone, Copy, Hash, Eq, Ord, PartialOrd)]

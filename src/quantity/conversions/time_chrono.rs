@@ -1,9 +1,9 @@
 use chrono::TimeDelta;
 use num_traits::AsPrimitive;
-use crate::{Quantity, Scalar, units::{*, Time::*}};
+use crate::{Quantity, units::{*, Time::*}, Value};
 
 
-impl<V: Scalar> TryFrom<Quantity<Time, V>> for TimeDelta {
+impl<V: Value> TryFrom<Quantity<Time, V>> for TimeDelta {
     type Error = ();
 
     fn try_from(qty: Quantity<Time, V>) -> Result<Self, Self::Error> {
@@ -16,7 +16,7 @@ impl<V: Scalar> TryFrom<Quantity<Time, V>> for TimeDelta {
 }
 
 
-impl<V: Scalar + Copy> From<TimeDelta> for Quantity<Time, V> where
+impl<V: Value + Copy> From<TimeDelta> for Quantity<Time, V> where
     i32: AsPrimitive<V>,
     i64: AsPrimitive<V>,
 {

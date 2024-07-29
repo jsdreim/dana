@@ -3,30 +3,30 @@
 use crate::{
     constants::*,
     Quantity,
-    Scalar,
     symbols::physical::*,
     units::*,
+    Value,
 };
 
 
-impl<V: Scalar> Quantity<Mass, V> {
+impl<V: Value> Quantity<Mass, V> {
     /// Return the gravitational force experienced by an object of this mass at
     ///     the surface of Earth.
     pub fn mass_as_weight(self) -> Option<Quantity<Force, V>> {
-        Some((self * GFORCE.scalar_cast()?).convert())
+        Some((self * GFORCE.value_cast()?).convert())
     }
 }
 
-impl<V: Scalar> Quantity<Force, V> {
+impl<V: Value> Quantity<Force, V> {
     /// Return the mass that would experience this gravitational force at the
     ///     surface of Earth.
     pub fn weight_to_mass(self) -> Option<Quantity<Mass, V>> {
-        Some((self / GFORCE.scalar_cast()?).convert())
+        Some((self / GFORCE.value_cast()?).convert())
     }
 }
 
 
-impl<V: Scalar> Quantity<Temp, V> {
+impl<V: Value> Quantity<Temp, V> {
     /// Define an absolute temperature in [`Kelvin`](Temp::Kelvin) in terms of
     ///     degrees Celsius.
     pub fn from_celsius(c: V) -> Self {
@@ -114,7 +114,7 @@ pub fn photon_frequency(energy: Quantity<Energy>) -> Quantity<Frequency> {
 
 
 /// Calculate the wavelength of a wave with the given frequency and speed.
-pub fn frequency_to_wavelength<V: Scalar>(
+pub fn frequency_to_wavelength<V: Value>(
     freq: Quantity<Frequency, V>,
     speed: Quantity<Speed, V>,
 ) -> Quantity<Length, V> {
@@ -123,7 +123,7 @@ pub fn frequency_to_wavelength<V: Scalar>(
 
 
 /// Calculate the frequency of a wave with the given wavelength and speed.
-pub fn wavelength_to_frequency<V: Scalar>(
+pub fn wavelength_to_frequency<V: Value>(
     length: Quantity<Length, V>,
     speed: Quantity<Speed, V>,
 ) -> Quantity<Frequency, V> {

@@ -7,10 +7,10 @@
 //!     variants, each with a different scaling factor.
 //!
 //! The most important exported type is [`Quantity`]. A `Quantity` is generic
-//!     over `Unit` types and numeric [`Scalar`] types, and serves to pair a
-//!     scalar value with a dimensional unit. The default scalar type is `f64`,
-//!     but [`Scalar`] is automatically implemented for any type that implements
-//!     the correct set of traits.
+//!     over `Unit` types and numeric [`Value`] types, and serves to pair a
+//!     dimensionless value with a dimensional unit. The default scalar type is
+//!     `f64`, but [`Value`] is automatically implemented for any type that
+//!     implements the correct set of traits.
 //!
 //! # Examples
 //!
@@ -153,18 +153,18 @@ pub mod dimension;
 pub mod equations;
 #[allow(missing_docs)]
 pub mod quantity;
-pub mod scalar;
 pub mod symbols;
 #[allow(missing_docs)]
 pub mod units;
+pub mod value;
 
 #[cfg(feature = "simd")]
 #[allow(missing_docs)]
 pub mod simd;
 
 pub use quantity::Quantity;
-pub use scalar::Scalar;
 pub use units::Unit;
+pub use value::Value;
 
 
 #[cfg(test)]

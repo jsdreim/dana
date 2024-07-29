@@ -6,20 +6,20 @@ use rand::{
     },
     prelude::*,
 };
-use crate::{Quantity, Scalar, Unit};
+use crate::{Quantity, Unit, Value};
 
 
-impl<U: Unit, V: Scalar + SampleUniform> SampleUniform for Quantity<U, V> {
+impl<U: Unit, V: Value + SampleUniform> SampleUniform for Quantity<U, V> {
     type Sampler = UniformQty<U, V>;
 }
 
 
-pub struct UniformQty<U: Unit, V: Scalar + SampleUniform> {
+pub struct UniformQty<U: Unit, V: Value + SampleUniform> {
     unit: U,
     sampler: V::Sampler,
 }
 
-impl<U: Unit, V: Scalar + SampleUniform> UniformSampler for UniformQty<U, V> {
+impl<U: Unit, V: Value + SampleUniform> UniformSampler for UniformQty<U, V> {
     type X = Quantity<U, V>;
 
     fn new<B1, B2>(low: B1, high: B2) -> Self where

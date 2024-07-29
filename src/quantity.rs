@@ -1,4 +1,4 @@
-//! The link between [`Scalar`]s and [`Unit`]s.
+//! The link between dimensionless [`Value`]s and dimensional [`Unit`]s.
 
 #[cfg(feature = "rand")]
 pub mod rand;
@@ -7,25 +7,25 @@ mod conversions;
 
 use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign};
 use num_traits::{Inv, MulAdd, NumCast, Pow, real::Real, Zero};
-use crate::{Scalar, units::{traits::*, unit_anon::UnitAnon}};
+use crate::{units::{traits::*, unit_anon::UnitAnon}, Value};
 
 
-type ScalarDefault = f64;
+type ValueDefault = f64;
 
 
 /// A [`Quantity`] with an [anonymous unit](UnitAnon).
-pub type QuantityAnon<D, V = ScalarDefault> = Quantity<UnitAnon<D>, V>;
+pub type QuantityAnon<D, V = ValueDefault> = Quantity<UnitAnon<D>, V>;
 
 
-/// Dimensionless [`Scalar`] value paired with a dimensional [`Unit`].
+/// Dimensionless [`Value`] value paired with a dimensional [`Unit`].
 #[derive(Clone, Copy, Debug)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
-pub struct Quantity<U: Unit, V: Scalar = ScalarDefault> {
+pub struct Quantity<U: Unit, V: Value = ValueDefault> {
     pub value: V,
     pub unit: U,
 }
 
-impl<U: Unit, V: Scalar> Quantity<U, V> {
+impl<U: Unit, V: Value> Quantity<U, V> {
     pub const fn new(unit: U, value: V) -> Self {
         Self { value, unit }
     }
@@ -134,7 +134,7 @@ impl<U: Unit, V: Scalar> Quantity<U, V> {
 
 
 //region Methods for mathematical operations.
-impl<U: Unit, V: Scalar> Quantity<U, V> {
+impl<U: Unit, V: Value> Quantity<U, V> {
     //region Positive exponents.
     pub fn squared(self) -> Quantity<<U as CanSquare>::Output, <V as Mul<V>>::Output> where
         U: CanSquare,
@@ -160,7 +160,7 @@ impl<U: Unit, V: Scalar> Quantity<U, V> {
     > where
         U: CanPow<E>,
         V: Pow<V>,
-        <V as Pow<V>>::Output: Scalar,
+        <V as Pow<V>>::Output: Value,
     {
         Quantity {
             value: self.value.pow(V::from_i32(E).unwrap()),
@@ -196,7 +196,7 @@ impl<U: Unit, V: Scalar> Quantity<U, V> {
     > where
         U: CanRoot<D>,
         V: Inv + Pow<<V as Inv>::Output>,
-        <V as Pow<<V as Inv>::Output>>::Output: Scalar,
+        <V as Pow<<V as Inv>::Output>>::Output: Value,
     {
         Quantity {
             value: self.value.pow(V::from_i32(D).unwrap().inv()),
@@ -209,17 +209,17 @@ impl<U: Unit, V: Scalar> Quantity<U, V> {
 
 
 //region Methods for scalar operations.
-impl<U: Unit, V: Scalar> Quantity<U, V> {
-    pub fn scalar_into<X>(self) -> Quantity<U, X> where
+impl<U: Unit, V: Value> Quantity<U, V> {
+    pub fn value_into<X>(self) -> Quantity<U, X> where
         V: Into<X>,
-        X: Scalar,
+        X: Value,
     {
         Quantity::new(self.unit, self.value.into())
     }
 
-    pub fn scalar_try_into<X>(self) -> Result<Quantity<U, X>, V::Error> where
+    pub fn value_try_into<X>(self) -> Result<Quantity<U, X>, V::Error> where
         V: TryInto<X>,
-        X: Scalar,
+        X: Value,
     {
         Ok(Quantity::new(self.unit, self.value.try_into()?))
     }
@@ -229,7 +229,7 @@ impl<U: Unit, V: Scalar> Quantity<U, V> {
 
 //region Methods for unit operations.
 /// Unit conversion.
-impl<U: Unit, V: Scalar> Quantity<U, V> {
+impl<U: Unit, V: Value> Quantity<U, V> {
     /// Perform trait-based unit conversion to the default of a unit type. This
     ///     kind of conversion can cross between [`Unit`] types.
     pub fn convert<W: Unit>(self) -> Quantity<W, V> where
@@ -258,8 +258,8 @@ impl<U: Unit, V: Scalar> Quantity<U, V> {
 
 //region Standard library operators.
 //region Negation.
-impl<U: Unit, V: Scalar> Neg for Quantity<U, V> where
-    V: Neg, <V as Neg>::Output: Scalar,
+impl<U: Unit, V: Value> Neg for Quantity<U, V> where
+    V: Neg, <V as Neg>::Output: Value,
 {
     type Output = Quantity<U, <V as Neg>::Output>;
 
@@ -273,9 +273,9 @@ impl<U: Unit, V: Scalar> Neg for Quantity<U, V> where
 //endregion
 
 //region Addition/subtraction between same-unit quantities.
-impl<U: Unit, V: Scalar, W: Unit, X: Scalar> Add<Quantity<W, X>> for Quantity<U, V> where
+impl<U: Unit, V: Value, W: Unit, X: Value> Add<Quantity<W, X>> for Quantity<U, V> where
     W: ConvertInto<U>,
-    V: Add<X>, <V as Add<X>>::Output: Scalar,
+    V: Add<X>, <V as Add<X>>::Output: Value,
 {
     type Output = Quantity<U, <V as Add<X>>::Output>;
 
@@ -287,9 +287,9 @@ impl<U: Unit, V: Scalar, W: Unit, X: Scalar> Add<Quantity<W, X>> for Quantity<U,
     }
 }
 
-impl<U: Unit, V: Scalar, W: Unit, X: Scalar> Sub<Quantity<W, X>> for Quantity<U, V> where
+impl<U: Unit, V: Value, W: Unit, X: Value> Sub<Quantity<W, X>> for Quantity<U, V> where
     W: ConvertInto<U>,
-    V: Sub<X>, <V as Sub<X>>::Output: Scalar,
+    V: Sub<X>, <V as Sub<X>>::Output: Value,
 {
     type Output = Quantity<U, <V as Sub<X>>::Output>;
 
@@ -301,7 +301,7 @@ impl<U: Unit, V: Scalar, W: Unit, X: Scalar> Sub<Quantity<W, X>> for Quantity<U,
     }
 }
 
-impl<U: Unit, V: Scalar, W: Unit, X: Scalar> AddAssign<Quantity<W, X>> for Quantity<U, V> where
+impl<U: Unit, V: Value, W: Unit, X: Value> AddAssign<Quantity<W, X>> for Quantity<U, V> where
     W: ConvertInto<U>,
     V: AddAssign<X>,
 {
@@ -310,7 +310,7 @@ impl<U: Unit, V: Scalar, W: Unit, X: Scalar> AddAssign<Quantity<W, X>> for Quant
     }
 }
 
-impl<U: Unit, V: Scalar, W: Unit, X: Scalar> SubAssign<Quantity<W, X>> for Quantity<U, V> where
+impl<U: Unit, V: Value, W: Unit, X: Value> SubAssign<Quantity<W, X>> for Quantity<U, V> where
     W: ConvertInto<U>,
     V: SubAssign<X>,
 {
@@ -321,9 +321,9 @@ impl<U: Unit, V: Scalar, W: Unit, X: Scalar> SubAssign<Quantity<W, X>> for Quant
 //endregion
 
 //region Division/multiplication between quantities.
-impl<U: Unit, V: Scalar, W: Unit, X: Scalar> Div<Quantity<W, X>> for Quantity<U, V> where
+impl<U: Unit, V: Value, W: Unit, X: Value> Div<Quantity<W, X>> for Quantity<U, V> where
     U: Div<W>, <U as Div<W>>::Output: Unit,
-    V: Div<X>, <V as Div<X>>::Output: Scalar,
+    V: Div<X>, <V as Div<X>>::Output: Value,
 {
     type Output = Quantity<U::Output, <V as Div<X>>::Output>;
 
@@ -335,9 +335,9 @@ impl<U: Unit, V: Scalar, W: Unit, X: Scalar> Div<Quantity<W, X>> for Quantity<U,
     }
 }
 
-impl<U: Unit, V: Scalar, W: Unit, X: Scalar> Mul<Quantity<W, X>> for Quantity<U, V> where
+impl<U: Unit, V: Value, W: Unit, X: Value> Mul<Quantity<W, X>> for Quantity<U, V> where
     U: Mul<W>, <U as Mul<W>>::Output: Unit,
-    V: Mul<X>, <V as Mul<X>>::Output: Scalar,
+    V: Mul<X>, <V as Mul<X>>::Output: Value,
 {
     type Output = Quantity<U::Output, <V as Mul<X>>::Output>;
 
@@ -351,8 +351,8 @@ impl<U: Unit, V: Scalar, W: Unit, X: Scalar> Mul<Quantity<W, X>> for Quantity<U,
 //endregion
 
 //region Division/multiplication between quantities and scalars.
-impl<U: Unit, V: Scalar, X: Scalar> Div<X> for Quantity<U, V> where
-    V: Div<X>, <V as Div<X>>::Output: Scalar,
+impl<U: Unit, V: Value, X: Value> Div<X> for Quantity<U, V> where
+    V: Div<X>, <V as Div<X>>::Output: Value,
 {
     type Output = Quantity<U, <V as Div<X>>::Output>;
 
@@ -364,8 +364,8 @@ impl<U: Unit, V: Scalar, X: Scalar> Div<X> for Quantity<U, V> where
     }
 }
 
-impl<U: Unit, V: Scalar, X: Scalar> Mul<X> for Quantity<U, V> where
-    V: Mul<X>, <V as Mul<X>>::Output: Scalar,
+impl<U: Unit, V: Value, X: Value> Mul<X> for Quantity<U, V> where
+    V: Mul<X>, <V as Mul<X>>::Output: Value,
 {
     type Output = Quantity<U, <V as Mul<X>>::Output>;
 
@@ -377,7 +377,7 @@ impl<U: Unit, V: Scalar, X: Scalar> Mul<X> for Quantity<U, V> where
     }
 }
 
-impl<U: Unit, V: Scalar, X: Scalar> DivAssign<X> for Quantity<U, V> where
+impl<U: Unit, V: Value, X: Value> DivAssign<X> for Quantity<U, V> where
     V: DivAssign<X>,
 {
     fn div_assign(&mut self, rhs: X) {
@@ -385,7 +385,7 @@ impl<U: Unit, V: Scalar, X: Scalar> DivAssign<X> for Quantity<U, V> where
     }
 }
 
-impl<U: Unit, V: Scalar, X: Scalar> MulAssign<X> for Quantity<U, V> where
+impl<U: Unit, V: Value, X: Value> MulAssign<X> for Quantity<U, V> where
     V: MulAssign<X>,
 {
     fn mul_assign(&mut self, rhs: X) {
@@ -395,7 +395,7 @@ impl<U: Unit, V: Scalar, X: Scalar> MulAssign<X> for Quantity<U, V> where
 //endregion
 
 //region Division/multiplication between quantities and pure units.
-impl<U: Unit, V: Scalar> Quantity<U, V> {
+impl<U: Unit, V: Value> Quantity<U, V> {
     pub fn div_unit<W: Unit>(self, rhs: W) -> Quantity<<U as Div<W>>::Output, V> where
         U: Div<W>, <U as Div<W>>::Output: Unit,
     {
@@ -418,7 +418,7 @@ impl<U: Unit, V: Scalar> Quantity<U, V> {
 
 //region Comparison between quantities.
 //region Equivalence.
-impl<U: Unit, V: Scalar, W: Unit, X: Scalar> PartialEq<Quantity<W, X>>
+impl<U: Unit, V: Value, W: Unit, X: Value> PartialEq<Quantity<W, X>>
 for Quantity<U, V> where
     W: ConvertInto<U>,
     V: PartialEq<X>,
@@ -429,13 +429,13 @@ for Quantity<U, V> where
     }
 }
 
-impl<U: Unit, V: Scalar + Eq> Eq for Quantity<U, V> where
+impl<U: Unit, V: Value + Eq> Eq for Quantity<U, V> where
     Quantity<U, V>: PartialEq,
 {}
 //endregion
 
 //region Ordering.
-impl<U: Unit, V: Scalar, W: Unit, X: Scalar> PartialOrd<Quantity<W, X>>
+impl<U: Unit, V: Value, W: Unit, X: Value> PartialOrd<Quantity<W, X>>
 for Quantity<U, V> where
     W: ConvertInto<U>,
     V: PartialOrd<X>,
@@ -446,7 +446,7 @@ for Quantity<U, V> where
     }
 }
 
-impl<U: Unit, V: Scalar + Ord> Ord for Quantity<U, V> where
+impl<U: Unit, V: Value + Ord> Ord for Quantity<U, V> where
     U: ConvertInto<U>,
     Quantity<U, V>: PartialOrd,
 {
@@ -461,9 +461,9 @@ impl<U: Unit, V: Scalar + Ord> Ord for Quantity<U, V> where
 
 
 //region Traits from `num_traits`.
-impl<U: Unit, V: Scalar + Real> Quantity<U, V> {
-    /// Cast the scalar to another type through the [`NumCast`] trait.
-    pub fn scalar_cast<X: Scalar>(self) -> Option<Quantity<U, X>> {
+impl<U: Unit, V: Value + Real> Quantity<U, V> {
+    /// Cast the value to another type through the [`NumCast`] trait.
+    pub fn value_cast<X: Value>(self) -> Option<Quantity<U, X>> {
         Some(Quantity::new(self.unit, NumCast::from(self.value)?))
     }
 
@@ -490,9 +490,9 @@ impl<U: Unit, V: Scalar + Real> Quantity<U, V> {
 
 // impl<U: Unit, V: Scalar> num_traits:: for Quantity<U, V> {}
 
-impl<U: Unit, V: Scalar> Inv for Quantity<U, V> where
+impl<U: Unit, V: Value> Inv for Quantity<U, V> where
     U: Inv, <U as Inv>::Output: Unit,
-    V: Inv, <V as Inv>::Output: Scalar,
+    V: Inv, <V as Inv>::Output: Value,
 {
     type Output = Quantity<<U as Inv>::Output, <V as Inv>::Output>;
 
@@ -502,7 +502,7 @@ impl<U: Unit, V: Scalar> Inv for Quantity<U, V> where
 }
 
 
-impl<U: Unit, V: Scalar> Zero for Quantity<U, V> {
+impl<U: Unit, V: Value> Zero for Quantity<U, V> {
     fn zero() -> Self {
         U::base().zero()
     }
@@ -518,9 +518,9 @@ impl<U, V, UMul, VMul, UAdd, VAdd> MulAdd<
     Quantity<UAdd, VAdd>,
 > for Quantity<U, V> where
     U: Unit, UMul: Unit, UAdd: Unit,
-    V: Scalar, VMul: Scalar, VAdd: Scalar,
+    V: Value, VMul: Value, VAdd: Value,
     U: Mul<UMul>, <U as Mul<UMul>>::Output: Unit<Dim=UAdd::Dim>,
-    V: MulAdd<VMul, VAdd>, <V as MulAdd<VMul, VAdd>>::Output: Scalar,
+    V: MulAdd<VMul, VAdd>, <V as MulAdd<VMul, VAdd>>::Output: Value,
 {
     type Output = Quantity<
         <U as Mul<UMul>>::Output,
@@ -561,7 +561,7 @@ impl<U, V, UMul, VMul, UAdd, VAdd> MulAdd<
 
 macro_rules! impl_fmt {
     ($($fmt:path),+$(,)?) => {$(
-    impl<U: Unit, V: Scalar> $fmt for Quantity<U, V> where V: $fmt {
+    impl<U: Unit, V: Value> $fmt for Quantity<U, V> where V: $fmt {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             <V as $fmt>::fmt(&self.value, f)?;
             write!(f, " {}", self.unit)

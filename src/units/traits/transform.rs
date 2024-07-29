@@ -1,12 +1,12 @@
-use crate::{Scalar, Unit};
+use crate::{Unit, Value};
 
 
-pub struct Conversion<U: Unit, S: Scalar> {
+pub struct Conversion<U: Unit, S: Value> {
     pub target: U,
     pub factor: S,
 }
 
-impl<U: Unit, S: Scalar> Conversion<U, S> {
+impl<U: Unit, S: Value> Conversion<U, S> {
     pub const fn new(target: U, factor: S) -> Self {
         Self { target, factor }
     }
@@ -26,7 +26,7 @@ impl<U: Unit, S: Scalar> Conversion<U, S> {
         }
     }
 
-    pub fn map_factor<T: Scalar>(self, f: impl FnOnce(S) -> T) -> Conversion<U, T> {
+    pub fn map_factor<T: Value>(self, f: impl FnOnce(S) -> T) -> Conversion<U, T> {
         Conversion {
             target: self.target,
             factor: f(self.factor),
@@ -42,7 +42,7 @@ pub trait ConvertFrom<U: Unit>: Unit {
         unit.scale() / self.scale()
     }
 
-    fn conversion_from<S: Scalar>(self, unit: U) -> Conversion<U, S> {
+    fn conversion_from<S: Value>(self, unit: U) -> Conversion<U, S> {
         let factor = self.conversion_factor_from(unit);
         Conversion::new(unit, S::from_f64(factor).unwrap())
     }
@@ -59,7 +59,7 @@ pub trait ConvertInto<U: Unit>: Unit {
     ///     from this unit to the other unit.
     fn conversion_factor_into(&self, unit: U) -> f64;
 
-    fn conversion_into<S: Scalar>(self, unit: U) -> Conversion<U, S> {
+    fn conversion_into<S: Value>(self, unit: U) -> Conversion<U, S> {
         let factor = self.conversion_factor_into(unit);
         Conversion::new(unit, S::from_f64(factor).unwrap())
     }
@@ -75,7 +75,7 @@ impl<U: Unit, V: ConvertFrom<U>> ConvertInto<V> for U {
 pub trait Cancel: Unit {
     fn cancel_factor(&self) -> f64 { self.scale() }
 
-    fn cancel<S: Scalar>(&self) -> S {
+    fn cancel<S: Value>(&self) -> S {
         S::from_f64(self.cancel_factor()).unwrap()
     }
 }

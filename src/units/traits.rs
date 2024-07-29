@@ -1,4 +1,4 @@
-use crate::{dimension::DimType, Quantity, Scalar, units::unit_anon::UnitAnon};
+use crate::{dimension::DimType, Quantity, units::unit_anon::UnitAnon, Value};
 
 pub mod transform;
 pub use transform::*;
@@ -29,15 +29,15 @@ pub trait Unit: Copy + Default + std::fmt::Display + PartialEq {
 
     fn dimension(&self) -> Self::Dim { DimType::dimension() }
 
-    fn quantity<V: Scalar>(self, value: V) -> Quantity<Self, V> {
+    fn quantity<V: Value>(self, value: V) -> Quantity<Self, V> {
         Quantity::new(self, value)
     }
 
-    fn one<V: Scalar>(self) -> Quantity<Self, V> {
+    fn one<V: Value>(self) -> Quantity<Self, V> {
         self.quantity(num_traits::One::one())
     }
 
-    fn zero<V: Scalar>(self) -> Quantity<Self, V> {
+    fn zero<V: Value>(self) -> Quantity<Self, V> {
         self.quantity(num_traits::Zero::zero())
     }
 
@@ -45,7 +45,7 @@ pub trait Unit: Copy + Default + std::fmt::Display + PartialEq {
     fn random<V, R>(self, rng: &mut R) -> Quantity<Self, V> where
         rand::distributions::Standard: rand::prelude::Distribution<V>,
         R: rand::Rng,
-        V: Scalar,
+        V: Value,
     {
         self.random_in(rng, rand::distributions::Standard)
     }
@@ -54,7 +54,7 @@ pub trait Unit: Copy + Default + std::fmt::Display + PartialEq {
     fn random_in<V, R, D>(self, rng: &mut R, dist: D) -> Quantity<Self, V> where
         D: rand::prelude::Distribution<V>,
         R: rand::Rng,
-        V: Scalar,
+        V: Value,
     {
         self.quantity(dist.sample(rng))
     }
@@ -74,7 +74,7 @@ pub trait Unit: Copy + Default + std::fmt::Display + PartialEq {
 
     fn convert_from<U, V>(self, qty: Quantity<U, V>) -> Quantity<Self, V> where
         U: ConvertInto<Self>,
-        V: Scalar,
+        V: Value,
     {
         qty.convert_to(self)
     }

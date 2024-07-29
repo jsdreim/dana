@@ -9,10 +9,10 @@ use std::{
     simd::*,
 };
 use num_traits::{AsPrimitive, FromPrimitive};
-use crate::{Quantity, Scalar, units::{*, traits::*, unit_anon::UnitAnon}};
+use crate::{Quantity, units::{*, traits::*, unit_anon::UnitAnon}, Value};
 
 
-dummy!(pub trait QtySimdValue: Scalar + SimdElement);
+dummy!(pub trait QtySimdValue: Value + SimdElement);
 dummy!(pub trait QtySimdScale: QtySimdValue + AsPrimitive<f64> + FromPrimitive);
 
 
