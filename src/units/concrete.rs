@@ -19,8 +19,8 @@ macro_rules! concrete_types {
         pub use $module::$unit;
         )+
 
-        /// Prelude to re-export all concrete unit types.
-        pub mod prelude {
+        /// Module to re-export all concrete unit types.
+        pub mod types {
             pub use super::{$($module::$unit,)+};
         }
 

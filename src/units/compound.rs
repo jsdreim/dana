@@ -11,7 +11,8 @@ pub use unit_mul::UnitMul;
 pub use unit_pow::*;
 
 
-pub mod prelude {
+/// Module to re-export all compound unit types.
+pub mod types {
     pub use super::{PerUnit, UnitDiv, UnitMul, unit_pow::*};
 }
 

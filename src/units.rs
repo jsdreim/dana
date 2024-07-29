@@ -7,12 +7,14 @@ pub mod si;
 pub mod traits;
 pub mod unit_anon;
 
-pub use compound::prelude::*;
-pub use concrete::prelude::*;
+pub use compound::types::*;
+pub use concrete::types::*;
+pub use derived::*;
 pub use traits::{Unit, UnitCompound, UnitConcrete};
 
 
-pub use derived::*;
+/// Module for named compound unit types, defined as relationships between
+///     concrete units.
 pub mod derived {
     use super::*;
 
@@ -29,4 +31,15 @@ pub mod derived {
 
     pub type HeatCapacity = utype!(Energy / Temp);
     pub type HeatSpecific = utype!(HeatCapacity / Mass);
+}
+
+
+/// Module to re-export all unit types.
+pub mod types {
+    pub use super::{
+        compound::types::*,
+        concrete::types::*,
+        derived::*,
+        unit_anon::UnitAnon,
+    };
 }
