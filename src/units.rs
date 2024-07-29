@@ -18,13 +18,42 @@ pub use traits::{Unit, UnitCompound, UnitConcrete};
 pub mod derived {
     use super::*;
 
+    /// [`Distance`](Length) travelled per unit [`Time`].
+    ///
+    /// Often represented as *v*.
     pub type Speed = utype!(Length / Time);
+
+    /// Change in [`Speed`] per unit [`Time`].
+    ///
+    /// Often represented as *a*.
     pub type Accel = utype!(Speed / Time);
+
+    /// [`Mass`] by unit [`Speed`].
+    ///
+    /// Often represented as *p*.
     pub type Momentum = utype!(Mass * Speed);
 
+    /// [`Length`] squared, representing a region of two-dimensional space.
+    ///
+    /// Often represented as *A* or *S*.
     pub type Area = utype!(Length^2);
 
+    /// [`Mass`] per unit [`Volume`]. More precisely, volumetric mass density.
+    ///
+    /// Often represented as *D* or *ρ*.
     pub type Density = utype!(Mass / Volume);
+
+    /// [`Length`] by unit [`Force`].
+    ///
+    /// Often represented as *τ*.
+    ///
+    /// NOTE: Torque is *dimensionally* equivalent to [`Energy`] (compare the
+    ///     definitions of the dimensions for [torque](crate::dimension::Torque)
+    ///     and [energy](crate::dimension::Energy)), but in practice they are
+    ///     **not** interchangeable, because torque is a [pseudovector].
+    ///
+    /// [pseudovector]: https://en.wikipedia.org/wiki/Pseudovector
+    //  TODO: Should torque even be included? Is this out of scope?
     pub type Torque = utype!(Length * Force);
 
     pub type GravParam = utype!(Length^3 / Time^2);
