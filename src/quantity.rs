@@ -4,7 +4,7 @@
 pub mod rand;
 
 use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign};
-use num_traits::{Inv, NumCast, Pow, real::Real, Zero};
+use num_traits::{Inv, MulAdd, NumCast, Pow, real::Real, Zero};
 use crate::{Scalar, units::{traits::*, unit_anon::UnitAnon}};
 
 
@@ -507,6 +507,36 @@ impl<U: Unit, V: Scalar> Zero for Quantity<U, V> {
 
     fn is_zero(&self) -> bool {
         self.value.is_zero()
+    }
+}
+
+
+impl<U, V, UMul, VMul, UAdd, VAdd> MulAdd<
+    Quantity<UMul, VMul>,
+    Quantity<UAdd, VAdd>,
+> for Quantity<U, V> where
+    U: Unit, UMul: Unit, UAdd: Unit,
+    V: Scalar, VMul: Scalar, VAdd: Scalar,
+    U: Mul<UMul>, <U as Mul<UMul>>::Output: Unit<Dim=UAdd::Dim>,
+    V: MulAdd<VMul, VAdd>, <V as MulAdd<VMul, VAdd>>::Output: Scalar,
+{
+    type Output = Quantity<
+        <U as Mul<UMul>>::Output,
+        <V as MulAdd<VMul, VAdd>>::Output,
+    >;
+
+    fn mul_add(
+        self,
+        qty_mul: Quantity<UMul, VMul>,
+        qty_add: Quantity<UAdd, VAdd>,
+    ) -> Self::Output {
+        let u_out = self.unit * qty_mul.unit;
+
+        let v_mul = qty_mul.value;
+        let v_add = qty_add.convert_to(u_out).value;
+        let v_out = self.value.mul_add(v_mul, v_add);
+
+        u_out.quantity(v_out)
     }
 }
 //endregion
