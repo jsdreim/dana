@@ -1,3 +1,5 @@
+//! Support for [`rand`] sampling traits.
+
 use rand::{
     distributions::uniform::{
         SampleUniform,
@@ -14,6 +16,9 @@ impl<U: Unit, V: Value + SampleUniform> SampleUniform for Quantity<U, V> {
 }
 
 
+/// The back-end implementing [`UniformSampler`] for [`Quantity`].
+///
+/// Works for any `Quantity<U, V>` where `V` implements [`SampleUniform`].
 pub struct UniformQty<U: Unit, V: Value + SampleUniform> {
     unit: U,
     sampler: V::Sampler,

@@ -151,7 +151,6 @@ pub mod constants;
 #[allow(missing_docs)]
 pub mod dimension;
 pub mod equations;
-#[allow(missing_docs)]
 pub mod quantity;
 pub mod symbols;
 #[allow(missing_docs)]

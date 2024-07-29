@@ -21,17 +21,22 @@ pub type QuantityAnon<D, V = ValueDefault> = Quantity<UnitAnon<D>, V>;
 #[derive(Clone, Copy, Debug)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 pub struct Quantity<U: Unit, V: Value = ValueDefault> {
+    /// Dimensionless value. This defines *how much* of the unit is represented
+    ///     by the quantity.
     pub value: V,
+    /// Dimensional unit. This defines *what* is represented by the quantity.
     pub unit: U,
 }
 
 impl<U: Unit, V: Value> Quantity<U, V> {
+    /// Construct a new [`Quantity`] from [`U`] and [`V`].
     pub const fn new(unit: U, value: V) -> Self {
         Self { value, unit }
     }
 
     // pub fn set_base(&mut self) { self.set_unit(U::default()) }
 
+    /// Change the unit of this quantity in-place.
     pub fn set_unit(&mut self, unit: U) where
         V: MulAssign,
     {
@@ -39,6 +44,7 @@ impl<U: Unit, V: Value> Quantity<U, V> {
         self.unit = unit;
     }
 
+    /// Return `true` if another quantity is within the given limit of this one.
     pub fn almost_eq<W>(self, rhs: Quantity<W, V>, limit: V) -> bool where
         V: Signed + PartialOrd,
         W: Unit<Dim=U::Dim>,
@@ -46,12 +52,15 @@ impl<U: Unit, V: Value> Quantity<U, V> {
         (self - rhs).abs().value <= limit
     }
 
-    pub fn with_anonymous(self) -> Quantity<UnitAnon<U::Dim>, V> {
+    /// Return an equivalent quantity with its unit [anonymized](UnitAnon).
+    pub fn with_anonymous(self) -> QuantityAnon<U::Dim, V> {
         self.unit.anonymous().quantity(self.value)
     }
 
+    /// Return an equivalent quantity with the base unit of the same type.
     pub fn with_base(self) -> Self { self.with_unit(U::base()) }
 
+    /// Return an equivalent quantity with the given unit of the same type.
     pub fn with_unit(self, unit: U) -> Self {
         if unit == self.unit {
             self
@@ -68,10 +77,16 @@ impl<U: Unit, V: Value> Quantity<U, V> {
         self.value * self.unit.scale_factor_v(unit).unwrap()
     }
 
+    /// Return the value of this quantity, scaled to the base unit of its type.
     pub fn value_as_base(self) -> V {
         self.value_as(U::base())
     }
 
+    /// Return an equivalent quantity with its value as close as possible to
+    ///     being within the range `[1,1000)`.
+    ///
+    /// This is done by repeatedly "stepping" the unit up or down. As such, it
+    ///     may be quite expensive for more complex compound units.
     pub fn normalize(self) -> Self where
         U: UnitStep,
         V: Real,
@@ -118,6 +133,8 @@ impl<U: Unit, V: Value> Quantity<U, V> {
         }
     }
 
+    /// Return a [`QtySimd`](crate::simd::QtySimd) array, for SIMD operations,
+    ///     populated by this quantity.
     #[cfg(feature = "simd")]
     pub fn to_simd<const N: usize, S>(self) -> crate::simd::QtySimd<U, V, N, S> where
         std::simd::LaneCount<N>: std::simd::SupportedLaneCount,
@@ -133,6 +150,7 @@ impl<U: Unit, V: Value> Quantity<U, V> {
 //region Methods for mathematical operations.
 impl<U: Unit, V: Value> Quantity<U, V> {
     //region Positive exponents.
+    /// Return the square of this quantity.
     pub fn squared(self) -> Quantity<<U as CanSquare>::Output, <V as Mul<V>>::Output> where
         U: CanSquare,
     {
@@ -142,6 +160,7 @@ impl<U: Unit, V: Value> Quantity<U, V> {
         }
     }
 
+    /// Return the cube of this quantity.
     pub fn cubed(self) -> Quantity<<U as CanCube>::Output, <V as Mul<V>>::Output> where
         U: CanCube,
     {
@@ -151,6 +170,7 @@ impl<U: Unit, V: Value> Quantity<U, V> {
         }
     }
 
+    /// Return an arbitrary integer power of this quantity.
     pub fn pow<const E: i32>(self) -> Quantity<
         U::Output,
         <V as Pow<V>>::Output,
@@ -167,6 +187,7 @@ impl<U: Unit, V: Value> Quantity<U, V> {
     //endregion
 
     //region Roots.
+    /// Return the square root of this quantity.
     pub fn sqrt(self) -> Quantity<<U as CanSquareRoot>::Output, V> where
         U: CanSquareRoot,
         V: Real,
@@ -177,6 +198,7 @@ impl<U: Unit, V: Value> Quantity<U, V> {
         }
     }
 
+    /// Return the cube root of this quantity.
     pub fn cbrt(self) -> Quantity<<U as CanCubeRoot>::Output, V> where
         U: CanCubeRoot,
         V: Real,
@@ -187,6 +209,7 @@ impl<U: Unit, V: Value> Quantity<U, V> {
         }
     }
 
+    /// Return the root to an arbitrary integer degree of this quantity.
     pub fn root<const D: i32>(self) -> Quantity<
         U::Output,
         <V as Pow<<V as Inv>::Output>>::Output,
@@ -207,6 +230,8 @@ impl<U: Unit, V: Value> Quantity<U, V> {
 
 //region Methods for scalar operations.
 impl<U: Unit, V: Value> Quantity<U, V> {
+    /// Return an equivalent quantity, with the value converted to another type
+    ///     via [`Into::into`].
     pub fn value_into<X>(self) -> Quantity<U, X> where
         V: Into<X>,
         X: Value,
@@ -214,6 +239,8 @@ impl<U: Unit, V: Value> Quantity<U, V> {
         Quantity::new(self.unit, self.value.into())
     }
 
+    /// Return an equivalent quantity, with the value converted to another type
+    ///     via [`TryInto::try_into`].
     pub fn value_try_into<X>(self) -> Result<Quantity<U, X>, V::Error> where
         V: TryInto<X>,
         X: Value,
@@ -392,7 +419,7 @@ impl<U: Unit, V: Value, X: Value> MulAssign<X> for Quantity<U, V> where
 //endregion
 
 //region Division/multiplication between quantities and pure units.
-impl<U: Unit, V: Value> Quantity<U, V> {
+/*impl<U: Unit, V: Value> Quantity<U, V> {
     pub fn div_unit<W: Unit>(self, rhs: W) -> Quantity<<U as Div<W>>::Output, V> where
         U: Div<W>, <U as Div<W>>::Output: Unit,
     {
@@ -410,7 +437,7 @@ impl<U: Unit, V: Value> Quantity<U, V> {
             unit: self.unit * rhs,
         }
     }
-}
+}*/
 //endregion
 
 //region Comparison between quantities.
@@ -459,6 +486,7 @@ impl<U: Unit, V: Value + Ord> Ord for Quantity<U, V> where
 
 //region Traits from `num_traits`.
 impl<U: Unit, V: Value + Signed> Quantity<U, V> {
+    /// Return the absolute value of this quantity.
     pub fn abs(self) -> Self {
         Self::new(self.unit, self.value.abs())
     }
@@ -470,18 +498,24 @@ impl<U: Unit, V: Value + Real> Quantity<U, V> {
         Some(Quantity::new(self.unit, NumCast::from(self.value)?))
     }
 
+    /// Return the smallest quantity with an integer value greater than or equal
+    ///     to this one.
     pub fn ceil(self) -> Self {
         Self::new(self.unit, self.value.ceil())
     }
 
+    /// Return the largest quantity with an integer value less than or equal to
+    ///     this one.
     pub fn floor(self) -> Self {
         Self::new(self.unit, self.value.floor())
     }
 
+    /// Return the largest quantity with the integer value nearest to this one.
     pub fn round(self) -> Self {
         Self::new(self.unit, self.value.round())
     }
 
+    /// Return a quantity with only the integer part of the value of this one.
     pub fn trunc(self) -> Self {
         Self::new(self.unit, self.value.trunc())
     }
