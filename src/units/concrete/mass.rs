@@ -8,6 +8,7 @@ pub enum Mass {
     NanoGram,
     MicroGram,
     MilliGram,
+    Grain,
     Gram,
     Ounce,
     Pound,
@@ -36,6 +37,7 @@ impl Unit for Mass {
             Self::Gram      => 1e-3,
             Self::KiloGram  => 1e0,
 
+            Self::Grain     => 064.798_910_e-6,
             Self::Ounce     => 028.349_523_125_e-3,
             Self::Pound     => 453.592_370_e-3,
 
@@ -63,6 +65,7 @@ impl UnitConcrete for Mass {
             Self::Gram      =>  "g",
             Self::KiloGram  => "kg",
 
+            Self::Grain     => "gr",
             Self::Ounce     => "oz",
             Self::Pound     => "lb",
 
@@ -104,7 +107,8 @@ impl UnitScale for Mass {
             Self::Gram          => Some(Self::MilliGram),
             Self::KiloGram      => Some(Self::Gram),
 
-            Self::Ounce         => Some(Self::Gram),
+            Self::Grain         => Some(Self::MilliGram),
+            Self::Ounce         => Some(Self::Grain),
             Self::Pound         => Some(Self::Ounce),
 
             Self::MetricTon     => Some(Self::KiloGram),
@@ -127,6 +131,7 @@ impl UnitScale for Mass {
             Self::Gram          => Some(Self::KiloGram),
             Self::KiloGram      => Some(Self::MetricTon),
 
+            Self::Grain         => Some(Self::Ounce),
             Self::Ounce         => Some(Self::Pound),
             Self::Pound         => Some(Self::MetricTon),
 

@@ -99,10 +99,10 @@ define_groups! {
         length_si, mass_si, time, current, temp,  amount, intensity,
     );
 
-    /// Unit symbols for the Imperial system.
-    pub mod imperial(
-        [L],             [M],           [T],  [F],
-        length_imperial, mass_imperial, time, force_imperial,
+    /// Unit symbols for the US Customary system.
+    pub mod us_customary(
+        [L],       [M],     /*[V],*/
+        length_us, mass_us, volume_us,
     );
 }
 
@@ -125,7 +125,7 @@ define_symbols! {
         const km = KiloMeter;
     }
 
-    pub mod length_imperial for type Length in mod length_si {
+    pub mod length_us for type Length in mod length_si {
         // const in = Inch; // ...Hmm.
         const inch = Inch;
         const ft = Foot;
@@ -161,7 +161,8 @@ define_symbols! {
         const GT = GigaTon;
     }
 
-    pub mod mass_imperial for type Mass in mod mass_si {
+    pub mod mass_us for type Mass in mod mass_si {
+        const gr = Grain;
         const oz = Ounce;
         const lb = Pound;
     }
@@ -228,10 +229,15 @@ define_symbols! {
         const GN = GigaNewton;
     }
 
-    pub mod force_imperial for type Force in mod force_si {
+    pub mod force_us for type Force in mod force_si {
         const ozf = Ounce;
         const lbf = Pound;
     }
+
+    // pub mod area_us for type Area as A /*, S*/ {
+    //     const sq_in = (inch^2);
+    //     const sq_ft = (ft^2);
+    // }
 
     pub mod volume_si for type Volume {
         // type V = Volume; // TODO
