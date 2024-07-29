@@ -20,6 +20,13 @@ pub trait Unit: Copy + Default + std::fmt::Display + PartialEq {
         have / want
     }
 
+    /// Given a unit of the same dimension, return the multiplication factor
+    ///     needed to scale from this unit to the other unit, converted to a
+    ///     [`Value`] type.
+    fn scale_factor_v<U: Unit<Dim=Self::Dim>, V: Value>(self, target: U) -> Option<V> {
+        V::from_f64(self.scale_factor(target))
+    }
+
     /// Return the base unit of this type, with a scale of 1.
     fn base() -> Self { Default::default() }
 

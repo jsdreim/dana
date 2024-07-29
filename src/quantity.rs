@@ -35,9 +35,7 @@ impl<U: Unit, V: Value> Quantity<U, V> {
     pub fn set_unit(&mut self, unit: U) where
         V: MulAssign,
     {
-        let factor = self.unit.scale_factor(unit);
-
-        self.value *= V::from_f64(factor).unwrap();
+        self.value *= self.unit.scale_factor_v(unit).unwrap();
         self.unit = unit;
     }
 
@@ -66,9 +64,8 @@ impl<U: Unit, V: Value> Quantity<U, V> {
     }
 
     /// Return the value of this quantity, scaled to another unit.
-    pub fn value_as(self, unit: U) -> V {
-        let factor = self.unit.scale_factor(unit);
-        self.value * V::from_f64(factor).unwrap()
+    pub fn value_as<W: Unit<Dim=U::Dim>>(self, unit: W) -> V {
+        self.value * self.unit.scale_factor_v(unit).unwrap()
     }
 
     pub fn value_as_base(self) -> V {
@@ -90,8 +87,8 @@ impl<U: Unit, V: Value> Quantity<U, V> {
                 while log >= limit {
                     let Some(next) = unit.step_up() else { break };
 
-                    let log_rel = unit.scale_factor(next).log10();
-                    let log_new = log + V::from_f64(log_rel).unwrap();
+                    let log_rel = unit.scale_factor_v::<U, V>(next).unwrap().log10();
+                    let log_new = log + log_rel;
 
                     if log_new >= V::zero() {
                         log = log_new;
@@ -104,8 +101,8 @@ impl<U: Unit, V: Value> Quantity<U, V> {
                 while log < V::zero() {
                     let Some(next) = unit.step_down() else { break };
 
-                    let log_rel = unit.scale_factor(next).log10();
-                    let log_new = log + V::from_f64(log_rel).unwrap();
+                    let log_rel = unit.scale_factor_v::<U, V>(next).unwrap().log10();
+                    let log_new = log + log_rel;
 
                     //  TODO: `<=` or `<`?
                     if log_new <= limit {
