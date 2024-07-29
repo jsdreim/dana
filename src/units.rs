@@ -11,6 +11,7 @@ pub use compound::types::*;
 pub use concrete::types::*;
 pub use derived::*;
 pub use traits::{Unit, UnitCompound, UnitConcrete};
+pub use unit_anon::UnitAnon;
 
 
 /// Module for named compound unit types, defined as relationships between

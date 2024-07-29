@@ -9,7 +9,7 @@ use std::{
     simd::*,
 };
 use num_traits::{AsPrimitive, FromPrimitive};
-use crate::{Quantity, units::{*, traits::*, unit_anon::UnitAnon}, Value};
+use crate::{Quantity, units::{*, traits::*, UnitAnon}, Value};
 
 
 dummy!(pub trait QtySimdValue: Value + SimdElement);
