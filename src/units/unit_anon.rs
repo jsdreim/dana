@@ -108,7 +108,7 @@ impl<D: DimType, S: AnonScale, const E: i32> CanRoot<E> for UnitAnon<D, S> where
 //endregion
 
 
-impl<D: DimType, S: AnonScale> UnitScale for UnitAnon<D, S> {
+impl<D: DimType, S: AnonScale> UnitStep for UnitAnon<D, S> {
     fn step_down(&self) -> Option<Self> { None }
     fn step_up(&self) -> Option<Self> { None }
 }

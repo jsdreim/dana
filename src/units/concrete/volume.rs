@@ -1,4 +1,4 @@
-use crate::units::traits::{Unit, UnitConcrete, UnitScale};
+use crate::units::traits::{Unit, UnitConcrete, UnitStep};
 
 
 #[allow(dead_code)]
@@ -76,7 +76,7 @@ impl UnitConcrete for Volume {
     }
 }
 
-impl UnitScale for Volume {
+impl UnitStep for Volume {
     fn step_down(&self) -> Option<Self> {
         match self {
             Self::MicroLiter => None,

@@ -1,4 +1,4 @@
-use crate::units::traits::{Unit, UnitConcrete, UnitScale};
+use crate::units::traits::{Unit, UnitConcrete, UnitStep};
 
 
 #[derive(Clone, Copy, Debug, Hash, PartialEq, PartialOrd, Eq, Ord)]
@@ -97,7 +97,7 @@ impl UnitConcrete for Mass {
 //     const SCALE: f64 = 1e0;
 // }
 
-impl UnitScale for Mass {
+impl UnitStep for Mass {
     fn step_down(&self) -> Option<Self> {
         match self {
             Self::PicoGram      => None,

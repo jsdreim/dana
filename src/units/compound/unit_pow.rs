@@ -92,7 +92,7 @@ impl<U: Unit, E, const D: i32> CanRoot<D> for UnitPow<U, E> where
 //endregion
 
 
-impl<U: UnitScale, E: Integer> UnitScale for UnitPow<U, E> where
+impl<U: UnitStep, E: Integer> UnitStep for UnitPow<U, E> where
     U::Dim: DimPowType<E>,
 {
     fn step_down(&self) -> Option<Self> {

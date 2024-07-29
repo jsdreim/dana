@@ -1,4 +1,4 @@
-use crate::units::traits::{Unit, UnitConcrete, UnitScale};
+use crate::units::traits::{Unit, UnitConcrete, UnitStep};
 
 
 #[derive(Clone, Copy, Debug, Hash, PartialEq, PartialOrd, Eq, Ord)]
@@ -46,7 +46,7 @@ impl UnitConcrete for Current {
     }
 }
 
-impl UnitScale for Current {
+impl UnitStep for Current {
     fn step_down(&self) -> Option<Self> {
         match self {
             Self::MicroAmp => None,

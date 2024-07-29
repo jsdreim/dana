@@ -86,7 +86,7 @@ pub trait UnitCompound: Unit {}
 /// A "concrete" unit is irreducible, and typically corresponds directly to a
 ///     physical property. It typically has multiple variants with different
 ///     scales.
-pub trait UnitConcrete: Unit + UnitScale {
+pub trait UnitConcrete: Unit + UnitStep {
     /// The SI base unit has a scale of 1.
     const BASE: Self;
 
@@ -99,16 +99,10 @@ pub trait UnitConcrete: Unit + UnitScale {
 impl<U: UnitConcrete> UnitNonExp for U {}
 
 
-/// This trait allows a [`Unit`] type to define a scale for its variants, which
-///     can be stepped up and down. This allows a [`Quantity`] to automatically
-///     [normalize](Quantity::normalize) its value.
-//  TODO: Find a word to distinguish between scale₁ (the scaling coefficient of
-//      a unit) and scale₂ (the range between the variants with the smallest
-//      scale₁ and the largest scale₁).
-pub trait UnitScale: Unit {
-    // const SMALLEST: Self;
-    // const LARGEST: Self;
-
+/// This trait defines the ability to "step" a [`Unit`] type up and down. This
+///     allows a [`Quantity`] to automatically [normalize](Quantity::normalize)
+///     its value.
+pub trait UnitStep: Unit {
     /// Return the next unit down in the scale, or `None` if this is already the
     ///     smallest variant.
     //  NOTE: It is an error for this method to return the same unit as `self`,
@@ -224,19 +218,19 @@ pub trait UnitBinary: UnitCompound {
         V::binary(self.lhs(), f(self.rhs()))
     }
 
-    fn step_lhs_down(&self) -> Option<Self> where Self::Lhs: UnitScale {
+    fn step_lhs_down(&self) -> Option<Self> where Self::Lhs: UnitStep {
         Some(Self::binary(self.lhs().step_down()?, self.rhs()))
     }
 
-    fn step_lhs_up(&self) -> Option<Self> where Self::Lhs: UnitScale {
+    fn step_lhs_up(&self) -> Option<Self> where Self::Lhs: UnitStep {
         Some(Self::binary(self.lhs().step_up()?, self.rhs()))
     }
 
-    fn step_rhs_down(&self) -> Option<Self> where Self::Rhs: UnitScale {
+    fn step_rhs_down(&self) -> Option<Self> where Self::Rhs: UnitStep {
         Some(Self::binary(self.lhs(), self.rhs().step_down()?))
     }
 
-    fn step_rhs_up(&self) -> Option<Self> where Self::Rhs: UnitScale {
+    fn step_rhs_up(&self) -> Option<Self> where Self::Rhs: UnitStep {
         Some(Self::binary(self.lhs(), self.rhs().step_up()?))
     }
 }

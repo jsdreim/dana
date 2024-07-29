@@ -74,7 +74,7 @@ impl<U: Unit, V: Scalar> Quantity<U, V> {
     }
 
     pub fn normalize(self) -> Self where
-        U: UnitScale,
+        U: UnitStep,
         V: Real,
     {
         if self.value.is_zero() {

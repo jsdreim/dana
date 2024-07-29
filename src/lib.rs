@@ -238,7 +238,7 @@ mod tests {
 
     #[test]
     fn test_quantity_norm() {
-        fn test<U: UnitScale>(q1: Quantity<U>) {
+        fn test<U: UnitStep>(q1: Quantity<U>) {
             let q2 = q1.normalize();
 
             // eprintln!("{q1:>9e} -> {q2:>8.3}");
@@ -277,7 +277,7 @@ mod tests {
 
     #[test]
     fn test_unit_scale() {
-        fn test<U: UnitScale + PartialOrd + std::fmt::Debug>() {
+        fn test<U: UnitStep + PartialOrd + std::fmt::Debug>() {
             let base = U::base();
 
             assert_eq!(

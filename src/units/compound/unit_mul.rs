@@ -66,7 +66,7 @@ impl<A: Unit, B: Unit> UnitBinary for UnitMul<A, B> where
 }
 
 
-impl<A: UnitScale, B: UnitScale> UnitScale for UnitMul<A, B> where
+impl<A: UnitStep, B: UnitStep> UnitStep for UnitMul<A, B> where
     A::Dim: Mul<B::Dim>,
     <A::Dim as Mul<B::Dim>>::Output: DimType,
 {

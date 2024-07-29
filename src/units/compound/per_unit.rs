@@ -44,7 +44,7 @@ impl<U: Unit> std::fmt::Display for PerUnit<U> where
 }
 
 
-impl<U: UnitScale> UnitScale for PerUnit<U> where
+impl<U: UnitStep> UnitStep for PerUnit<U> where
     U::Dim: Inv,
     <U::Dim as Inv>::Output: DimType,
 {

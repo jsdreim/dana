@@ -1,4 +1,4 @@
-use crate::units::traits::{Unit, UnitConcrete, UnitScale};
+use crate::units::traits::{Unit, UnitConcrete, UnitStep};
 
 
 #[derive(Clone, Copy, Debug, Hash, PartialEq, PartialOrd, Eq, Ord)]
@@ -46,7 +46,7 @@ impl UnitConcrete for Power {
     }
 }
 
-impl UnitScale for Power {
+impl UnitStep for Power {
     fn step_down(&self) -> Option<Self> {
         match self {
             Self::MicroWatt => None,

@@ -1,4 +1,4 @@
-use crate::units::traits::{Unit, UnitConcrete, UnitScale};
+use crate::units::traits::{Unit, UnitConcrete, UnitStep};
 
 
 #[derive(Clone, Copy, Debug, Hash, PartialEq, PartialOrd, Eq, Ord)]
@@ -46,7 +46,7 @@ impl UnitConcrete for Voltage {
     }
 }
 
-impl UnitScale for Voltage {
+impl UnitStep for Voltage {
     fn step_down(&self) -> Option<Self> {
         match self {
             Self::MicroVolt => None,

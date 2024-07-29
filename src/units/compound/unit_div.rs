@@ -69,7 +69,7 @@ impl<A: Unit, B: Unit> UnitBinary for UnitDiv<A, B> where
 }
 
 
-impl<A: UnitScale, B: UnitScale> UnitScale for UnitDiv<A, B> where
+impl<A: UnitStep, B: UnitStep> UnitStep for UnitDiv<A, B> where
     A::Dim: Div<B::Dim>,
     <A::Dim as Div<B::Dim>>::Output: DimType,
 {

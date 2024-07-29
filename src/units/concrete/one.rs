@@ -1,4 +1,4 @@
-use crate::units::traits::{Unit, UnitConcrete, UnitScale};
+use crate::units::traits::{Unit, UnitConcrete, UnitStep};
 
 
 #[derive(Clone, Copy, Debug, Hash, PartialEq, PartialOrd, Eq, Ord)]
@@ -17,7 +17,7 @@ impl UnitConcrete for One {
     fn symbol(&self) -> &'static str { "1" }
 }
 
-impl UnitScale for One {
+impl UnitStep for One {
     fn step_down(&self) -> Option<Self> { None }
     fn step_up(&self) -> Option<Self> { None }
 }
