@@ -3,6 +3,8 @@
 #[cfg(feature = "rand")]
 pub mod rand;
 
+mod conversions;
+
 use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign};
 use num_traits::{Inv, MulAdd, NumCast, Pow, real::Real, Zero};
 use crate::{Scalar, units::{traits::*, unit_anon::UnitAnon}};
