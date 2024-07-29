@@ -6,7 +6,7 @@ pub mod rand;
 mod conversions;
 
 use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign};
-use num_traits::{Inv, MulAdd, NumCast, Pow, real::Real, Zero};
+use num_traits::{Inv, MulAdd, NumCast, Pow, real::Real, Signed, Zero};
 use crate::{units::{traits::*, unit_anon::UnitAnon}, Value};
 
 
@@ -42,7 +42,7 @@ impl<U: Unit, V: Value> Quantity<U, V> {
     }
 
     pub fn almost_eq<W>(self, rhs: Quantity<W, V>, limit: V) -> bool where
-        V: Real,
+        V: Signed + PartialOrd,
         W: Unit<Dim=U::Dim>,
     {
         (self - rhs).abs().value <= limit
@@ -461,14 +461,16 @@ impl<U: Unit, V: Value + Ord> Ord for Quantity<U, V> where
 
 
 //region Traits from `num_traits`.
+impl<U: Unit, V: Value + Signed> Quantity<U, V> {
+    pub fn abs(self) -> Self {
+        Self::new(self.unit, self.value.abs())
+    }
+}
+
 impl<U: Unit, V: Value + Real> Quantity<U, V> {
     /// Cast the value to another type through the [`NumCast`] trait.
     pub fn value_cast<X: Value>(self) -> Option<Quantity<U, X>> {
         Some(Quantity::new(self.unit, NumCast::from(self.value)?))
-    }
-
-    pub fn abs(self) -> Self {
-        Self::new(self.unit, self.value.abs())
     }
 
     pub fn ceil(self) -> Self {
