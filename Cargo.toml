@@ -11,6 +11,10 @@ typenum = "1.17.0"
 [dependencies.dana_macros]
 path = "dana_macros"
 
+[dependencies.chrono]
+version = "0.4.38"
+optional = true
+
 [dependencies.rand]
 version = "0.8.5"
 optional = true
@@ -48,6 +52,8 @@ required-features = ["rand", "simd"]
 
 [features]
 default = []
+
+chrono = ["dep:chrono"]
 rand = ["dep:rand"]
 serde = ["dep:serde"]
 simd = []
