@@ -27,37 +27,51 @@ impl<V: Scalar> Quantity<Force, V> {
 
 
 impl<V: Scalar> Quantity<Temp, V> {
+    /// Define an absolute temperature in [`Kelvin`](Temp::Kelvin) in terms of
+    ///     degrees Celsius.
     pub fn from_celsius(c: V) -> Self {
         Temp::Kelvin.quantity(c + V::from_f64(273.15).unwrap())
     }
 
+    /// Define an absolute temperature in [`Kelvin`](Temp::Kelvin) in terms of
+    ///     degrees Fahrenheit.
     pub fn from_fahrenheit(f: V) -> Self {
         Self::from_celsius((f - V::from_f64(32.0).unwrap()) / V::from_f64(1.8).unwrap())
     }
 
+    /// Define an absolute temperature in [`Kelvin`](Temp::Kelvin) in terms of
+    ///     degrees Rankine.
     pub fn from_rankine(r: V) -> Self {
         Temp::Kelvin.quantity(r / V::from_f64(1.8).unwrap())
     }
 
+    /// Convert this temperature to degrees Celsius.
     pub fn to_celsius(self) -> V {
         self.value_as(Temp::Kelvin) - V::from_f64(273.15).unwrap()
     }
 
+    /// Convert this temperature to degrees Fahrenheit.
     pub fn to_fahrenheit(self) -> V {
         self.to_celsius() * V::from_f64(1.8).unwrap() + V::from_f64(32.0).unwrap()
     }
 
+    /// Convert this temperature to degrees Rankine.
     pub fn to_rankine(self) -> V {
         self.value_as(Temp::Kelvin) * V::from_f64(1.8).unwrap()
     }
 }
 
 
+/// Calculate the [Standard Gravitational Parameter] for a given mass.
+///
+/// [Standard Gravitational Parameter]: https://en.wikipedia.org/wiki/Standard_gravitational_parameter
 pub fn gravitational_parameter(mass: Quantity<Mass>) -> Quantity<GravParam> {
     (mass * CONST_G).convert()
 }
 
 
+/// Given two masses at a given distance, calculate the gravitational [`Force`]
+///     exerted on each mass towards the other.
 pub fn gravity(
     mass_1: Quantity<Mass>,
     mass_2: Quantity<Mass>,
@@ -74,39 +88,46 @@ pub fn gravity(
 }
 
 
+/// Convert a mass to its corresponding energy, according to E=mc².
 pub fn mass_to_energy(mass: Quantity<Mass>) -> Quantity<Energy> {
-    qty![mass * {CONST_C.squared()} as Energy]
+    (mass * CONST_C2).convert()
 }
 
 
+/// Convert an energy to its corresponding mass, according to E=mc².
 pub fn energy_to_mass(energy: Quantity<Energy>) -> Quantity<Mass> {
-    qty![energy / {CONST_C.squared()} as Mass]
+    (energy / CONST_C2).convert()
 }
 
 
+/// Calculate the energy of a photon with the given frequency of light. The
+///     result will be in [electron volts](Energy::ElectronVolt).
 pub fn photon_energy(freq: Quantity<Frequency>) -> Quantity<Energy> {
-    qty![freq * CONST_H in eV]
+    (freq * CONST_H).convert_to(Energy::ElectronVolt)
 }
 
 
+/// Calculate the frequency of light for a photon with the given energy.
 pub fn photon_frequency(energy: Quantity<Energy>) -> Quantity<Frequency> {
-    qty![energy / CONST_H in Hz]
+    (energy / CONST_H).convert()
 }
 
 
+/// Calculate the wavelength of a wave with the given frequency and speed.
 pub fn frequency_to_wavelength<V: Scalar>(
     freq: Quantity<Frequency, V>,
     speed: Quantity<Speed, V>,
 ) -> Quantity<Length, V> {
-    qty![speed / [freq as 1/Time] -> Length]
+    (speed / freq).convert()
 }
 
 
+/// Calculate the frequency of a wave with the given wavelength and speed.
 pub fn wavelength_to_frequency<V: Scalar>(
     length: Quantity<Length, V>,
     speed: Quantity<Speed, V>,
 ) -> Quantity<Frequency, V> {
-    qty![speed / length -> 1/Time as Frequency]
+    (speed / length).convert()
 }
 
 
