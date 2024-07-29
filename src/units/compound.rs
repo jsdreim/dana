@@ -11,6 +11,11 @@ pub use unit_mul::UnitMul;
 pub use unit_pow::*;
 
 
+pub mod prelude {
+    pub use super::{PerUnit, UnitDiv, UnitMul, unit_pow::*};
+}
+
+
 /// Operator implementations grouped together, to compare them more easily.
 mod impl_ops {
     use std::ops::{Div, Mul};

@@ -9,11 +9,20 @@ struct _Notes;
 
 
 macro_rules! concrete_types {
-    ($($module:ident::$unit:ident),+$(,)?) => {
+    ($(
+    $(#[$attr:meta])*
+    $module:ident::$unit:ident
+    ),+$(,)?) => {
         $(
+        $(#[$attr])*
         pub mod $module;
         pub use $module::$unit;
         )+
+
+        /// Prelude to re-export all concrete unit types.
+        pub mod prelude {
+            pub use super::{$($module::$unit,)+};
+        }
 
         impl_unit_concrete!($($unit),+);
 
@@ -44,6 +53,7 @@ macro_rules! concrete_types {
             }
         }
 
+        /// Unit inversion.
         impl ::num_traits::Inv for $unit where
             $crate::dimension::$unit: ::num_traits::Inv,
         {
@@ -67,14 +77,6 @@ macro_rules! concrete_types {
                 $crate::units::UnitPow::new(self)
             }
         }
-
-        /*impl<__E: $crate::units::Exp $($(, $tv: $t0 $(+ $t1)*)+)?>
-        $crate::units::traits::CanPow<__E>
-        for $unit$(<$($tv),+>)? where
-        {
-            type Output = $crate::units::UnitPow<Self, __E>;
-            fn pow(self) -> Self::Output { $crate::units::UnitPow::new(self) }
-        }*/
         )+
     };
 }
