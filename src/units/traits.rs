@@ -7,7 +7,7 @@ pub use transform::*;
 
 
 /// Trait for a type that represents a dimensional "unit".
-pub trait Unit: Copy + Default + std::fmt::Display + PartialEq {
+pub trait Unit: Copy + Default + std::fmt::Debug + std::fmt::Display + PartialEq {
     /// The [`Dimension`](crate::dimension::Dimension) represented by units of
     ///     this type.
     type Dim: DimType;
