@@ -29,7 +29,7 @@ pub struct Quantity<U: Unit, V: Value = ValueDefault> {
 }
 
 impl<U: Unit, V: Value> Quantity<U, V> {
-    /// Construct a new [`Quantity`] from [`U`] and [`V`].
+    /// Construct a new [`Quantity`] from [`Unit`] and [`Value`].
     pub const fn new(unit: U, value: V) -> Self {
         Self { value, unit }
     }
