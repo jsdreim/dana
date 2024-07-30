@@ -4,7 +4,7 @@ use dana::{
     equations,
     qty, qtype,
     quantity::{Quantity, QuantityAnon},
-    symbols::{electrical::*, physical::*},
+    symbols::{electrical::*, physics::*},
     units::*,
 };
 

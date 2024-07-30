@@ -3,7 +3,7 @@
 use crate::{
     constants::*,
     Quantity,
-    symbols::physical::*,
+    symbols::physics::*,
     units::*,
     Value,
 };

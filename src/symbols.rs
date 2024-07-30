@@ -114,13 +114,13 @@ define_groups! {
     );
 
     /// Group module for units often used in chemistry.
-    pub mod chemical(
+    pub mod chemistry(
         [M],     [T],  [E],    [K,Θ], [N],
         mass_si, time, energy, temp,  amount,
     );
 
     /// Group module for units often used in physics.
-    pub mod physical(
+    pub mod physics(
         (basic),
         [E],    [f],       [F],                [K,Θ], [J],
         energy, frequency, force_si, pressure, temp,  intensity,
