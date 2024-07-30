@@ -153,7 +153,6 @@ pub mod dimension;
 pub mod equations;
 pub mod quantity;
 pub mod symbols;
-#[allow(missing_docs)]
 pub mod units;
 pub mod value;
 

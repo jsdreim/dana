@@ -1,3 +1,5 @@
+//! Module for the multiplied unit type.
+
 use std::ops::Mul;
 use crate::{dimension::*, units::traits::*};
 
@@ -14,6 +16,7 @@ impl<A: Unit, B: Unit> UnitMul<A, B> where
     A::Dim: Mul<B::Dim>,
     <A::Dim as Mul<B::Dim>>::Output: DimType,
 {
+    /// Construct a new [`UnitMul`] around the inputs.
     pub const fn new(lhs: A, rhs: B) -> Self { Self(lhs, rhs) }
 }
 
@@ -47,10 +50,6 @@ impl<A: Unit, B: Unit> UnitCompound for UnitMul<A, B> where
     A::Dim: Mul<B::Dim>,
     <A::Dim as Mul<B::Dim>>::Output: DimType,
 {}
-impl<A: Unit, B: Unit> UnitNonExp for UnitMul<A, B> where
-    A::Dim: Mul<B::Dim>,
-    <A::Dim as Mul<B::Dim>>::Output: DimType,
-{}
 
 impl<A: Unit, B: Unit> UnitBinary for UnitMul<A, B> where
     A::Dim: Mul<B::Dim>,
@@ -59,10 +58,10 @@ impl<A: Unit, B: Unit> UnitBinary for UnitMul<A, B> where
     type Lhs = A;
     type Rhs = B;
 
+    fn binary(lhs: Self::Lhs, rhs: Self::Rhs) -> Self { Self::new(lhs, rhs) }
+
     fn lhs(&self) -> Self::Lhs { self.0 }
     fn rhs(&self) -> Self::Rhs { self.1 }
-
-    fn binary(lhs: Self::Lhs, rhs: Self::Rhs) -> Self { Self(lhs, rhs) }
 }
 
 

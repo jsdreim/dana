@@ -1,3 +1,5 @@
+//! Module for the exponentiated unit type.
+
 use std::{marker::PhantomData, ops::Mul};
 use typenum::{Integer, PartialDiv};
 use crate::{dimension::*, units::traits::*};
@@ -6,7 +8,10 @@ use crate::{dimension::*, units::traits::*};
 /// Type alias allowing specification of a [`UnitPow`] by integer parameter.
 pub type UnitPowN<U, const E: i32> = UnitPow<U, <ExpHack<E> as HasTypenum>::Typenum>;
 
+/// Type alias for a unit to the second power.
 pub type UnitSquared<U> = UnitPowN<U, 2>;
+
+/// Type alias for a unit to the third power.
 pub type UnitCubed<U> = UnitPowN<U, 3>;
 
 
@@ -22,6 +27,7 @@ pub struct UnitPow<U: Unit, E: Integer>(pub U, pub PhantomData<E>) where
 impl<U: Unit, E: Integer> UnitPow<U, E> where
     U::Dim: DimPowType<E>,
 {
+    /// Construct a new [`UnitPow`] around the input.
     pub const fn new(unit: U) -> Self { Self(unit, PhantomData) }
 }
 
@@ -62,10 +68,6 @@ impl<U: Unit, E: Integer> std::fmt::Display for UnitPow<U, E> where
 
 
 //region Exponential traits.
-impl<U: Unit, E: Integer> UnitExp for UnitPow<U, E> where
-    U::Dim: DimPowType<E>,
-{}
-
 impl<U: Unit, E1, const E2: i32> CanPow<E2> for UnitPow<U, E1> where
     ExpHack<E2>: HasTypenum,
     E1: Integer + Mul<<ExpHack<E2> as HasTypenum>::Typenum>,

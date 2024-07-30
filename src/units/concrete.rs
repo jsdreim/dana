@@ -1,3 +1,12 @@
+//! Module for [concrete unit](UnitConcrete) types.
+//!
+//! Concrete units are defined absolutely, and are not reducible, but they may
+//!     have multiple variants with different scale factors. Every concrete unit
+//!     type has a constant [base unit](UnitConcrete::BASE), and every concrete
+//!     unit has a unique [symbol](UnitConcrete::symbol).
+
+#![allow(missing_docs)]
+
 use super::traits::*;
 
 
@@ -116,7 +125,7 @@ concrete_types!(
 pub type Distance = Length;
 
 
-impl_scale! {
+/*impl_scale! {
     for Length impl (Pico, Nano, Micro, Milli, Kilo) Meter;
     // for Mass impl (Milli, Kilo) Gram;
     for Time impl (Pico, Nano, Micro, Milli) Second;
@@ -136,4 +145,4 @@ impl_scale! {
     for Current impl (Micro, Milli, Kilo, Mega, Giga, Tera) Amp;
     for Voltage impl (Micro, Milli, Kilo, Mega, Giga, Tera) Volt;
     for Resistance impl (Micro, Milli, Kilo, Mega, Giga, Tera) Ohm;
-}
+}*/

@@ -1,3 +1,8 @@
+//! Module for unit conversion machinery.
+
+//  TODO: Can all of this be removed in favor of doing it in Quantity methods?
+#![allow(missing_docs)]
+
 use crate::{Unit, Value};
 
 

@@ -1,9 +1,9 @@
 //! Core module of the units system.
 
-pub mod _experimental;
+// pub mod _experimental;
 pub mod compound;
 pub mod concrete;
-pub mod si;
+// pub mod si;
 pub mod traits;
 pub mod unit_anon;
 
@@ -57,9 +57,28 @@ pub mod derived {
     //  TODO: Should torque even be included? Is this out of scope?
     pub type Torque = utype!(Length * Force);
 
+    /// [`Length`] cubed over [`Time`] squared.
+    ///
+    /// The Gravitational Parameter, the product of mass and the [gravitational
+    ///     constant](crate::constants::CONST_G), is used to calculate the
+    ///     gravitational force between celestial bodies.
+    ///
+    /// Often represented as *μ*.
     pub type GravParam = utype!(Length^3 / Time^2);
 
+    /// [`Energy`] per unit [`Temp`].
+    ///
+    /// Represents the amount of heat energy that must be supplied to an object
+    ///     in order to increase its temperature by a certain amount.
+    ///
+    /// Often represented as *C*.
     pub type HeatCapacity = utype!(Energy / Temp);
+
+    /// [Heat capacity](HeatCapacity) per unit [`Mass`].
+    ///
+    /// The intensive form of heat capacity.
+    ///
+    /// Often represented as *c*.
     pub type HeatSpecific = utype!(HeatCapacity / Mass);
 }
 

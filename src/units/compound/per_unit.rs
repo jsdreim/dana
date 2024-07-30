@@ -1,8 +1,13 @@
+//! Module for the reciprocal unit type.
+
 use num_traits::Inv;
 use crate::{dimension::*, units::traits::*};
 
 
 /// The reciprocal of a unit.
+///
+/// This is equivalent both to [`One`](crate::units::One) divided by the unit,
+///     and to the unit taken to the [power](crate::units::UnitPow) of -1.
 #[derive(Clone, Copy, Debug, Default, Hash, Eq, PartialEq, Ord, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 #[repr(transparent)]
@@ -15,8 +20,10 @@ impl<U: Unit> PerUnit<U> where
     U::Dim: Inv,
     <U::Dim as Inv>::Output: DimType,
 {
+    /// Construct a new [`PerUnit`] around the input.
     pub const fn new(unit: U) -> Self { Self(unit) }
 
+    /// Return the unit being inverted.
     pub const fn denominator(&self) -> U { self.0 }
 }
 

@@ -1,17 +1,31 @@
+//! Module for the anonymous unit type.
+
 use std::{marker::PhantomData, ops::{Div, Mul}};
 use num_traits::{AsPrimitive, Inv, real::Real};
 use crate::{dimension::*, units::traits::*, Value};
 
 
-dummy!(pub trait AnonScale: Copy + Value + AsPrimitive<f64>);
+dummy!(
+    /// Marker trait for a type that can be used as the scaling factor for an
+    ///     anonymous unit.
+    pub trait AnonScale: Copy + Value + AsPrimitive<f64>
+);
 
 
+/// An anonymous unit.
+///
+/// Anonymous units still enforce [`Dimension`] compatibility, but instead of
+///     being one of a discrete set of variants, a `UnitAnon` directly contains
+///     an arbitrary scaling factor. This may be useful in situations where an
+///     extremely complex unit tree needs to be used in a large number of
+///     operations that all calculate its scale factor.
 #[derive(Clone, Copy, Hash, Eq, Ord, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 #[repr(transparent)]
 pub struct UnitAnon<D: DimType, S: AnonScale = f64>(pub S, PhantomData<D>);
 
 impl<D: DimType, S: AnonScale> UnitAnon<D, S> {
+    /// Construct a new [`UnitAnon`] with the given scaling factor.
     pub const fn new(s: S) -> Self { Self(s, PhantomData) }
 }
 

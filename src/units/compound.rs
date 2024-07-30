@@ -1,3 +1,11 @@
+//! Module for [compound unit](UnitCompound) types.
+//!
+//! Compound units are defined in terms of other units. Each compound unit type
+//!     is generic over one or more [`Unit`] types (which may themselves also be
+//!     compound units), and represents a relationship between them. A compound
+//!     unit defines its [`Dim`](Unit::Dim) type and [scale](Unit::scale) based
+//!     on those of its components.
+
 use super::traits::*;
 
 pub mod per_unit;

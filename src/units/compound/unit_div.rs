@@ -1,3 +1,5 @@
+//! Module for the divided unit type.
+
 use std::ops::Div;
 use crate::{dimension::*, units::traits::*};
 
@@ -14,9 +16,13 @@ impl<A: Unit, B: Unit> UnitDiv<A, B> where
     A::Dim: Div<B::Dim>,
     <A::Dim as Div<B::Dim>>::Output: DimType,
 {
+    /// Construct a new [`UnitDiv`] around the inputs.
     pub const fn new(lhs: A, rhs: B) -> Self { Self(lhs, rhs) }
 
+    /// Return the dividend of the operation.
     pub const fn numerator(&self) -> A { self.0 }
+
+    /// Return the divisor of the operation.
     pub const fn denominator(&self) -> B { self.1 }
 }
 
@@ -50,10 +56,6 @@ impl<A: Unit, B: Unit> UnitCompound for UnitDiv<A, B> where
     A::Dim: Div<B::Dim>,
     <A::Dim as Div<B::Dim>>::Output: DimType,
 {}
-impl<A: Unit, B: Unit> UnitNonExp for UnitDiv<A, B> where
-    A::Dim: Div<B::Dim>,
-    <A::Dim as Div<B::Dim>>::Output: DimType,
-{}
 
 impl<A: Unit, B: Unit> UnitBinary for UnitDiv<A, B> where
     A::Dim: Div<B::Dim>,
@@ -62,10 +64,10 @@ impl<A: Unit, B: Unit> UnitBinary for UnitDiv<A, B> where
     type Lhs = A;
     type Rhs = B;
 
+    fn binary(lhs: Self::Lhs, rhs: Self::Rhs) -> Self { Self::new(lhs, rhs) }
+
     fn lhs(&self) -> Self::Lhs { self.0 }
     fn rhs(&self) -> Self::Rhs { self.1 }
-
-    fn binary(lhs: Self::Lhs, rhs: Self::Rhs) -> Self { Self(lhs, rhs) }
 }
 
 
