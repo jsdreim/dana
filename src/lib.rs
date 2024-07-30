@@ -246,7 +246,8 @@ mod tests {
             let q2 = q1.normalize();
 
             // eprintln!("{q1:>9e} -> {q2:>8.3}");
-            assert!(q2.almost_eq(q1, 1e-12));
+            assert_eq!(q2, q1, "Precision loss different from pure convert.");
+            assert_qty_approx!(<= 1e-6, q1, q2);
         }
 
         test(qty![4.321_e+9  mm/s]);
