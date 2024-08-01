@@ -82,20 +82,34 @@ Sealed for Dimension<L, M, T, I, Θ, N, J> {}
 /// Trait specifying a type to be a [`Dimension`] with arbitrary exponents.
 pub trait DimType: Sealed + Copy + std::fmt::Display {
     //region Definitions.
+    /// Exponent typenum for Length.
     type ExpLen: Int;
+    /// Exponent typenum for Mass.
     type ExpMass: Int;
+    /// Exponent typenum for Time.
     type ExpTime: Int;
+    /// Exponent typenum for Electrical Current.
     type ExpCurr: Int;
+    /// Exponent typenum for Temperature.
     type ExpTemp: Int;
+    /// Exponent typenum for Substance Amount.
     type ExpAmt: Int;
+    /// Exponent typenum for Luminous Intensity.
     type ExpLum: Int;
 
+    /// Exponent constant for Length.
     const EXP_LEN:  Exp = <Self::ExpLen as Integer>::I32;
+    /// Exponent constant for Mass.
     const EXP_MASS: Exp = <Self::ExpMass as Integer>::I32;
+    /// Exponent constant for Time.
     const EXP_TIME: Exp = <Self::ExpTime as Integer>::I32;
+    /// Exponent constant for Electrical Current.
     const EXP_CURR: Exp = <Self::ExpCurr as Integer>::I32;
+    /// Exponent constant for Temperature.
     const EXP_TEMP: Exp = <Self::ExpTemp as Integer>::I32;
+    /// Exponent constant for Substance Amount.
     const EXP_AMT:  Exp = <Self::ExpAmt as Integer>::I32;
+    /// Exponent constant for Luminous Intensity.
     const EXP_LUM:  Exp = <Self::ExpLum as Integer>::I32;
     //endregion
 
@@ -294,6 +308,7 @@ pub struct ExpHack<const E: Exp>;
 
 /// Trait for associating a type with a specific [`typenum`] [`Integer`].
 pub trait HasTypenum {
+    /// The [`Integer`] equivalent of this type.
     type Typenum: Integer;
 }
 
