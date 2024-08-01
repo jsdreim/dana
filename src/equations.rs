@@ -131,6 +131,25 @@ pub fn wavelength_to_frequency<V: Value>(
 }
 
 
+/// Calculate the specific heat capacity of a mixture.
+pub fn heat_specific_total<V: Value>(
+    parts: impl AsRef<[(Quantity<Mass, V>, Quantity<HeatSpecific, V>)]>,
+) -> Quantity<HeatSpecific, V> {
+    let slice = parts.as_ref();
+
+    let total_c: Quantity<HeatCapacity, V> = slice.iter()
+        .cloned()
+        .map(|(mass, heat_specific)| Unit::base_from(heat_specific * mass))
+        .sum();
+
+    let total_m: Quantity<Mass, V> = slice.iter()
+        .map(|(mass, _)| mass.clone())
+        .sum();
+
+    total_c / total_m
+}
+
+
 #[cfg(test)]
 mod tests {
     use super::*;
