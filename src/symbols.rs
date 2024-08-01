@@ -334,9 +334,9 @@ define_symbols! {
         const GPa = GigaPascal;
         const TPa = TeraPascal;
 
-        /// Unit alias for [`Pound`s](Force::Pound) per [square](UnitSquared)
-        ///     [`Inch`](Length::Inch).
-        const psi: (Force / Area) = (lbf / inch^2);
+        const  psi = Psi;
+        const kpsi = KiloPsi;
+        const Mpsi = MegaPsi;
     }
 
     /// Symbol module for [`Energy`].
