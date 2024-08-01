@@ -47,6 +47,8 @@
 //  New quantities.
 //! ## Defining Quantities
 //!
+//  TODO: Focus less heavily on `qty!` here. Link to it and recommend it, but
+//      then describe non-macro definition.
 //! Using the full syntax is verbose to the point of near-unreadability:
 //! ```
 //! use dana::{Quantity, units::*};
@@ -87,50 +89,6 @@
 //!
 //! let grav = qty![9.81 m/s^2];
 //! ```
-//!
-//!
-//  Conversion.
-//! ## Unit Conversion
-//!
-//! In addition to defining new [`Quantity`] values, the [`qty`] macro may also
-//!     be used for conversion and reorganization. There are three operators
-//!     that can be used for this purpose:
-//! - `->`: Simple reorganization.
-//! - `as`: Conversion to the base unit of a [`Unit`] type.
-//! - `in`: Conversion to a specific unit.
-//!
-//! These operations can also be chained:
-//! ```
-//! use dana::{constants::CONST_C2, qty, symbols::*, units::*};
-//!
-//! let quantity = qty![
-//!     1.0 g // One gram.
-//!     * {CONST_C2} // Multiply by c².
-//!     as Energy // Convert to energy according to E=mc².
-//!     as P * T  // Express as the product of power and time.
-//!     in W * 1/Hz // Reinterpret time as "per Hertz".
-//!     -> P / f // Reorganize to be power divided by frequency.
-//!     in A * V / Hz // Reinterpret power as the product of amps and volts.
-//! ];
-//! ```
-//!
-//! A star can be used to "dereference" a quantity, returning the scalar value,
-//!     after performing any conversions. Among other things, this allows for
-//!     particularly readable assertions:
-//! ```
-//! # use dana::{qty, symbols::*};
-//! let d = qty![30.0 km];
-//! let v = qty![45.0 km/h];
-//!
-//! assert_eq!(qty![*(d/v) -> T in min], 40.0);
-//! ```
-//!
-//! Square brackets can be used to perform recursion, allowing for definition,
-//!     calculation, and conversion all in a single call:
-//! ```
-//! # use dana::{qty, symbols::*};
-//! assert_eq!(qty![*[3.3 V] / [150.0 Ω] in mA], 22.0);
-//! ```
 
 #![cfg_attr(feature = "simd", feature(portable_simd))]
 #![warn(missing_docs)]
@@ -139,12 +97,7 @@
 extern crate self as dana;
 
 #[macro_use]
-extern crate dana_macros;
-pub use dana_macros::{dim, qty, qtype, unit, utype};
-
-#[macro_use]
-mod macros;
-
+pub mod macros;
 pub mod prelude;
 
 pub mod constants;

@@ -297,7 +297,7 @@ pub trait HasTypenum {
     type Typenum: Integer;
 }
 
-impl_typenums!();
+dana_macros::impl_typenums!();
 
 
 /// Indicates that a [`Dimension`] may be raised to an arbitrary `i32` power.
