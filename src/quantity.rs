@@ -5,7 +5,10 @@ pub mod rand;
 
 mod conversions;
 
-use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign};
+use std::{
+    iter::Sum,
+    ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign},
+};
 use num_traits::{Inv, MulAdd, NumCast, Pow, real::Real, Signed, Zero};
 use crate::{units::{traits::*, UnitAnon}, Value};
 
@@ -481,6 +484,18 @@ impl<U: Unit, V: Value + Ord> Ord for Quantity<U, V> where
 }
 //endregion
 //endregion
+
+impl<U: Unit, V: Value> Sum for Quantity<U, V> {
+    fn sum<I: Iterator<Item=Self>>(mut iter: I) -> Self {
+        //  NOTE: Read the first quantity in order to use its unit. Starting at
+        //      zero would cause all quantities in the iterator to be converted
+        //      to the base unit (potentially losing precision unnecessarily).
+        match iter.next() {
+            Some(qty) => iter.fold(qty, Add::add),
+            None => Self::zero(),
+        }
+    }
+}
 //endregion
 
 
