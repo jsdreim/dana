@@ -13,6 +13,7 @@ pub trait Unit: Copy + Default + std::fmt::Debug + std::fmt::Display + PartialEq
     type Dim: DimType;
     // type ScaleType: crate::Scalar;
 
+    //region Unit scale methods.
     /// Return the scale of this unit, relative to the base unit of this type.
     fn scale(&self) -> f64;
 
@@ -31,6 +32,7 @@ pub trait Unit: Copy + Default + std::fmt::Debug + std::fmt::Display + PartialEq
     fn scale_factor_v<U: Unit<Dim=Self::Dim>, V: Value>(self, target: U) -> Option<V> {
         V::from_f64(self.scale_factor(target))
     }
+    //endregion
 
     /// Return the base unit of this type, with a scale of 1.
     fn base() -> Self { Default::default() }
@@ -44,6 +46,8 @@ pub trait Unit: Copy + Default + std::fmt::Debug + std::fmt::Display + PartialEq
     /// Return a runtime representation of the dimension of this unit.
     fn dimension(&self) -> Self::Dim { DimType::dimension() }
 
+    //region Quantity creation.
+    //region With `self` as unit.
     /// Return a [`Quantity`] with this unit and the given value.
     fn quantity<V: Value>(self, value: V) -> Quantity<Self, V> {
         Quantity::new(self, value)
@@ -59,6 +63,37 @@ pub trait Unit: Copy + Default + std::fmt::Debug + std::fmt::Display + PartialEq
         self.quantity(num_traits::Zero::zero())
     }
 
+    /// Return a given [`Quantity`], converted to this unit.
+    fn convert_from<U, V>(self, qty: Quantity<U, V>) -> Quantity<Self, V> where
+        U: Unit<Dim=Self::Dim>,
+        V: Value,
+    {
+        qty.convert_to(self)
+    }
+    //endregion
+
+    //region With base unit.
+    //  NOTE: These are provided, rather than simply recommending use of the
+    //      more explicit `<_>::base().*()`, because that breaks inference when
+    //      called from the trait. Using `Unit::base_*()` allows rustc to infer
+    //      the output type.
+
+    /// Return a [`Quantity`] with the base of this unit type and the given value.
+    fn base_qty<V: Value>(value: V) -> Quantity<Self, V> {
+        Self::base().quantity(value)
+    }
+
+    /// Return a given [`Quantity`], converted to the base of this unit type.
+    fn base_from<U, V>(qty: Quantity<U, V>) -> Quantity<Self, V> where
+        U: Unit<Dim=Self::Dim>,
+        V: Value,
+    {
+        qty.convert_to(Self::base())
+    }
+    //endregion
+    //endregion
+
+    //region Feature-gated methods.
     /// Return a [`Quantity`] with this unit and a random value.
     #[cfg(feature = "rand")]
     fn random<V, R>(self, rng: &mut R) -> Quantity<Self, V> where
@@ -94,6 +129,7 @@ pub trait Unit: Copy + Default + std::fmt::Debug + std::fmt::Display + PartialEq
             [S::from_f64(self.scale()).unwrap(); N],
         )
     }
+    //endregion
 }
 
 
