@@ -141,7 +141,35 @@ macro_rules! qty {($($t:tt)*) => {$crate::macros::proc::qty!($($t)*)}}
 
 
 /// Macro to simplify [`Quantity`](crate::Quantity) type definitions.
-//  TODO
+///
+/// # Examples
+///
+/// Basic usage is effectively a passthrough to [`utype!`](crate::utype), with
+///     `Quantity` around it:
+/// ```
+/// use dana::{prelude::*, symbols::*};
+///
+/// let qty = qty![9.81 m/s^2];
+///
+/// //  Fully-explicit type:
+/// let explicit: Quantity<UnitDiv<Length, UnitSquared<Time>>> = qty;
+///
+/// //  Type with `Quantity` and `utype!` macro:
+/// let macro_utype: Quantity<utype!(L/T^2)> = qty;
+///
+/// //  Type with `qtype!` macro:
+/// let macro_qtype: qtype!(L/T^2) = qty;
+/// ```
+///
+/// The only variation is to specify a type for the dimensionless value,
+///     followed by a semicolon:
+/// ```
+/// # use dana::{prelude::*, symbols::*};
+/// #
+/// let _: qtype!(Time) = qty![500.0 ms]; // Default (f64).
+/// let _: qtype!(_; Time) = qty![500 ms]; // Implicit (i32).
+/// let _: qtype!(u64; Time) = qty![500 ms]; // Explicit (u64).
+/// ```
 #[macro_export]
 macro_rules! qtype {($($t:tt)*) => {$crate::macros::proc::qtype!($($t)*)}}
 
