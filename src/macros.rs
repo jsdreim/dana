@@ -195,7 +195,19 @@ macro_rules! unit {($($t:tt)*) => {$crate::macros::proc::unit!($($t)*)}}
 
 
 /// Macro to simplify compound unit type definitions.
-//  TODO
+///
+/// # Examples
+///
+/// Syntax is identical to [`unit!`](crate::unit), but this macro resolves to a
+///     type, rather than an expression:
+/// ```
+/// use dana::{prelude::*, symbols::*};
+///
+/// type UnitAccel = utype!(L/T^2);
+///
+/// let unit_accel: UnitAccel = unit!(m/s^2);
+/// let qty_accel: Quantity<UnitAccel> = unit_accel.quantity(9.81);
+/// ```
 #[macro_export]
 macro_rules! utype {($($t:tt)*) => {$crate::macros::proc::utype!($($t)*)}}
 
