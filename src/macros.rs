@@ -161,15 +161,29 @@ macro_rules! qty {($($t:tt)*) => {$crate::macros::proc::qty!($($t)*)}}
 /// let macro_qtype: qtype!(L/T^2) = qty;
 /// ```
 ///
-/// The only variation is to specify a type for the dimensionless value,
-///     followed by a semicolon:
+/// The only variation is to specify a type for the dimensionless value. This
+///     can be expressed in a few ways:
+/// - Before the unit specifier, followed by a semicolon, similar to the `[T;N]`
+///     syntax of array types
+/// - Before the unit specifier, followed by `as`, closer to a natural-language
+///     expression
+/// - After the unit specifier, separated by a comma, mirroring the generic
+///     parameters of `Quantity<U, V>`
 /// ```
 /// # use dana::{prelude::*, symbols::*};
 /// #
 /// let _: qtype!(Time) = qty![500.0 ms]; // Default (f64).
+///
 /// let _: qtype!(_; Time) = qty![500 ms]; // Implicit (i32).
 /// let _: qtype!(u64; Time) = qty![500 ms]; // Explicit (u64).
+///
+/// let _: qtype!(_ as Time) = qty![500 ms]; // Implicit (i32).
+/// let _: qtype!(u64 as Time) = qty![500 ms]; // Explicit (u64).
+///
+/// let _: qtype!(Time, _) = qty![500 ms]; // Implicit (i32).
+/// let _: qtype!(Time, u64) = qty![500 ms]; // Explicit (u64).
 /// ```
+//  TODO: Decide which "before" form is better.
 #[macro_export]
 macro_rules! qtype {($($t:tt)*) => {$crate::macros::proc::qtype!($($t)*)}}
 

@@ -9,6 +9,14 @@ use syn::{
 };
 
 
+macro_rules! parse_any {
+    ($buf:expr, $init:tt $(, $list:tt)* $(,)?) => {
+        $buf.parse::<Token![$init]>().is_ok() $(||
+        $buf.parse::<Token![$list]>().is_ok()  )*
+    };
+}
+
+
 pub fn typenum_int<N: std::fmt::Display + PrimInt + Signed>(n: N) -> String {
     let prefix = match n.cmp(&N::zero()) {
         Ordering::Less => 'N',

@@ -1,12 +1,13 @@
 #[macro_use]
 mod debug;
+#[macro_use]
+mod util;
 mod macro_dim;
 mod macro_qty;
 mod macro_qtype;
 mod macro_reorg;
 mod macro_scale;
 mod unit_spec;
-mod util;
 
 use proc_macro::TokenStream;
 use quote::ToTokens;

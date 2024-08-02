@@ -24,9 +24,13 @@ impl std::fmt::Debug for ScalarType {
 
 impl Parse for ScalarType {
     fn parse(input: ParseStream) -> Result<Self> {
-        match input.parse() {
-            Ok(discard) => Ok(Self::Inferred(discard)),
-            Err(_) => Ok(Self::Explicit(input.parse()?)),
+        if input.is_empty() {
+            Err(input.error("expected `_` or numeric type"))
+        } else {
+            match input.parse() {
+                Ok(discard) => Ok(Self::Inferred(discard)),
+                Err(_) => Ok(Self::Explicit(input.parse()?)),
+            }
         }
     }
 }
@@ -51,15 +55,31 @@ impl Parse for MacroQType {
     fn parse(input: ParseStream) -> Result<Self> {
         let fork = input.fork();
 
-        let scalar = match fork.parse() {
-            Ok(scalar) if fork.parse::<Token![;]>().is_ok() => {
+        //  Check for a valid scalar type before the unit specifier.
+        let scalar_first = match fork.parse::<ScalarType>() {
+            Ok(scalar) if parse_any!(fork, ;, as) => {
+                //  Found one, and then also found a valid separator.
                 input.advance_to(&fork);
                 Some(scalar)
             }
             _ => None,
         };
 
-        Ok(Self { scalar, dim: input.parse()? })
+        //  Parse the unit specifier.
+        let dim = input.parse::<UnitSpecType>()?;
+
+        //  Decide what to do for a scalar type.
+        let scalar = if scalar_first.is_none() // Did not set one earlier?
+            && input.parse::<Token![,]>().is_ok() // Also found a comma here?
+        {
+            //  Parse a scalar type now.
+            Some(input.parse::<ScalarType>()?)
+        } else {
+            //  Reuse whatever was or was not found earlier.
+            scalar_first
+        };
+
+        Ok(Self { scalar, dim })
     }
 }
 
