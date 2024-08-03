@@ -5,7 +5,7 @@
 //!     re-exported in the [prelude].
 
 #[allow(unused_imports)]
-use crate::*;
+use crate::{*, prelude::*};
 
 pub use crate::{dim, qty, qtype, unit, utype};
 
@@ -256,7 +256,62 @@ macro_rules! qtype {($($t:tt)*) => {$crate::macros::proc::qtype!($($t)*)}}
 
 
 /// Macro to simplify compound unit definitions.
-//  TODO
+///
+/// **Note:** This macro expands to an *expression*. For a version that does the
+///     same thing, but instead expands to a *type*, see [`utype!`].
+///
+/// This macro expects to be invoked with one or more [`Unit`] types, separated
+///     by binary mathematical operators, and possibly grouped by parentheses.
+///     Each binary operator represents a specific [`UnitCompound`] generic type
+///     that will be applied to the two sides of the operator. The following
+///     operators are supported:
+/// - `unit^N`: [`UnitPow`]
+/// - `1 / unit`: [`PerUnit`]
+/// - `lhs / rhs`: [`UnitDiv`]
+/// - `lhs * rhs`: [`UnitMul`]
+///
+/// # Examples
+///
+/// The most basic way to use this macro, while still benefitting from operator
+///     evaluation, is with fully-qualified units:
+/// ```
+/// use dana::prelude::*;
+///
+/// let _: PerUnit<Time> = unit!(1 / Time::Second);
+/// let _: UnitDiv<Length, Time> = unit!(Length::Meter / Time::Second);
+/// let _: UnitMul<Force, Length> = unit!(Force::Newton * Length::Meter);
+/// let _: UnitSquared<Length> = unit!(Length::Meter^2);
+///
+/// //  This gets quite verbose for large units.
+/// let _: UnitDiv<GravParam, Mass>
+///     = unit!(Length::Meter^3 / Time::Second^2 / Mass::KiloGram);
+/// ```
+///
+/// It is highly recommended to import from [`symbols`] as needed:
+/// ```
+/// use dana::{prelude::*, symbols::physics::*};
+///
+/// let _: PerUnit<Time> = unit!(1/s);
+/// let _: UnitDiv<Length, Time> = unit!(m/s);
+/// let _: UnitMul<Length, Force> = unit!(m*N);
+/// let _: UnitSquared<Length> = unit!(m^2);
+///
+/// let _: UnitDiv<GravParam, Mass> = unit!(m^3 / s^2 / kg);
+/// ```
+///
+/// Note that `^` is the "strongest" operator, and will always be applied as
+///     soon as possible. Other operators will be applied in order from left to
+///     right. To change this order, parentheses can be used to form groups:
+/// ```
+/// # use dana::{prelude::*, symbols::common::*};
+/// #
+/// let _: UnitDiv<Length, UnitSquared<Time>> = unit!(m / s^2);
+/// let _: UnitSquared<UnitDiv<Length, Time>> = unit!((m/s)^2);
+///
+/// let _: UnitDiv<UnitMul<Mass, Length>, Time> = unit!(kg * m / s);
+/// let _: UnitMul<UnitDiv<Length, Time>, Mass> = unit!(m / s * kg);
+/// let _: UnitDiv<Length, UnitMul<Time, Mass>> = unit!(m / (s*kg));
+/// ```
 #[macro_export]
 macro_rules! unit {($($t:tt)*) => {$crate::macros::proc::unit!($($t)*)}}
 
