@@ -1,8 +1,10 @@
-use proc_macro2::{Span, TokenStream};
-use quote::{quote, ToTokens};
+use proc_macro2::{Span, TokenStream, TokenTree};
+use quote::{quote, quote_spanned, ToTokens};
 use syn::{parse::{Parse, ParseStream}, Result, Token};
+use crate::util::{PathSep, typenum_int};
 
 
+//region Sequence-based definition.
 #[derive(Debug, Default)]
 pub struct DimExp {
     sum: i32,
@@ -15,7 +17,7 @@ impl DimExp {
     }
 
     pub fn label(&self) -> String {
-        crate::util::typenum_int(self.sum)
+        typenum_int(self.sum)
     }
 
     pub fn add(&mut self, exp: i32, span: Span) {
@@ -53,7 +55,7 @@ impl ToTokens for DimExp {
 
 
 #[derive(Debug, Default)]
-pub struct MacroDim {
+pub struct DimSeq {
     pub exp_l: DimExp,
     pub exp_m: DimExp,
     pub exp_t: DimExp,
@@ -63,107 +65,50 @@ pub struct MacroDim {
     pub exp_j: DimExp,
 }
 
-impl Parse for MacroDim {
+impl Parse for DimSeq {
     fn parse(input: ParseStream) -> Result<Self> {
+        input.parse::<Token![<]>()?;
+
         let mut total = Self::default();
-        let mut first = true;
 
-        //  Check for an angle-bracketed section. This allows specifying a
-        //      dimension as a sequence of plain integer literals.
-        if input.parse::<Token![<]>().is_ok() {
-            first = false;
+        let mut i = 0;
+        let array = [
+            &mut total.exp_l,
+            &mut total.exp_m,
+            &mut total.exp_t,
+            &mut total.exp_i,
+            &mut total.exp_k,
+            &mut total.exp_n,
+            &mut total.exp_j,
+        ];
 
-            let mut i = 0;
-            let array = [
-                &mut total.exp_l,
-                &mut total.exp_m,
-                &mut total.exp_t,
-                &mut total.exp_i,
-                &mut total.exp_k,
-                &mut total.exp_n,
-                &mut total.exp_j,
-            ];
-
-            while let Ok(literal) = input.parse::<syn::LitInt>() {
-                if array.len() <= i {
-                    return Err(syn::Error::new(
-                        literal.span(),
-                        &format!("too many dimensions specified, expected at \
-                        most {}", array.len()),
-                        // "too many dimensions specified",
-                    ));
-                }
-
-                let exp: i32 = literal.base10_parse()?;
-                array[i].sum += exp;
-                array[i].spans.push(literal.span());
-                i += 1;
-
-                if input.parse::<Token![,]>().is_err() {
-                    break;
-                }
+        while let Ok(literal) = input.parse::<syn::LitInt>() {
+            if array.len() <= i {
+                return Err(syn::Error::new(
+                    literal.span(),
+                    &format!("too many dimensions specified, expected at \
+                    most {}", array.len()),
+                    // "too many dimensions specified",
+                ));
             }
 
-            input.parse::<Token![>]>()?;
-        }
+            let exp: i32 = literal.base10_parse()?;
+            array[i].sum += exp;
+            array[i].spans.push(literal.span());
+            i += 1;
 
-        //  Read multiplied dimensions with exponents.
-        while first || input.parse::<Token![*]>().is_ok() {
-            first = false;
-
-            if let Ok(literal) = input.parse::<syn::LitInt>() {
-                let value: i32 = literal.base10_parse()?;
-
-                if value != 1 {
-                    return Err(syn::Error::new(
-                        literal.span(),
-                        &format!("expected `1` or dimension, found `{literal}`"),
-                    ));
-                }
-            } else if let Ok(ident) = input.parse::<syn::Ident>() {
-                let exp_new: DimExp = input.parse()?;
-
-                let span_ident = ident.span();
-                let span_exp = match exp_new.spans.first() {
-                    Some(span) => match span_ident.join(*span) {
-                        Some(joined) => joined,
-                        None => *span,
-                    }
-                    None => span_ident,
-                };
-
-                let exp = match ident.to_string().to_lowercase().as_str() {
-                    "l" => &mut total.exp_l,
-                    "m" => &mut total.exp_m,
-                    "t" => &mut total.exp_t,
-                    "i" => &mut total.exp_i,
-                    "θ" => &mut total.exp_k,
-                    "k" => &mut total.exp_k,
-                    "n" => &mut total.exp_n,
-                    "j" => &mut total.exp_j,
-                    _ => return Err(syn::Error::new(
-                        span_ident,
-                        &format!("unknown dimension: expected `L`, `M`, `T`, \
-                        `I`, `Θ`, `K`, `N`, or `J`, found `{ident}`"),
-                        // "unknown dimension",
-                    )),
-                };
-
-                exp.add(exp_new.sum, span_exp);
-            } else {
-                if input.is_empty() {
-                    return Err(input.error("expected `1` or dimension"));
-                } else {
-                    return Err(input.error("unexpected token, expected `1` or dimension"));
-                }
+            if input.parse::<Token![,]>().is_err() {
+                break;
             }
         }
+
+        input.parse::<Token![>]>()?;
 
         Ok(total)
     }
 }
 
-impl ToTokens for MacroDim {
+impl ToTokens for DimSeq {
     fn to_tokens(&self, tokens: &mut TokenStream) {
         let Self { exp_l, exp_m, exp_t, exp_i, exp_k, exp_n, exp_j } = self;
 
@@ -172,5 +117,194 @@ impl ToTokens for MacroDim {
                 #exp_l, #exp_m, #exp_t, #exp_i, #exp_k, #exp_n, #exp_j,
             >
         });
+    }
+}
+//endregion
+
+
+//region Product-based definition.
+/// Literal `1`, single identifier, or path.
+#[derive(Debug)]
+pub enum DimBase {
+    /// A literal `1`.
+    One(Span),
+    /// One identifier.
+    Ident(syn::Ident),
+    /// One token, possibly preceded by a path separator, followed by a sequence
+    ///     of path separators and identifiers.
+    Path { lead: Option<PathSep>, first: TokenTree, path: Vec<syn::Ident> },
+}
+
+impl Parse for DimBase {
+    fn parse(input: ParseStream) -> Result<Self> {
+        if input.is_empty() {
+            Err(input.error("expected `1` or dimension"))
+        } else if let Ok(literal) = input.parse::<syn::LitInt>() {
+            let value: i32 = literal.base10_parse()?;
+
+            if value == 1 {
+                Ok(Self::One(literal.span()))
+            } else {
+                Err(syn::Error::new(
+                    literal.span(),
+                    &format!("expected `1` or dimension, found `{literal}`"),
+                ))
+            }
+        } else {
+            let lead = input.parse().ok();
+
+            if lead.is_some() || input.peek2(Token![::]) {
+                let mut path = Vec::new();
+
+                let first = input.parse()?;
+
+                while input.parse::<Token![::]>().is_ok() {
+                    path.push(input.parse()?);
+                }
+
+                Ok(Self::Path { lead, first, path })
+            } else {
+                Ok(Self::Ident(input.parse()?))
+            }
+        }
+    }
+}
+
+impl ToTokens for DimBase {
+    fn to_tokens(&self, tokens: &mut TokenStream) {
+        match self {
+            &Self::One(span) => {
+                tokens.extend(quote_spanned!(span=> ::dana::dimension::One))
+            }
+            Self::Ident(ident) => ident.to_tokens(tokens),
+            Self::Path { lead, first, path } => {
+                tokens.extend(quote!(#lead #first #(::#path)*));
+            }
+        }
+    }
+}
+
+
+#[derive(Debug)]
+pub struct DimPow {
+    base: DimBase,
+    exp: Option<(i32, Span)>,
+}
+
+impl Parse for DimPow {
+    fn parse(input: ParseStream) -> Result<Self> {
+        let base = input.parse()?;
+
+        let exp = if input.parse::<Token![^]>().is_ok() {
+            let literal = input.parse::<syn::LitInt>()?;
+            let value = literal.base10_parse()?;
+
+            Some((value, literal.span()))
+        } else {
+            None
+        };
+
+        Ok(Self { base, exp })
+    }
+}
+
+impl ToTokens for DimPow {
+    fn to_tokens(&self, tokens: &mut TokenStream) {
+        let mut base = self.base.to_token_stream();
+
+        if let Some((value, span)) = &self.exp {
+            let label = typenum_int(*value);
+            let ident = syn::Ident::new(&label, *span);
+
+            base = quote!(
+                <#base as ::dana::dimension::DimPowType<::typenum::#ident>>::Output
+            );
+        }
+
+        base.to_tokens(tokens);
+    }
+}
+
+
+#[derive(Debug)]
+pub struct DimSpec {
+    factors: Vec<DimPow>,
+}
+
+impl Parse for DimSpec {
+    fn parse(input: ParseStream) -> Result<Self> {
+        let mut factors = Vec::new();
+
+        if let Ok(dim) = input.parse() {
+            factors.push(dim);
+
+            while input.parse::<Token![*]>().is_ok() {
+                factors.push(input.parse()?);
+            }
+        }
+
+        Ok(Self { factors })
+    }
+}
+
+impl ToTokens for DimSpec {
+    fn to_tokens(&self, tokens: &mut TokenStream) {
+        let mut iter = self.factors.iter();
+
+        match iter.next() {
+            Some(first) => {
+                let mut dim = first.to_token_stream();
+
+                for mul in iter {
+                    dim = quote!(<#dim as ::std::ops::Mul<#mul>>::Output);
+                }
+
+                tokens.extend(dim);
+            }
+            None => {
+                tokens.extend(quote!(::dana::dimension::One));
+            }
+        }
+    }
+}
+//endregion
+
+
+pub struct MacroDim {
+    seq: Option<DimSeq>,
+    mul: Option<DimSpec>,
+}
+
+impl Parse for MacroDim {
+    fn parse(input: ParseStream) -> Result<Self> {
+        if input.is_empty() {
+            Err(input.error("expected `<`, `1`, or dimension"))
+        } else {
+            let seq = if input.peek(Token![<]) {
+                Some(input.parse()?)
+            } else {
+                None
+            };
+
+            let mul = match &seq {
+                Some(_) if input.parse::<Token![*]>().is_err() => None,
+                __ => Some(input.parse()?),
+            };
+
+            Ok(Self { seq, mul })
+        }
+    }
+}
+
+impl ToTokens for MacroDim {
+    fn to_tokens(&self, tokens: &mut TokenStream) {
+        match (&self.seq, &self.mul) {
+            (Some(seq), Some(mul)) => tokens.extend(quote!(
+                <#seq as ::std::ops::Mul<#mul>>::Output
+            )),
+            (Some(seq), None) => seq.to_tokens(tokens),
+            (None, Some(mul)) => mul.to_tokens(tokens),
+            (None, None) => tokens.extend(quote!(::dana::dimension::One)),
+        }
     }
 }

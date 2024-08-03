@@ -6,22 +6,25 @@ fn dim() {
     //  Scalar.
     let _qty: QuantityAnon<dim!(1)> = qty![1.0 m/m as ?];
     let _qty: QuantityAnon<dim!(1*1)> = qty![1.0 m/m as ?];
-    let _qty: QuantityAnon<dim!(L^0)> = qty![1.0 m/m as ?];
-    let _qty: QuantityAnon<dim!(1*L^0)> = qty![1.0 m/m as ?];
+    let _qty: QuantityAnon<dim!(_L^0)> = qty![1.0 m/m as ?];
+    let _qty: QuantityAnon<dim!(1*_L^0)> = qty![1.0 m/m as ?];
 
     //  Positive exponents.
-    let _qty: QuantityAnon<dim!(L)> = qty![1.0 m as ?];
-    let _qty: QuantityAnon<dim!(L^1)> = qty![1.0 m as ?];
-    let _qty: QuantityAnon<dim!(L^2)> = qty![1.0 m^2 as ?];
-    let _qty: QuantityAnon<dim!(L*L)> = qty![1.0 m^2 as ?];
+    let _qty: QuantityAnon<dim!(_L)> = qty![1.0 m as ?];
+    let _qty: QuantityAnon<dim!(_L^1)> = qty![1.0 m as ?];
+    let _qty: QuantityAnon<dim!(_L^2)> = qty![1.0 m^2 as ?];
+    let _qty: QuantityAnon<dim!(_L*_L)> = qty![1.0 m^2 as ?];
 
     //  Negative exponents.
-    let _qty: QuantityAnon<dim!(L^-1)> = qty![1.0/m as ?];
-    let _qty: QuantityAnon<dim!(L^-1)> = qty![1.0 m^-1 as ?];
-    let _qty: QuantityAnon<dim!(L^-2)> = qty![1.0 m^-2 as ?];
-    let _qty: QuantityAnon<dim!(L^-2)> = qty![1.0/m^2 as ?];
+    let _qty: QuantityAnon<dim!(_L^-1)> = qty![1.0/m as ?];
+    let _qty: QuantityAnon<dim!(_L^-1)> = qty![1.0 m^-1 as ?];
+    let _qty: QuantityAnon<dim!(_L^-2)> = qty![1.0 m^-2 as ?];
+    let _qty: QuantityAnon<dim!(_L^-2)> = qty![1.0/m^2 as ?];
 
-    // let _qty: QuantityAnon<dim!(L^-2)> = qty![1.0/m/m as ?]; // FIXME
+    // let _qty: QuantityAnon<dim!(_L^-2)> = qty![1.0/m/m as ?]; // FIXME
+
+    //  Combination form.
+    let _qty: QuantityAnon<dim!(<3, 0, -1> * _L^-2 * _T)> = qty![1.0 m as ?];
 }
 
 

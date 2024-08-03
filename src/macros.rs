@@ -67,11 +67,11 @@ pub mod proc {
 /// The second form mirrors the mathematical style of definition, as the product
 ///     of a sequence of powers of unique symbols:
 /// ```
-/// # use dana::prelude::*;
+/// # use dana::{prelude::*, symbols::*};
 /// #
 /// # let unit_anon = UnitAnon::from_unit(Power::KiloWatt * Time::Hour);
 /// #
-/// let _: UnitAnon<dim!(L^2 * M * T^-2)> = unit_anon;
+/// let _: UnitAnon<dim!(_L^2 * _M * _T^-2)> = unit_anon;
 /// ```
 ///
 /// Because there is no way to express complicated relationships between
@@ -85,8 +85,6 @@ pub mod proc {
 /// - `Θ`, `K`: [Temperature](dimension::Temp)
 /// - `N`:      [Substance Amount](dimension::Amount)
 /// - `J`:      [Luminous Intensity](dimension::Intensity)
-//  TODO: It may actually be possible, using op trait `Output` types in place of
-//      compound unit struct types. Investigate.
 #[macro_export]
 macro_rules! dim {($($t:tt)*) => {$crate::macros::proc::dim!($($t)*)}}
 
