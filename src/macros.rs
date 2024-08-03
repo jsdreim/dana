@@ -19,7 +19,74 @@ pub mod proc {
 /// Macro to simplify [`Dimension`] definitions.
 ///
 /// [`Dimension`]: dimension::Dimension
-//  TODO
+///
+/// # Examples
+///
+/// A `Dimension` is effectively a type-level array of seven [`Integer`] types,
+///     each corresponding to, and representing an exponent of, one of the [ISQ]
+///     base dimensions. It is somewhat analogous to `[i32; 7]`.
+///
+/// [`Integer`]: typenum::Integer
+/// [ISQ]: https://en.wikipedia.org/wiki/International_System_of_Quantities
+///
+/// Because `Dimension` is generic over seven [`typenum`] types, fully-explicit
+///     definitions are quite opaque and hard to read without much practice,
+///     not to mention extremely long:
+/// ```
+/// use dana::{dimension::Dimension, prelude::*, symbols::*};
+/// use typenum::{N2, P1, P2, Z0};
+///
+/// let qty_anon: Quantity<UnitAnon<Dimension<P2, P1, N2, Z0, Z0, Z0, Z0>>>
+///     = qty![[8.0 W] * [3.0 s] as ?];
+/// ```
+///
+/// ## Macro Form 1
+///
+/// The first form of `dim!` allows defining a `Dimension` in terms of integer
+///     literals, which alone already has a significant impact on readability:
+/// ```
+/// # use dana::{prelude::*, symbols::*};
+/// #
+/// # let qty_anon = qty![[8.0 W] * [3.0 s] as ?];
+/// #
+/// let _: Quantity<UnitAnon<dim!(<2, 1, -2, 0, 0, 0, 0>)>> = qty_anon;
+/// ```
+///
+/// This form also assumes any unspecified dimensions to be zero, allowing most
+///     definitions to be quite short:
+/// ```
+/// # use dana::{prelude::*, symbols::*};
+/// #
+/// # let qty_anon = qty![[8.0 W] * [3.0 s] as ?];
+/// #
+/// let _: Quantity<UnitAnon<dim!(<2, 1, -2>)>> = qty_anon;
+/// ```
+///
+/// ## Macro Form 2
+///
+/// The second form mirrors the mathematical style of definition, as the product
+///     of a sequence of powers of unique symbols:
+/// ```
+/// # use dana::{prelude::*, symbols::*};
+/// #
+/// # let qty_anon = qty![[8.0 W] * [3.0 s] as ?];
+/// #
+/// let _: Quantity<UnitAnon<dim!(L^2 * M * T^-2)>> = qty_anon;
+/// ```
+///
+/// Because there is no way to express complicated relationships between
+///     `Dimension`s, it is not possible for the macro to combine arbitrary
+///     dimensions by name, as it is for units with [`unit!`]. This macro is,
+///     therefore, strictly limited to the following symbols:
+/// - `L`:      [Length](dimension::Length)
+/// - `M`:      [Mass](dimension::Mass)
+/// - `T`:      [Time](dimension::Time)
+/// - `I`:      [Electrical Current](dimension::Current)
+/// - `Θ`, `K`: [Temperature](dimension::Temp)
+/// - `N`:      [Substance Amount](dimension::Amount)
+/// - `J`:      [Luminous Intensity](dimension::Intensity)
+//  TODO: It may actually be possible, using op trait `Output` types in place of
+//      compound unit struct types. Investigate.
 #[macro_export]
 macro_rules! dim {($($t:tt)*) => {$crate::macros::proc::dim!($($t)*)}}
 
