@@ -48,6 +48,7 @@ mod macros;
 use crate::units::*;
 
 
+pub use dimensions::*;
 pub mod dimensions {
     //! Symbols for specific [`Dimension`] types.
 
@@ -55,43 +56,43 @@ pub mod dimensions {
 
     //region Fundamental dimensions.
     /// [`Dimension`] alias for [`Length`].
-    pub type L = Length;
+    pub type _L = Length;
     /// [`Dimension`] alias for [`Mass`].
-    pub type M = Mass;
+    pub type _M = Mass;
     /// [`Dimension`] alias for [`Time`].
-    pub type T = Time;
+    pub type _T = Time;
     /// [`Dimension`] alias for [`Current`].
-    pub type I = Current;
+    pub type _I = Current;
     /// [`Dimension`] alias for [`Temp`].
-    pub type K = Temp;
+    pub type _K = Temp;
     /// [`Dimension`] alias for [`Temp`].
-    pub type Θ = Temp;
+    pub type _Θ = Temp;
     /// [`Dimension`] alias for [`Amount`].
-    pub type N = Amount;
+    pub type _N = Amount;
     /// [`Dimension`] alias for [`Intensity`].
-    pub type J = Intensity;
+    pub type _J = Intensity;
     //endregion
 
     //region Derived dimensions.
     //  TODO: How many of these should be provided (if any at all)?
-    /*pub type f = Frequency;
-    pub type v = Velocity;
-    pub type a = Accel;
-    pub type F = Force;
-    // pub type p = Pressure;
-    // pub type A = Area;
-    // pub type V = Volume;
-    pub type D = Density;
-    pub type ρ = Density;
+    /*pub type _f = Frequency;
+    pub type _v = Velocity;
+    pub type _a = Accel;
+    pub type _F = Force;
+    // pub type _p = Pressure;
+    // pub type _A = Area;
+    // pub type _V = Volume;
+    pub type _D = Density;
+    pub type _ρ = Density;
 
-    pub type Q = Charge;
-    pub type τ = Torque;
-    pub type E = Energy;
-    pub type P = Power;
-    pub type V = Voltage;
-    // pub type U = Voltage;
-    pub type R = Resistance;
-    pub type C = Capacitance;*/
+    pub type _Q = Charge;
+    pub type _τ = Torque;
+    pub type _E = Energy;
+    pub type _P = Power;
+    pub type _V = Voltage;
+    // pub type _U = Voltage;
+    pub type _R = Resistance;
+    pub type _C = Capacitance;*/
     //endregion
 }
 
