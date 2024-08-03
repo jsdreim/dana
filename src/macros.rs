@@ -106,14 +106,14 @@ macro_rules! dim {($($t:tt)*) => {$crate::macros::proc::dim!($($t)*)}}
 /// This allows definition of quantities in very terse mathematical form,
 ///     especially with imports from [`symbols`]:
 /// ```
-/// use dana::{qty, symbols::*};
+/// use dana::{qty, symbols::basic::*};
 ///
 /// let gravity = qty![9.81 m/s^2];
 /// ```
 ///
 /// Using braces, it is also possible to supply an expression for the value:
 /// ```
-/// # use dana::{qty, symbols::*};
+/// # use dana::{qty, symbols::basic::*};
 /// #
 /// let meters = 5.0;
 /// let distance = qty![{meters} m];
@@ -128,7 +128,7 @@ macro_rules! dim {($($t:tt)*) => {$crate::macros::proc::dim!($($t)*)}}
 /// - `in`: Conversion to a specific unit.
 ///
 /// ```
-/// # use dana::{qty, symbols::*};
+/// # use dana::{qty, symbols::{electrical::*, physics::*}};
 /// #
 /// let heat_energy = qty![73.0 W*s as E];
 /// let speed_limit = qty![45.0 mph in m/s];
@@ -138,7 +138,7 @@ macro_rules! dim {($($t:tt)*) => {$crate::macros::proc::dim!($($t)*)}}
 ///     [`Quantity::convert_to`] calls, they are still subject to dimensional
 ///     compatibility requirements:
 /// ```compile_fail
-/// # use dana::{qty, symbols::*};
+/// # use dana::{qty, symbols::basic::*};
 /// #
 /// let speed_limit = qty![5.0 m*s in m/s];
 /// //                ^^^^^^^^^^^^^^^^^^^^ error[E0271]: type mismatch
@@ -149,7 +149,7 @@ macro_rules! dim {($($t:tt)*) => {$crate::macros::proc::dim!($($t)*)}}
 /// Mathematical operations are also supported between existing quantities, in
 ///     order to make subsequent conversions clearer:
 /// ```
-/// # use dana::{qty, symbols::*};
+/// # use dana::{qty, symbols::physics::*};
 /// #
 /// let pressure = qty![12.0 psi];
 /// let area = qty![16.0 cm^2];
@@ -166,7 +166,7 @@ macro_rules! dim {($($t:tt)*) => {$crate::macros::proc::dim!($($t)*)}}
 ///     quantities should be enclosed in braces, to prevent them from being
 ///     interpreted as part of a unit specifier:
 /// ```
-/// # use dana::{qty, symbols::*};
+/// # use dana::{qty, symbols::physics::*};
 /// #
 /// let area = qty![16.0 cm^2];
 /// let time = qty![4.0 s];
@@ -185,7 +185,7 @@ macro_rules! dim {($($t:tt)*) => {$crate::macros::proc::dim!($($t)*)}}
 ///     returning the dimensionless value, after completion of all operations.
 ///     Among other things, this allows for particularly readable assertions:
 /// ```
-/// # use dana::{qty, symbols::*};
+/// # use dana::{qty, symbols::basic::*};
 /// #
 /// let d = qty![30.0 km];
 /// let v = qty![45.0 kph];
@@ -199,7 +199,7 @@ macro_rules! dim {($($t:tt)*) => {$crate::macros::proc::dim!($($t)*)}}
 /// Square brackets can be used to perform recursion, allowing for definition,
 ///     calculation, conversion, and value output, all in a single invocation:
 /// ```
-/// # use dana::{qty, symbols::*};
+/// # use dana::{qty, symbols::electrical::*};
 /// #
 /// assert_eq!(qty![*[3.3 V] / [150.0 Ω] in mA], 22.0);
 /// ```
@@ -214,7 +214,7 @@ macro_rules! qty {($($t:tt)*) => {$crate::macros::proc::qty!($($t)*)}}
 /// Basic usage is effectively a passthrough to [`utype!`], with `Quantity`
 ///     around it:
 /// ```
-/// use dana::{prelude::*, symbols::*};
+/// use dana::{prelude::*, symbols::basic::*};
 ///
 /// let qty = qty![9.81 m/s^2];
 ///
@@ -237,7 +237,7 @@ macro_rules! qty {($($t:tt)*) => {$crate::macros::proc::qty!($($t)*)}}
 /// - After the unit specifier, separated by a comma, mirroring the generic
 ///     parameters of `Quantity<U, V>`
 /// ```
-/// # use dana::{prelude::*, symbols::*};
+/// # use dana::{prelude::*, symbols::time::*};
 /// #
 /// let _: qtype!(Time) = qty![500.0 ms]; // Default (f64).
 ///
@@ -323,7 +323,7 @@ macro_rules! unit {($($t:tt)*) => {$crate::macros::proc::unit!($($t)*)}}
 /// Syntax is identical to [`unit!`], but this macro resolves to a type, rather
 ///     than an expression:
 /// ```
-/// use dana::{prelude::*, symbols::*};
+/// use dana::{prelude::*, symbols::basic::*};
 ///
 /// type UnitAccel = utype!(L/T^2);
 ///
