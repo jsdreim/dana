@@ -76,6 +76,7 @@ macro_rules! dim {($($t:tt)*) => {$crate::macros::proc::dim!($($t)*)}}
 /// # use dana::{qty, symbols::*};
 /// #
 /// let speed_limit = qty![5.0 m*s in m/s];
+/// //                ^^^^^^^^^^^^^^^^^^^^ error[E0271]: type mismatch
 /// ```
 ///
 /// ## Quantity Operations
@@ -104,11 +105,12 @@ macro_rules! dim {($($t:tt)*) => {$crate::macros::proc::dim!($($t)*)}}
 /// #
 /// let area = qty![16.0 cm^2];
 /// let time = qty![4.0 s];
+/// let n_kg = 2.0;
 ///
 /// let velocity = qty![
 ///     12.0 psi
 ///     * {area}
-///     / 2.0 kg
+///     / {n_kg} kg
 ///     * {time}
 ///     in m/s
 /// ];
