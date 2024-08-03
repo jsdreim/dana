@@ -33,11 +33,11 @@ pub mod proc {
 ///     definitions are quite opaque and hard to read without much practice,
 ///     not to mention extremely long:
 /// ```
-/// use dana::{dimension::Dimension, prelude::*, symbols::*};
+/// use dana::{dimension::Dimension, prelude::*};
 /// use typenum::{N2, P1, P2, Z0};
 ///
-/// let qty_anon: Quantity<UnitAnon<Dimension<P2, P1, N2, Z0, Z0, Z0, Z0>>>
-///     = qty![[8.0 W] * [3.0 s] as ?];
+/// let unit_anon: UnitAnon<Dimension<P2, P1, N2, Z0, Z0, Z0, Z0>>
+///     = (Power::KiloWatt * Time::Hour).anonymous();
 /// ```
 ///
 /// ## Macro Form 1
@@ -45,21 +45,21 @@ pub mod proc {
 /// The first form of `dim!` allows defining a `Dimension` in terms of integer
 ///     literals, which alone already has a significant impact on readability:
 /// ```
-/// # use dana::{prelude::*, symbols::*};
+/// # use dana::prelude::*;
 /// #
-/// # let qty_anon = qty![[8.0 W] * [3.0 s] as ?];
+/// # let unit_anon = (Power::KiloWatt * Time::Hour).anonymous();
 /// #
-/// let _: Quantity<UnitAnon<dim!(<2, 1, -2, 0, 0, 0, 0>)>> = qty_anon;
+/// let _: UnitAnon<dim!(<2, 1, -2, 0, 0, 0, 0>)> = unit_anon;
 /// ```
 ///
 /// This form also assumes any unspecified dimensions to be zero, allowing most
 ///     definitions to be quite short:
 /// ```
-/// # use dana::{prelude::*, symbols::*};
+/// # use dana::prelude::*;
 /// #
-/// # let qty_anon = qty![[8.0 W] * [3.0 s] as ?];
+/// # let unit_anon = (Power::KiloWatt * Time::Hour).anonymous();
 /// #
-/// let _: Quantity<UnitAnon<dim!(<2, 1, -2>)>> = qty_anon;
+/// let _: UnitAnon<dim!(<2, 1, -2>)> = unit_anon;
 /// ```
 ///
 /// ## Macro Form 2
@@ -67,11 +67,11 @@ pub mod proc {
 /// The second form mirrors the mathematical style of definition, as the product
 ///     of a sequence of powers of unique symbols:
 /// ```
-/// # use dana::{prelude::*, symbols::*};
+/// # use dana::prelude::*;
 /// #
-/// # let qty_anon = qty![[8.0 W] * [3.0 s] as ?];
+/// # let unit_anon = (Power::KiloWatt * Time::Hour).anonymous();
 /// #
-/// let _: Quantity<UnitAnon<dim!(L^2 * M * T^-2)>> = qty_anon;
+/// let _: UnitAnon<dim!(L^2 * M * T^-2)> = unit_anon;
 /// ```
 ///
 /// Because there is no way to express complicated relationships between
