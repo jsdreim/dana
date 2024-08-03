@@ -65,26 +65,35 @@ pub mod proc {
 /// ## Macro Form 2
 ///
 /// The second form mirrors the mathematical style of definition, as the product
-///     of a sequence of powers of unique symbols:
+///     of a sequence of dimensions with optional exponents:
+/// ```
+/// # use dana::prelude::*;
+/// #
+/// # let unit_anon = UnitAnon::from_unit(Power::KiloWatt * Time::Hour);
+/// #
+/// use dana::symbols::dimensions::*;
+///
+/// let _: UnitAnon<dim!(_L^2 * _M * _T^-2)> = unit_anon;
+/// ```
+///
+/// Note that the symbols for [`Dimension`]s are prefixed with underscores. This
+///     is to distinguish them from symbols for [`Unit`] types. Mathematically,
+///     these are essentially the same thing, but within this library, they are
+///     quite different.
+///
+/// ## Combined Form
+///
+/// It is also possible to combine the two forms:
 /// ```
 /// # use dana::{prelude::*, symbols::*};
 /// #
 /// # let unit_anon = UnitAnon::from_unit(Power::KiloWatt * Time::Hour);
 /// #
-/// let _: UnitAnon<dim!(_L^2 * _M * _T^-2)> = unit_anon;
+/// let _: UnitAnon<dim!(<2,1,-3> * _T)> = unit_anon;
 /// ```
 ///
-/// Because there is no way to express complicated relationships between
-///     `Dimension`s, it is not possible for the macro to combine arbitrary
-///     dimensions by name, as it is for units with [`unit!`]. This macro is,
-///     therefore, strictly limited to the following symbols:
-/// - `L`:      [Length](dimension::Length)
-/// - `M`:      [Mass](dimension::Mass)
-/// - `T`:      [Time](dimension::Time)
-/// - `I`:      [Electrical Current](dimension::Current)
-/// - `Θ`, `K`: [Temperature](dimension::Temp)
-/// - `N`:      [Substance Amount](dimension::Amount)
-/// - `J`:      [Luminous Intensity](dimension::Intensity)
+/// The first form must be placed before the second form, and the two must be
+///     separated by a `*` operator.
 #[macro_export]
 macro_rules! dim {($($t:tt)*) => {$crate::macros::proc::dim!($($t)*)}}
 
