@@ -37,7 +37,7 @@ pub mod proc {
 /// use typenum::{N2, P1, P2, Z0};
 ///
 /// let unit_anon: UnitAnon<Dimension<P2, P1, N2, Z0, Z0, Z0, Z0>>
-///     = (Power::KiloWatt * Time::Hour).anonymous();
+///     = UnitAnon::from_unit(Power::KiloWatt * Time::Hour);
 /// ```
 ///
 /// ## Macro Form 1
@@ -47,7 +47,7 @@ pub mod proc {
 /// ```
 /// # use dana::prelude::*;
 /// #
-/// # let unit_anon = (Power::KiloWatt * Time::Hour).anonymous();
+/// # let unit_anon = UnitAnon::from_unit(Power::KiloWatt * Time::Hour);
 /// #
 /// let _: UnitAnon<dim!(<2, 1, -2, 0, 0, 0, 0>)> = unit_anon;
 /// ```
@@ -57,7 +57,7 @@ pub mod proc {
 /// ```
 /// # use dana::prelude::*;
 /// #
-/// # let unit_anon = (Power::KiloWatt * Time::Hour).anonymous();
+/// # let unit_anon = UnitAnon::from_unit(Power::KiloWatt * Time::Hour);
 /// #
 /// let _: UnitAnon<dim!(<2, 1, -2>)> = unit_anon;
 /// ```
@@ -69,7 +69,7 @@ pub mod proc {
 /// ```
 /// # use dana::prelude::*;
 /// #
-/// # let unit_anon = (Power::KiloWatt * Time::Hour).anonymous();
+/// # let unit_anon = UnitAnon::from_unit(Power::KiloWatt * Time::Hour);
 /// #
 /// let _: UnitAnon<dim!(L^2 * M * T^-2)> = unit_anon;
 /// ```

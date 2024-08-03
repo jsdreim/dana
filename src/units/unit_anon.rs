@@ -8,7 +8,7 @@ use crate::{dimension::*, units::traits::*, Value};
 dummy!(
     /// Marker trait for a type that can be used as the scaling factor for an
     ///     anonymous unit.
-    pub trait AnonScale: Copy + Value + AsPrimitive<f64>
+    pub trait AnonScale: Value + AsPrimitive<f64>
 );
 
 
@@ -27,6 +27,13 @@ pub struct UnitAnon<D: DimType, S: AnonScale = f64>(pub S, PhantomData<D>);
 impl<D: DimType, S: AnonScale> UnitAnon<D, S> {
     /// Construct a new [`UnitAnon`] with the given scaling factor.
     pub const fn new(s: S) -> Self { Self(s, PhantomData) }
+
+    /// Construct a new [`UnitAnon`] from another [`Unit`] type.
+    pub fn from_unit(u: impl Unit<Dim=D>) -> Self where
+        f64: AsPrimitive<S>,
+    {
+        Self::new(u.scale().as_())
+    }
 }
 
 impl<D: DimType, S: AnonScale> Default for UnitAnon<D, S> {
