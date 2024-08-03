@@ -2,7 +2,13 @@
 //!
 //! It should never be necessary to import anything from this module. It is only
 //!     public for technical reasons; Macros are exported at the crate level and
-//!     re-exported in the [prelude](crate::prelude).
+//!     re-exported in the [prelude].
+
+#[allow(unused_imports)]
+use crate::*;
+
+pub use crate::{dim, qty, qtype, unit, utype};
+
 
 #[doc(hidden)]
 pub mod proc {
@@ -12,7 +18,7 @@ pub mod proc {
 
 /// Macro to simplify [`Dimension`] definitions.
 ///
-/// [`Dimension`]: crate::dimension::Dimension
+/// [`Dimension`]: dimension::Dimension
 //  TODO
 #[macro_export]
 macro_rules! dim {($($t:tt)*) => {$crate::macros::proc::dim!($($t)*)}}
@@ -21,14 +27,7 @@ macro_rules! dim {($($t:tt)*) => {$crate::macros::proc::dim!($($t)*)}}
 /// Macro to simplify [`Quantity`] definitions.
 ///
 /// Note: This macro is designed to be used in conjunction with imports from the
-///     [`symbols`](crate::symbols) module.
-///
-/// [`Quantity`]: crate::Quantity
-/// [`Unit`]: crate::Unit
-///
-/// [`qty!`]: crate::qty!
-/// [`unit!`]: crate::unit!
-///
+///     [`symbols`] module.
 ///
 /// # Examples
 /// ## Quantity Definitions
@@ -38,7 +37,7 @@ macro_rules! dim {($($t:tt)*) => {$crate::macros::proc::dim!($($t)*)}}
 ///     a unit specifier, in the same format expected by [`unit!`].
 ///
 /// This allows definition of quantities in very terse mathematical form,
-///     especially with imports from [`symbols`](crate::symbols):
+///     especially with imports from [`symbols`]:
 /// ```
 /// use dana::{qty, symbols::*};
 ///
@@ -68,10 +67,9 @@ macro_rules! dim {($($t:tt)*) => {$crate::macros::proc::dim!($($t)*)}}
 /// let speed_limit = qty![45.0 mph in m/s];
 /// ```
 ///
-/// Because these conversion operators evaluate to calls to
-///     [`Quantity::convert`](crate::Quantity::convert) and
-///     [`Quantity::convert_to`](crate::Quantity::convert_to), they are still
-///     subject to dimensional compatibility requirements:
+/// Because these conversion operators evaluate to [`Quantity::convert`] and
+///     [`Quantity::convert_to`] calls, they are still subject to dimensional
+///     compatibility requirements:
 /// ```compile_fail
 /// # use dana::{qty, symbols::*};
 /// #
@@ -142,12 +140,12 @@ macro_rules! dim {($($t:tt)*) => {$crate::macros::proc::dim!($($t)*)}}
 macro_rules! qty {($($t:tt)*) => {$crate::macros::proc::qty!($($t)*)}}
 
 
-/// Macro to simplify [`Quantity`](crate::Quantity) type definitions.
+/// Macro to simplify [`Quantity`] type definitions.
 ///
 /// # Examples
 ///
-/// Basic usage is effectively a passthrough to [`utype!`](crate::utype), with
-///     `Quantity` around it:
+/// Basic usage is effectively a passthrough to [`utype!`], with `Quantity`
+///     around it:
 /// ```
 /// use dana::{prelude::*, symbols::*};
 ///
@@ -200,8 +198,8 @@ macro_rules! unit {($($t:tt)*) => {$crate::macros::proc::unit!($($t)*)}}
 ///
 /// # Examples
 ///
-/// Syntax is identical to [`unit!`](crate::unit), but this macro resolves to a
-///     type, rather than an expression:
+/// Syntax is identical to [`unit!`], but this macro resolves to a type, rather
+///     than an expression:
 /// ```
 /// use dana::{prelude::*, symbols::*};
 ///
@@ -214,9 +212,9 @@ macro_rules! unit {($($t:tt)*) => {$crate::macros::proc::unit!($($t)*)}}
 macro_rules! utype {($($t:tt)*) => {$crate::macros::proc::utype!($($t)*)}}
 
 
-/// Asserts that one [`Quantity`](crate::Quantity) is *almost* equal to another,
-///     by comparing their difference (in the units of the first quantity) to a
-///     limit (default `1e-12`).
+/// Asserts that one [`Quantity`] is *almost* equal to another, by comparing
+///     their difference (in the units of the first quantity) to a limit
+///     (default `1e-12`).
 ///
 /// The limit can be changed by passing `<=` and a literal ahead of the first
 ///     argument.
@@ -282,7 +280,7 @@ macro_rules! assert_qty_approx {
 }
 
 
-/// Equivalent to [`assert_qty_approx`], but only runs in debug builds.
+/// Equivalent to [`assert_qty_approx!`], but only runs in debug builds.
 #[macro_export]
 macro_rules! debug_assert_qty_approx {
     ($($t:tt)*) => {
