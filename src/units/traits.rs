@@ -126,7 +126,7 @@ pub trait Unit: Copy + Default + std::fmt::Debug + std::fmt::Display + PartialEq
     {
         crate::simd::QtySimd::from_scales(
             values,
-            [S::from_f64(self.scale()).unwrap(); N],
+            [crate::_conv_f64(self.scale()); N],
         )
     }
     //endregion

@@ -46,7 +46,7 @@ impl<U, V, const N: usize, S> QtySimd<U, V, N, S> where
     pub fn from_units(values: [V; N], units: [U; N]) -> Self {
         Self::from_scales(
             values,
-            from_fn(|n| S::from_f64(units[n].scale()).unwrap()),
+            from_fn(|n| crate::_conv_f64(units[n].scale())),
         )
     }
 
@@ -62,7 +62,7 @@ impl<U, V, const N: usize, S> QtySimd<U, V, N, S> where
     pub fn from_qty(qty: Quantity<U, V>) -> Self {
         Self::from_scales(
             [qty.value; N],
-            [S::from_f64(qty.unit.scale()).unwrap(); N],
+            [crate::_conv_f64(qty.unit.scale()); N],
         )
     }
 

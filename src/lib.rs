@@ -116,6 +116,7 @@ pub mod simd;
 pub use quantity::Quantity;
 pub use units::Unit;
 pub use value::Value;
+use value::{_conv_f64, _conv_i32};
 
 
 #[cfg(test)]

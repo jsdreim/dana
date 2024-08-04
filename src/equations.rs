@@ -30,34 +30,34 @@ impl<V: Value> Quantity<Temp, V> {
     /// Define an absolute temperature in [`Kelvin`](Temp::Kelvin) in terms of
     ///     degrees Celsius.
     pub fn from_celsius(c: V) -> Self {
-        Temp::Kelvin.quantity(c + V::from_f64(273.15).unwrap())
+        Temp::Kelvin.quantity(c + crate::_conv_f64(273.15))
     }
 
     /// Define an absolute temperature in [`Kelvin`](Temp::Kelvin) in terms of
     ///     degrees Fahrenheit.
     pub fn from_fahrenheit(f: V) -> Self {
-        Self::from_celsius((f - V::from_f64(32.0).unwrap()) / V::from_f64(1.8).unwrap())
+        Self::from_celsius((f - crate::_conv_f64(32.0)) / crate::_conv_f64(1.8))
     }
 
     /// Define an absolute temperature in [`Kelvin`](Temp::Kelvin) in terms of
     ///     degrees Rankine.
     pub fn from_rankine(r: V) -> Self {
-        Temp::Kelvin.quantity(r / V::from_f64(1.8).unwrap())
+        Temp::Kelvin.quantity(r / crate::_conv_f64(1.8))
     }
 
     /// Convert this temperature to degrees Celsius.
     pub fn to_celsius(self) -> V {
-        self.value_as(Temp::Kelvin) - V::from_f64(273.15).unwrap()
+        self.value_as(Temp::Kelvin) - crate::_conv_f64(273.15)
     }
 
     /// Convert this temperature to degrees Fahrenheit.
     pub fn to_fahrenheit(self) -> V {
-        self.to_celsius() * V::from_f64(1.8).unwrap() + V::from_f64(32.0).unwrap()
+        self.to_celsius() * crate::_conv_f64(1.8) + crate::_conv_f64(32.0)
     }
 
     /// Convert this temperature to degrees Rankine.
     pub fn to_rankine(self) -> V {
-        self.value_as(Temp::Kelvin) * V::from_f64(1.8).unwrap()
+        self.value_as(Temp::Kelvin) * crate::_conv_f64(1.8)
     }
 }
 

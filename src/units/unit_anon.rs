@@ -123,7 +123,7 @@ impl<D: DimType, S: AnonScale, const E: i32> CanRoot<E> for UnitAnon<D, S> where
     type Output = UnitAnon<D::Output, S>;
 
     fn root(self) -> Self::Output {
-        UnitAnon::new(self.0.powf(S::from_i32(E).unwrap().inv()))
+        UnitAnon::new(self.0.powf(crate::_conv_i32::<S>(E).inv()))
     }
 }
 //endregion

@@ -49,7 +49,7 @@ pub trait ConvertFrom<U: Unit>: Unit {
 
     fn conversion_from<S: Value>(self, unit: U) -> Conversion<U, S> {
         let factor = self.conversion_factor_from(unit);
-        Conversion::new(unit, S::from_f64(factor).unwrap())
+        Conversion::new(unit, crate::_conv_f64(factor))
     }
 }
 
@@ -66,7 +66,7 @@ pub trait ConvertInto<U: Unit>: Unit {
 
     fn conversion_into<S: Value>(self, unit: U) -> Conversion<U, S> {
         let factor = self.conversion_factor_into(unit);
-        Conversion::new(unit, S::from_f64(factor).unwrap())
+        Conversion::new(unit, crate::_conv_f64(factor))
     }
 }
 
@@ -81,7 +81,7 @@ pub trait Cancel: Unit {
     fn cancel_factor(&self) -> f64 { self.scale() }
 
     fn cancel<S: Value>(&self) -> S {
-        S::from_f64(self.cancel_factor()).unwrap()
+        crate::_conv_f64(self.cancel_factor())
     }
 }
 

@@ -97,7 +97,7 @@ impl<U: Unit, V: Value> Quantity<U, V> {
         if self.value.is_zero() {
             self.with_base()
         } else {
-            let limit = V::from_u8(3).unwrap();
+            let limit = crate::_conv_i32(3);
             let mut log: V = self.value.log10();
             let mut unit: U = self.unit;
 
@@ -183,7 +183,7 @@ impl<U: Unit, V: Value> Quantity<U, V> {
         <V as Pow<V>>::Output: Value,
     {
         Quantity {
-            value: self.value.pow(V::from_i32(E).unwrap()),
+            value: self.value.pow(crate::_conv_i32(E)),
             unit: self.unit.pow(),
         }
     }
@@ -222,7 +222,7 @@ impl<U: Unit, V: Value> Quantity<U, V> {
         <V as Pow<<V as Inv>::Output>>::Output: Value,
     {
         Quantity {
-            value: self.value.pow(V::from_i32(D).unwrap().inv()),
+            value: self.value.pow(crate::_conv_i32::<V>(D).inv()),
             unit: self.unit.root(),
         }
     }
