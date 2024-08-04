@@ -26,10 +26,10 @@ impl Parse for QtyValue {
             Ok(Self::Literal(lit))
         } else if let Ok(ident) = input.parse() {
             Ok(Self::Ident(ident))
-        } else if let Ok(group) = input.parse() {
-            Ok(Self::Group(group))
+        } else if input.peek(syn::token::Brace) {
+            Ok(Self::Group(input.parse()?))
         } else {
-            Err(input.error("expected literal, identifier, or group"))
+            Err(input.error("expected literal, identifier, or braced group"))
         }
     }
 }
