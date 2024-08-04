@@ -17,16 +17,35 @@ use super::traits::*;
 struct _Notes;
 
 
+macro_rules! concrete_mod {
+    //  Doc comment provided, use it directly.
+    ($(#[$attr:meta])+ $vis:vis use $module:ident::$unit:ident;) => {
+        $(#[$attr])+
+        $vis mod $module;
+        $vis use $module::$unit;
+    };
+    //  Doc comment not provided, generate one.
+    ($vis:vis use $module:ident::$unit:ident;) => {
+        #[doc = concat!(
+            "Module for the ",
+            "[`", stringify!($unit), "`]",
+            "(", stringify!($module), "::", stringify!($unit), ")",
+            " concrete unit type.",
+        )]
+        $vis mod $module;
+        $vis use $module::$unit;
+    };
+}
+
 macro_rules! concrete_types {
     ($(
     $(#[$attr:meta])*
     $module:ident::$unit:ident
     ),+$(,)?) => {
-        $(
-        $(#[$attr])*
-        pub mod $module;
-        pub use $module::$unit;
-        )+
+        $(concrete_mod! {
+            $(#[$attr])*
+            pub use $module::$unit;
+        })+
 
         /// Module to re-export all concrete unit types.
         pub mod types {
