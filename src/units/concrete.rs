@@ -122,8 +122,6 @@ concrete_types!(
     resistance::Resistance,
 );
 
-pub type Distance = Length;
-
 
 /*impl_scale! {
     for Length impl (Pico, Nano, Micro, Milli, Kilo) Meter;
