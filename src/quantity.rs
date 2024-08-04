@@ -37,7 +37,12 @@ impl<U: Unit, V: Value> Quantity<U, V> {
         Self { value, unit }
     }
 
-    // pub fn set_base(&mut self) { self.set_unit(U::default()) }
+    /// Change the unit of this quantity in-place to the base unit.
+    pub fn set_base(&mut self) where
+        V: MulAssign,
+    {
+        self.set_unit(U::base())
+    }
 
     /// Change the unit of this quantity in-place.
     pub fn set_unit(&mut self, unit: U) where

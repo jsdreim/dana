@@ -101,6 +101,8 @@ macro_rules! define_symbols {
             "(super::super::", stringify!($utype), "::", stringify!($variant), ")."
         )]
         pub const $alias: super::super::$utype = <$utype>::$variant;
+
+        // pub use super::super::$utype::$variant as $alias; // TODO
     };
     //  Define an alias with a unit expression. Manual doc.
     (@ $utype:tt; $(#[$attr:meta])* $alias:ident            = ($($unit:tt)*)) => {

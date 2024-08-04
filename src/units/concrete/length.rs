@@ -46,10 +46,10 @@ impl Unit for Length {
             Self::Meter => 1e0,
             Self::KiloMeter => 1e+3,
 
-            Self::Inch => 0.025_4, // Defined as exactly 25.4mm.
-            Self::Foot => 0.304_8,
-            Self::Yard => 0.914_4,
-            Self::Mile => 1_609.344,
+            Self::Inch   => 0.025_4, // Defined as exactly 25.4mm.
+            Self::Foot   => 0.304_8,
+            Self::Yard   => 0.914_4,
+            Self::Mile   => 1_609.344,
 
             Self::LightSec   => crate::constants::CONST_C.value,
             Self::AstroUnit  => 149_597_870_700.0,
