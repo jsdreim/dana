@@ -1,6 +1,14 @@
 [package]
 name = "dana"
-version = "0.1.0"
+description = "Compile-time dimensional analysis via generic types."
+version = "0.2.0"
+
+readme = "README.md"
+
+exclude = ["/.idea", "/.vscode", "*.sh", "*.tar.gz", "*.zip"]
+categories = ["development-tools", "mathematics", "science"]
+keywords = ["dimensional-analysis", "quantities", "units", "library"]
+
 edition = "2021"
 
 
