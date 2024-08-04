@@ -222,11 +222,6 @@ pub enum Operation {
     /// Convert a quantity to a specified unit.
     ConvertUnit(UnitSpecExpr),
 
-    /// Simplify a quantity to an inferred unit type.
-    Simplify,
-    /// Simplify a quantity to a specified unit type.
-    SimplifyType(UnitSpecType),
-
     /// Perform a binary operation between quantities.
     Binary {
         /// Binary operator character.
@@ -254,17 +249,11 @@ impl Parse for Operation {
             } else {
                 Ok(Self::ConvertUnit(input.parse()?))
             }
-        } else if input.parse::<Token![->]>().is_ok() {
-            if input.parse::<Token![_]>().is_ok() {
-                Ok(Self::Simplify)
-            } else {
-                Ok(Self::SimplifyType(input.parse()?))
-            }
         } else {
             let fork = input.fork();
 
             let Ok(op) = fork.parse::<Punct>() else {
-                return Err(fork.error("expected `as`, `in`, `->`, or operator"));
+                return Err(fork.error("expected `as`, `in`, or operator"));
             };
 
             let rhs = fork.parse()?;
@@ -318,15 +307,6 @@ impl ToTokens for QtyTree {
                 Operation::ConvertUnit(unit) => {
                     let unit = unit.as_expr();
                     quote!(#qty.convert_to(#unit))
-                }
-                Operation::Simplify => {
-                    quote!(#qty.convert())
-                    // quote!(#qty.simplify()) // TODO
-                }
-                Operation::SimplifyType(utype) => {
-                    let utype = utype.as_type();
-                    quote!(#qty.convert::<#utype>())
-                    // quote!(#qty.simplify::<#utype>()) // TODO
                 }
                 Operation::Binary { op, rhs } => {
                     quote!((#qty #op #rhs))

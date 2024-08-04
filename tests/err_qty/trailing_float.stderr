@@ -1,4 +1,4 @@
-error: expected `as`, `in`, `->`, or operator
+error: expected `as`, `in`, or operator
  --> tests/err_qty/trailing_float.rs:5:27
   |
 5 |     let _err = qty![1.0 m 2.5];

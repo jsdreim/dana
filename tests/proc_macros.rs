@@ -60,8 +60,8 @@ fn qty_valid() {
     assert_eq!(qty![150.0 cm], qty![2.0 m -  50.0 cm]);
     assert_eq!(qty![250.0 cm], qty![2.0 m - -50.0 cm]);
 
-    //  Test chained definition, multiplication, and simplification.
-    assert_eq!(qty![6.0 m^2], qty![2.0 m * 3.0 m -> L^2]);
+    //  Test chained definition, multiplication, and conversion.
+    assert_eq!(qty![6.0 m^2], qty![2.0 m * 3.0 m as L^2]);
 
     //  Test chained definition, addition, conversion, and deref with all
     //      combinations of recursion brackets.
@@ -77,6 +77,7 @@ fn qty_valid() {
     assert_eq!(qty![*[ [2.0 m] + [10.0 cm]  in mm]], 2.1e3);
     assert_eq!(qty![*[[ 2.0 m  +  10.0 cm ] in mm]], 2.1e3);
     assert_eq!(qty![*[[[2.0 m] + [10.0 cm]] in mm]], 2.1e3);
+    //               ^^^ 3-bit index of case.
 }
 
 

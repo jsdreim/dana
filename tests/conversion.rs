@@ -44,7 +44,7 @@ fn test_ratios() {
 
     let v_f = v / qty![f as 1/T];
 
-    let fv = qty![v_f -> L];
+    let fv = qty![v_f as L];
 
     // let fv: qtype!((L/t) / (1/t)) = v / qty![f as 1/t];
     // let fv: qtype!((L/t) * t) = fv.simplify();
@@ -108,7 +108,7 @@ fn test_electrical_charge() {
     assert_eq!(p, qty![2.88 W]);
 
     //  Battery should last for 31h15m.
-    let t: Quantity<Time> = qty![q / [i in C/s] -> T];
+    let t: Quantity<Time> = qty![(q / i) as T];
     assert_eq!(t, qty![31.0 h, 15.0 min]);
 
     //  After that time, should have dissipated 324kJ (90Wh) in total.
