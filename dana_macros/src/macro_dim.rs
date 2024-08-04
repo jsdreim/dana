@@ -19,11 +19,6 @@ impl DimExp {
     pub fn label(&self) -> String {
         typenum_int(self.sum)
     }
-
-    pub fn add(&mut self, exp: i32, span: Span) {
-        self.sum += exp;
-        self.spans.push(span);
-    }
 }
 
 impl Parse for DimExp {

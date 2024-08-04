@@ -1,9 +1,8 @@
-#![allow(dead_code)]
-
 use proc_macro::TokenStream;
 use quote::ToTokens;
 
 
+#[allow(dead_code)]
 pub struct CallDebug {
     span: proc_macro2::Span,
     text: String,

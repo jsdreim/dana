@@ -2,10 +2,10 @@
 mod debug;
 #[macro_use]
 mod util;
+
 mod macro_dim;
 mod macro_qty;
 mod macro_qtype;
-mod macro_reorg;
 mod macro_scale;
 mod unit_spec;
 
@@ -14,7 +14,6 @@ use quote::ToTokens;
 use macro_dim::MacroDim;
 use macro_qty::MacroQty;
 use macro_qtype::MacroQType;
-use macro_reorg::Reorg;
 use macro_scale::MacroScale;
 use unit_spec::{UnitSpecExpr, UnitSpecType};
 
@@ -39,16 +38,6 @@ pub fn impl_typenums(_: TokenStream) -> TokenStream {
     }
 
     out.into()
-}
-
-
-#[proc_macro]
-pub fn impl_reorg(stream: TokenStream) -> TokenStream {
-    let code = macro_dbg! {
-        // as macro "impl_reorg" for stream;
-        syn::parse_macro_input!(stream as Reorg)
-    };
-    code.into_token_stream().into()
 }
 
 
