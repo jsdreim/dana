@@ -1,7 +1,10 @@
 #[test]
 fn dim() {
-    use dana_macros::{dim, qty};
-    use dana::{quantity::QuantityAnon, symbols::*};
+    use dana::{
+        prelude::*,
+        quantity::QuantityAnon,
+        symbols::{basic::*, dimensions::*},
+    };
 
     //  Scalar.
     let _qty: QuantityAnon<dim!(1)> = qty![1.0 m/m as ?];
@@ -38,8 +41,7 @@ fn qty_invalid() {
 
 #[test]
 fn qty_valid() {
-    use dana_macros::qty;
-    use dana::{Quantity, symbols::*, units::*};
+    use dana::{prelude::*, symbols::basic::*};
 
     //  Test basic definitions against fully-explicit types.
     let _qty: Quantity<L> = qty![1.0 m];
@@ -83,8 +85,7 @@ fn qty_valid() {
 
 #[test]
 fn qty_ops() {
-    use dana_macros::qty;
-    use dana::{constants::*, Quantity, symbols::*, units::*};
+    use dana::{constants::*, prelude::*, symbols::{electrical::*, physics::*}};
 
     let v: Quantity<Voltage> = qty![3.3 V];
     let r: Quantity<Resistance> = qty![150.0 Ω];
@@ -119,8 +120,7 @@ fn qty_ops() {
 
 #[test]
 fn qty_ops_adv() {
-    use dana_macros::qty;
-    use dana::{Quantity, symbols::*, units::*};
+    use dana::{prelude::*, symbols::{basic::*, electrical::*}};
 
     let n = 5.0;
     let w_4: Quantity<Power> = qty![4.0 W];
@@ -158,8 +158,7 @@ fn qty_ops_adv() {
 
 #[test]
 fn qtype_valid() {
-    use dana_macros::qtype;
-    use dana::{symbols::*, units::{*, traits::*}};
+    use dana::{prelude::*, symbols::basic::*};
 
     let u = Length::Meter / Time::Second.squared();
 

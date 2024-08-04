@@ -1,16 +1,11 @@
 use num_traits::Inv;
-use dana::{
-    constants::*,
-    equations,
-    qty, qtype,
-    quantity::{Quantity, QuantityAnon},
-    symbols::{electrical::*, physics::*},
-    units::*,
-};
+use dana::{prelude::*, symbols::{electrical::*, physics::*}};
 
 
 #[test]
 fn test_anonymous() {
+    use dana::quantity::QuantityAnon;
+
     let l: QuantityAnon<_> = qty![72.0 km as ?];
     let t: QuantityAnon<_> = qty![4.0 h as ?];
 
@@ -37,6 +32,8 @@ fn test_anonymous() {
 
 #[test]
 fn test_ratios() {
+    use dana::{constants::*, equations::*};
+
     // let v = qty![5.0 m/s];
 
     let f = qty![1.0 kHz];
@@ -50,7 +47,7 @@ fn test_ratios() {
     // let fv: qtype!((L/t) * t) = fv.simplify();
     // let fv: qtype!(L) = fv.simplify();
 
-    assert_eq!(fv, equations::frequency_to_wavelength(f, v));
+    assert_eq!(fv, frequency_to_wavelength(f, v));
 
     // dbg!(qty![(f/v) in m]);
 }
