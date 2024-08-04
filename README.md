@@ -51,3 +51,12 @@ error[E0308]: mismatched types
 ```
 
 See the [library documentation](https://docs.rs/dana) for further information.
+
+
+## Cargo Features
+
+The following [Cargo features](https://doc.rust-lang.org/cargo/reference/features.html) are available to enable additional functionality:
+- `chrono`: Support for conversion between `Quantity<Time>` and [`chrono::TimeDelta`](https://docs.rs/chrono/latest/chrono/struct.TimeDelta.html)
+- `rand`: Support for [`rand`](https://docs.rs/rand/latest/rand/index.html) sampling traits
+- `serde`: Support for [`serde`](https://docs.rs/serde/latest/serde/index.html) traits
+- `simd`: Experimental `QtySimd` arrays using the unstable [`portable_simd`](https://github.com/rust-lang/rust/issues/86656) feature
