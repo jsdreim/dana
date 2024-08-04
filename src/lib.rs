@@ -27,7 +27,7 @@
 //!     amount of time it took to move that distance, and calculates the average
 //!     speed of the object:
 //! ```
-//! use dana::{Quantity, units::*};
+//! use dana::{Quantity, units::{Length, Speed, Time}};
 //!
 //! fn speed(dist: Quantity<Length>, time: Quantity<Time>) -> Quantity<Speed> {
 //!     dist / time
@@ -38,13 +38,13 @@
 //!     the time taken. Attempting to perform the wrong operation will produce
 //!     the wrong type, resulting in a "mismatched types" error:
 //! ```compile_fail
-//! # use dana::{Quantity, units::*};
+//! # use dana::{Quantity, units::{Length, Speed, Time}};
+//! #
 //! fn speed(dist: Quantity<Length>, time: Quantity<Time>) -> Quantity<Speed> {
 //!     time / dist
 //! }
 //! ```
 //!
-//  New quantities.
 //! ## Defining Quantities
 //!
 //  TODO: Focus less heavily on `qty!` here. Link to it and recommend it, but
