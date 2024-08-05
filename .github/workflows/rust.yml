@@ -17,12 +17,20 @@ jobs:
 
     # Default:
     - name: Build
-      run: cargo build --verbose
+      run: cargo build
     - name: Run tests
-      run: cargo test --verbose
+      run: cargo test
+    - name: Run benchmarks
+      run: cargo bench
 
     # With features:
     - name: Build with features
-      run: cargo build --verbose --features "chrono rand serde"
+      run: cargo build --features "chrono rand serde"
     - name: Run tests with features
-      run: cargo test --verbose --features "chrono rand serde"
+      run: cargo test --features "chrono rand serde"
+
+#    # With nightly and ALL features:
+#    - name: Build on nightly, with all features
+#      run: cargo +nightly build --all-features
+#    - name: Run tests on nightly, with all features
+#      run: cargo +nightly test --all-features
