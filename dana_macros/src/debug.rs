@@ -10,6 +10,7 @@ pub struct CallDebug {
     column: usize,
 }
 
+#[allow(dead_code)]
 impl CallDebug {
     pub fn new(macro_name: &str, stream: &TokenStream) -> Self {
         let span = proc_macro2::Span::mixed_site();
