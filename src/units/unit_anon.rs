@@ -1,6 +1,6 @@
 //! Module for the anonymous unit type.
 
-use std::{marker::PhantomData, ops::{Div, Mul}};
+use core::{marker::PhantomData, ops::{Div, Mul}};
 use num_traits::{AsPrimitive, Inv, real::Real};
 use crate::{dimension::*, units::traits::*, Value};
 
@@ -53,14 +53,14 @@ impl<D: DimType, S: AnonScale> Unit for UnitAnon<D, S> {
     // fn anonymous(&self) -> UnitAnon<Self::Dim> { *self }
 }
 
-impl<D: DimType, S: AnonScale> std::fmt::Debug for UnitAnon<D, S> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl<D: DimType, S: AnonScale> core::fmt::Debug for UnitAnon<D, S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         write!(f, "UnitAnon({:?}, \"{}\")", self.0, self.dimension())
     }
 }
 
-impl<D: DimType, S: AnonScale> std::fmt::Display for UnitAnon<D, S> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl<D: DimType, S: AnonScale> core::fmt::Display for UnitAnon<D, S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         write!(f, "*{}", self.0)
     }
 }

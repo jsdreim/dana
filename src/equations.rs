@@ -171,10 +171,7 @@ mod tests {
         let d = qty!(20.0 mm);
         let f = gravity(m1, m2, d);
 
-        assert_eq!(
-            format!("{:.3e}", f),
-            format!("{:.3e}", qty!(4.171e-6 N)),
-        );
+        assert_qty_approx!(<= 1e-9, f, qty!(4.171e-6 N));
     }
 
     #[test]
@@ -201,10 +198,7 @@ mod tests {
             assert_eq!(freq, photon_frequency(energy));
 
             //  Confirm that the results are correct.
-            assert_eq!(
-                format!("{:.3e}", energy),
-                format!("{:.3e}", energy_expected),
-            );
+            assert_qty_approx!(<= 1e-3, energy, energy_expected);
         }
 
         test(qty![685.0 nm], qty![1.810 eV]);

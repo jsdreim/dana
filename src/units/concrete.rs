@@ -57,16 +57,16 @@ macro_rules! concrete_types {
             fn default() -> Self { Self::BASE }
         }
 
-        impl ::std::fmt::Display for $unit {
-            fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-                <str as std::fmt::Display>::fmt(self.symbol(), f)
+        impl ::core::fmt::Display for $unit {
+            fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+                <str as core::fmt::Display>::fmt(self.symbol(), f)
             }
         }
 
         /// Unit division.
-        impl<U: $crate::Unit> ::std::ops::Div<U> for $unit where
-            $crate::dimension::$unit: ::std::ops::Div<<U as $crate::Unit>::Dim>,
-            <$crate::dimension::$unit as ::std::ops::Div<<U as $crate::Unit>::Dim>>::Output:
+        impl<U: $crate::Unit> ::core::ops::Div<U> for $unit where
+            $crate::dimension::$unit: ::core::ops::Div<<U as $crate::Unit>::Dim>,
+            <$crate::dimension::$unit as ::core::ops::Div<<U as $crate::Unit>::Dim>>::Output:
                 $crate::dimension::DimType,
         {
             type Output = $crate::units::UnitDiv<Self, U>;
@@ -77,9 +77,9 @@ macro_rules! concrete_types {
         }
 
         /// Unit multiplication.
-        impl<U: $crate::Unit> ::std::ops::Mul<U> for $unit where
-            $crate::dimension::$unit: ::std::ops::Mul<<U as $crate::Unit>::Dim>,
-            <$crate::dimension::$unit as ::std::ops::Mul<<U as $crate::Unit>::Dim>>::Output:
+        impl<U: $crate::Unit> ::core::ops::Mul<U> for $unit where
+            $crate::dimension::$unit: ::core::ops::Mul<<U as $crate::Unit>::Dim>,
+            <$crate::dimension::$unit as ::core::ops::Mul<<U as $crate::Unit>::Dim>>::Output:
                 $crate::dimension::DimType,
         {
             type Output = $crate::units::UnitMul<Self, U>;

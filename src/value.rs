@@ -1,6 +1,6 @@
 //! Module for the [`Value`] marker trait.
 
-use std::fmt::{Debug, Display};
+use core::fmt::{Debug, Display};
 use num_traits::{FromPrimitive, Num, NumCast};
 
 

@@ -90,6 +90,7 @@
 //! let grav = qty![9.81 m/s^2];
 //! ```
 
+#![no_std]
 #![cfg_attr(feature = "simd", feature(portable_simd))]
 #![warn(missing_docs)]
 
@@ -238,7 +239,7 @@ mod tests {
 
     #[test]
     fn test_unit_scale() {
-        fn test<U: UnitStep + PartialOrd + std::fmt::Debug>() {
+        fn test<U: UnitStep + PartialOrd + core::fmt::Debug>() {
             let base = U::base();
 
             assert_eq!(

@@ -27,7 +27,7 @@ pub mod types {
 
 /// Operator implementations grouped together, to compare them more easily.
 mod impl_ops {
-    use std::ops::{Div, Mul};
+    use core::ops::{Div, Mul};
     use num_traits::Inv;
     use typenum::Integer;
     use crate::{dimension::*, units::compound::*};

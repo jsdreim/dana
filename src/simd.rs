@@ -2,7 +2,7 @@
 //!
 //! [SIMD]: https://en.wikipedia.org/wiki/Single_instruction,_multiple_data
 
-use std::{
+use core::{
     array::from_fn,
     marker::PhantomData,
     ops::{Add, Div, Mul, Neg, Sub},

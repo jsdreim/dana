@@ -1,6 +1,6 @@
 //! Module for base dimensions underlying the unit system.
 
-use std::{marker::PhantomData, ops::{Add, Div, Mul, Neg, Sub}};
+use core::{marker::PhantomData, ops::{Add, Div, Mul, Neg, Sub}};
 use num_traits::Inv;
 use typenum::{
     marker_traits::{Integer, NonZero},
@@ -80,7 +80,7 @@ Sealed for Dimension<L, M, T, I, Θ, N, J> {}
 
 
 /// Trait specifying a type to be a [`Dimension`] with arbitrary exponents.
-pub trait DimType: Sealed + Copy + std::fmt::Display {
+pub trait DimType: Sealed + Copy + core::fmt::Display {
     //region Definitions.
     /// Exponent typenum for Length.
     type ExpLen: Int;
@@ -155,10 +155,10 @@ for Dimension<L, M, T, I, K, N, J> {
 }
 
 
-impl<L: Int, M: Int, T: Int, I: Int, K: Int, N: Int, J: Int> std::fmt::Display
+impl<L: Int, M: Int, T: Int, I: Int, K: Int, N: Int, J: Int> core::fmt::Display
 for Dimension<L, M, T, I, K, N, J> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        use std::fmt::Write;
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        use core::fmt::Write;
 
         let mut any = false;
 
@@ -350,13 +350,16 @@ mod tests {
 
     #[test]
     fn test_dimensions() {
-        assert_eq!(format!("{}", Length::dimension()), "L");
-        assert_eq!(format!("{}", Velocity::dimension()), "L*T^-1");
-        assert_eq!(format!("{}", Accel::dimension()), "L*T^-2");
+        //  TODO: Find a way to test this without needing stdlib.
+        // #[cfg(feature = "std")] {
+        //     assert_eq!(format!("{}", Length::dimension()), "L");
+        //     assert_eq!(format!("{}", Velocity::dimension()), "L*T^-1");
+        //     assert_eq!(format!("{}", Accel::dimension()), "L*T^-2");
+        // }
 
-        let _a: Accel = Velocity::dimension() / Time::dimension();
-        let _a: Accel = Velocity::dimension() * Time::dimension().inv();
-        let _a: Length = Velocity::dimension() * Time::dimension();
-        let _a: Torque = Length::dimension() * Force::dimension();
+        let _: Accel = Velocity::dimension() / Time::dimension();
+        let _: Accel = Velocity::dimension() * Time::dimension().inv();
+        let _: Length = Velocity::dimension() * Time::dimension();
+        let _: Torque = Length::dimension() * Force::dimension();
     }
 }

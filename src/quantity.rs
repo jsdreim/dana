@@ -5,7 +5,7 @@ pub mod rand;
 
 mod qty_from;
 
-use std::{
+use core::{
     iter::Sum,
     ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign},
 };
@@ -145,7 +145,7 @@ impl<U: Unit, V: Value> Quantity<U, V> {
     ///     populated by this quantity.
     #[cfg(feature = "simd")]
     pub fn to_simd<const N: usize, S>(self) -> crate::simd::QtySimd<U, V, N, S> where
-        std::simd::LaneCount<N>: std::simd::SupportedLaneCount,
+        core::simd::LaneCount<N>: core::simd::SupportedLaneCount,
         V: crate::simd::QtySimdValue,
         S: crate::simd::QtySimdScale,
         f64: num_traits::AsPrimitive<S>,
@@ -472,7 +472,7 @@ for Quantity<U, V> where
     W: ConvertInto<U>,
     V: PartialOrd<X>,
 {
-    fn partial_cmp(&self, other: &Quantity<W, X>) -> Option<std::cmp::Ordering> {
+    fn partial_cmp(&self, other: &Quantity<W, X>) -> Option<core::cmp::Ordering> {
         let comp = other.clone().convert_to(self.unit);
         self.value.partial_cmp(&comp.value)
     }
@@ -482,7 +482,7 @@ impl<U: Unit, V: Value + Ord> Ord for Quantity<U, V> where
     U: ConvertInto<U>,
     Quantity<U, V>: PartialOrd,
 {
-    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+    fn cmp(&self, other: &Self) -> core::cmp::Ordering {
         let comp = other.clone().convert_to(self.unit);
         self.value.cmp(&comp.value)
     }
@@ -615,7 +615,7 @@ impl<U, V, UMul, VMul, UAdd, VAdd> MulAdd<
 macro_rules! impl_fmt {
     ($($fmt:path),+$(,)?) => {$(
     impl<U: Unit, V: Value> $fmt for Quantity<U, V> where V: $fmt {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+        fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
             <V as $fmt>::fmt(&self.value, f)?;
             write!(f, " {}", self.unit)
         }
@@ -624,12 +624,12 @@ macro_rules! impl_fmt {
 }
 
 impl_fmt!(
-    std::fmt::Display,
-    std::fmt::Octal,
-    std::fmt::LowerHex,
-    std::fmt::UpperHex,
-    std::fmt::Pointer,
-    std::fmt::Binary,
-    std::fmt::LowerExp,
-    std::fmt::UpperExp,
+    core::fmt::Display,
+    core::fmt::Octal,
+    core::fmt::LowerHex,
+    core::fmt::UpperHex,
+    core::fmt::Pointer,
+    core::fmt::Binary,
+    core::fmt::LowerExp,
+    core::fmt::UpperExp,
 );

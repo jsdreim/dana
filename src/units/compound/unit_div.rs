@@ -1,6 +1,6 @@
 //! Module for the divided unit type.
 
-use std::ops::Div;
+use core::ops::Div;
 use crate::{dimension::*, units::traits::*};
 
 
@@ -38,11 +38,11 @@ impl<A: Unit, B: Unit> Unit for UnitDiv<A, B> where
     }
 }
 
-impl<A: Unit, B: Unit> std::fmt::Display for UnitDiv<A, B> where
+impl<A: Unit, B: Unit> core::fmt::Display for UnitDiv<A, B> where
     A::Dim: Div<B::Dim>,
     <A::Dim as Div<B::Dim>>::Output: DimType,
 {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         if f.alternate() {
             write!(f, "({:#}/{:#})", self.0, self.1)
         } else {

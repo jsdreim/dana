@@ -78,9 +78,5 @@ pub const CONST_R: qtype!(E/K/N) = qty![8.314_462_618_153_24 J/K/mol];
 
 #[test]
 fn test_constants() {
-    assert_eq!(format!("{CONST_C:.3e}"), "2.998e8 m/s");
-    assert_eq!(format!("{CONST_G:.3e}"), "6.674e-11 (m^3/s^2)/kg");
-    assert_eq!(format!("{GFORCE:.2}"), "9.81 (m/s)/s");
-
     assert_eq!(CONST_C.squared(), CONST_C2);
 }

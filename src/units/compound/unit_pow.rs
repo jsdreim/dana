@@ -1,6 +1,6 @@
 //! Module for the exponentiated unit type.
 
-use std::{marker::PhantomData, ops::Mul};
+use core::{marker::PhantomData, ops::Mul};
 use typenum::{Integer, PartialDiv};
 use crate::{dimension::*, units::traits::*};
 
@@ -50,18 +50,18 @@ impl<U: Unit, E: Integer> Unit for UnitPow<U, E> where
     }
 }
 
-impl<U: Unit + std::fmt::Debug, E: Integer> std::fmt::Debug for UnitPow<U, E> where
+impl<U: Unit + core::fmt::Debug, E: Integer> core::fmt::Debug for UnitPow<U, E> where
     U::Dim: DimPowType<E>,
 {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         write!(f, "UnitPow({:?}, {:?})", self.0, E::I32)
     }
 }
 
-impl<U: Unit, E: Integer> std::fmt::Display for UnitPow<U, E> where
+impl<U: Unit, E: Integer> core::fmt::Display for UnitPow<U, E> where
     U::Dim: DimPowType<E>,
 {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         write!(f, "{:#}^{}", self.0, E::I32)
     }
 }

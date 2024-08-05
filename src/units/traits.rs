@@ -7,7 +7,7 @@ pub use transform::*;
 
 
 /// Trait for a type that represents a dimensional "unit".
-pub trait Unit: Copy + Default + std::fmt::Debug + std::fmt::Display + PartialEq {
+pub trait Unit: Copy + Default + core::fmt::Debug + core::fmt::Display + PartialEq {
     /// The [`Dimension`](crate::dimension::Dimension) represented by units of
     ///     this type.
     type Dim: DimType;
@@ -120,7 +120,7 @@ pub trait Unit: Copy + Default + std::fmt::Debug + std::fmt::Display + PartialEq
     #[cfg(feature = "simd")]
     fn quantity_simd<V, const N: usize, S>(self, values: [V; N])
         -> crate::simd::QtySimd<Self, V, N, S> where
-        std::simd::LaneCount<N>: std::simd::SupportedLaneCount,
+        core::simd::LaneCount<N>: core::simd::SupportedLaneCount,
         V: crate::simd::QtySimdValue,
         S: crate::simd::QtySimdScale,
     {

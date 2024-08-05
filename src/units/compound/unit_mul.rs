@@ -1,6 +1,6 @@
 //! Module for the multiplied unit type.
 
-use std::ops::Mul;
+use core::ops::Mul;
 use crate::{dimension::*, units::traits::*};
 
 
@@ -32,11 +32,11 @@ impl<A: Unit, B: Unit> Unit for UnitMul<A, B> where
     }
 }
 
-impl<A: Unit, B: Unit> std::fmt::Display for UnitMul<A, B> where
+impl<A: Unit, B: Unit> core::fmt::Display for UnitMul<A, B> where
     A::Dim: Mul<B::Dim>,
     <A::Dim as Mul<B::Dim>>::Output: DimType,
 {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         if f.alternate() {
             write!(f, "({:#}*{:#})", self.0, self.1)
         } else {

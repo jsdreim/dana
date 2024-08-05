@@ -1,6 +1,6 @@
 #![feature(portable_simd)]
 
-use std::{array::from_fn, ops::{Add, Mul}, simd::*};
+use core::{array::from_fn, ops::{Add, Mul}, simd::*};
 use criterion::{black_box, Criterion, criterion_group, criterion_main};
 use num_traits::AsPrimitive;
 use rand::Rng;

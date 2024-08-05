@@ -39,11 +39,11 @@ impl<U: Unit> Unit for PerUnit<U> where
     }
 }
 
-impl<U: Unit> std::fmt::Display for PerUnit<U> where
+impl<U: Unit> core::fmt::Display for PerUnit<U> where
     U::Dim: Inv,
     <U::Dim as Inv>::Output: DimType,
 {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         // write!(f, "1/{:#}", self.0)
         // write!(f, "{:#}⁻¹", self.0)
         write!(f, "{:#}^-1", self.0)
