@@ -14,7 +14,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
+
+    # Default:
     - name: Build
       run: cargo build --verbose
     - name: Run tests
       run: cargo test --verbose
+
+    # With features:
+    - name: Build with features
+      run: cargo build --verbose --features "chrono rand serde"
+    - name: Run tests with features
+      run: cargo test --verbose --features "chrono rand serde"
