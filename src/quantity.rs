@@ -3,7 +3,7 @@
 #[cfg(feature = "rand")]
 pub mod rand;
 
-mod conversions;
+mod qty_from;
 
 use std::{
     iter::Sum,
