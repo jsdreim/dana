@@ -24,7 +24,7 @@ num-traits = "0.2.19"
 [workspace.dependencies.dana_macros]
 # NOTE: Keep dependency version in sync with workspace version.
 # TODO: Can this be picked automatically?
-version = "0.2.0"
+version = "=0.2.0"
 path = "dana_macros"
 
 
