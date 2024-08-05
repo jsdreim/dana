@@ -33,7 +33,7 @@ pub fn typenum_int<N: std::fmt::Display + PrimInt + Signed>(n: N) -> String {
 // }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct PathSep { pub spans: [proc_macro2::Span; 2] }
 
 impl Parse for PathSep {

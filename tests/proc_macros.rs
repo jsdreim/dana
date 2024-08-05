@@ -24,7 +24,9 @@ fn dim() {
     let _qty: QuantityAnon<dim!(_L^-2)> = qty![1.0 m^-2 as ?];
     let _qty: QuantityAnon<dim!(_L^-2)> = qty![1.0/m^2 as ?];
 
-    // let _qty: QuantityAnon<dim!(_L^-2)> = qty![1.0/m/m as ?]; // FIXME
+    let _qty: QuantityAnon<dim!(_L^-2)> = qty![1.0/m/m as ?];
+    let _qty: QuantityAnon<dim!(_L^-2)> = qty![1.0/m^2 as ?];
+    let _qty: QuantityAnon<dim!(_L^-1 * _T)> = qty![1.0/m*s as ?];
 
     //  Combination form.
     let _qty: QuantityAnon<dim!(<3, 0, -1> * _L^-2 * _T)> = qty![1.0 m as ?];
@@ -50,6 +52,13 @@ fn qty_valid() {
     let _qty: Quantity<UnitSquared<L>> = qty![1.0 m^2];
     let _qty: Quantity<UnitMul<L, PerUnit<L>>> = qty![1.0 m * 1/m];
     let _qty: Quantity<UnitMul<L, PerUnit<L>>> = qty![1.0 m * 1/(m)];
+
+    //  Test inverse-unit definitions.
+    let _qty: Quantity<PerUnit<T>> = qty![1.0/s];
+    let _qty: Quantity<PerUnit<PerUnit<T>>> = qty![1.0/1/s]; // TODO: Discourage?
+    let _qty: Quantity<PerUnit<UnitSquared<L>>> = qty![1.0/m^2];
+    let _qty: Quantity<UnitDiv<PerUnit<L>, T>> = qty![1.0/m/s];
+    let _qty: Quantity<UnitMul<PerUnit<L>, M>> = qty![1.0/m*kg];
 
     //  Test sum definitions.
     assert_eq!(qty![250.0 cm], qty![2.0 m,  50.0 cm]);

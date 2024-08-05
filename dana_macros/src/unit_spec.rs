@@ -17,12 +17,12 @@ pub type UnitSpecType = UnitSpec<UnitCoreType>;
 
 
 /// Marker trait indicating that a type is usable at the core of a [`UnitSpec`].
-pub trait UnitCore: std::fmt::Debug + Parse + ToTokens {}
-impl<T: std::fmt::Debug + Parse + ToTokens> UnitCore for T {}
+pub trait UnitCore: Clone + std::fmt::Debug + Parse + ToTokens {}
+impl<T: Clone + std::fmt::Debug + Parse + ToTokens> UnitCore for T {}
 
 
 /// Core type for an expression-destined unit specifier.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub enum UnitCoreExpr {
     /// One identifier.
     Ident(syn::Ident),
@@ -89,7 +89,7 @@ impl ToTokens for UnitCoreExpr {
 
 
 /// Core type for an expression-destined unit specifier.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub enum UnitCoreType {
     /// One identifier.
     Ident(syn::Ident),
@@ -130,6 +130,7 @@ impl ToTokens for UnitCoreType {
 }
 
 
+#[derive(Clone)]
 pub enum Exponent {
     Whole(syn::LitInt),
     Frac(syn::LitInt, syn::LitInt),
@@ -200,7 +201,7 @@ impl ToTokens for Exponent {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 struct UnitExp<U: UnitCore> {
     base: UnitSpec<U>,
     inv: bool,
@@ -322,7 +323,7 @@ impl<U: UnitCore> UnitExp<U> {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub enum UnitSpec<U: UnitCore> {
     Leaf(U),
 
@@ -330,6 +331,30 @@ pub enum UnitSpec<U: UnitCore> {
     Mul(Box<UnitSpec<U>>, Box<UnitSpec<U>>),
     Inv(Box<UnitSpec<U>>),
     Pow(Box<UnitSpec<U>>, Exponent),
+}
+
+impl<U: UnitCore> UnitSpec<U> {
+    pub fn invert(&mut self) {
+        *self = Self::Inv(Box::new(self.clone()));
+    }
+
+    pub fn leftmost_mut(&mut self) -> &mut Self {
+        let mut node: &mut UnitSpec<U> = self;
+
+        loop {
+            node = &mut *match node {
+                Self::Leaf(_) => break,
+                Self::Pow(..) => break,
+
+                Self::Div(left, _) => left,
+                Self::Mul(left, _) => left,
+                Self::Inv(unit)    => unit,
+                // Self::Pow(base, _) => base,
+            };
+        }
+
+        node
+    }
 }
 
 impl<U: UnitCore> Parse for UnitSpec<U> {

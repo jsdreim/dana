@@ -62,24 +62,27 @@ impl Parse for QtyNew {
         //  Read a scalar value.
         let value: QtyValue = fork.parse()?;
 
-        //  Check for an optional div/mul operator.
-        let inv = value.is_literal() && if fork.parse::<Token![/]>().is_ok() {
-            //  `1.0 / s`
-            true
-        } else if fork.parse::<Token![*]>().is_ok() {
-            //  `1.0 * s`
-            false
-        } else {
-            //  `1.0 s`
-            false
+        //  If the value is a literal, check for an optional div/mul operator.
+        let invert = value.is_literal() && {
+            if fork.parse::<Token![/]>().is_ok() {
+                //  `1.0 / s`
+                true
+            } else if fork.parse::<Token![*]>().is_ok() {
+                //  `1.0 * s`
+                false
+            } else {
+                //  `1.0 s`
+                false
+            }
         };
 
-        //  Read a unit specifier, possibly inverting it.
-        let unit = if inv {
-            UnitSpecExpr::Inv(Box::new(fork.parse()?))
-        } else {
-            fork.parse()?
-        };
+        //  Read a unit specifier.
+        let mut unit: UnitSpecExpr = fork.parse()?;
+
+        if invert {
+            //  Invert the furthest-left component.
+            unit.leftmost_mut().invert();
+        }
 
         input.advance_to(&fork);
 
