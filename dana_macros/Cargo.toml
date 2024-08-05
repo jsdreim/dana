@@ -1,8 +1,19 @@
 [package]
 name = "dana_macros"
-version = "0.1.0"
-edition = "2021"
-publish = false
+description = "Procedural macro crate for `dana`."
+version.workspace = true
+
+authors.workspace = true
+repository.workspace = true
+readme.workspace = true
+documentation.workspace = true
+
+exclude.workspace = true
+categories.workspace = true
+keywords.workspace = true
+
+edition.workspace = true
+license.workspace = true
 
 
 [lib]
@@ -10,7 +21,7 @@ proc-macro = true
 
 
 [dependencies]
-num-traits = "0.2.19"
+num-traits.workspace = true
 quote = "1.0.36"
 syn = "2.0.66"
 
