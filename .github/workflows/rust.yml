@@ -15,22 +15,60 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    # Default:
+    # Default build:
     - name: Build
       run: cargo build
-    - name: Run tests
-      run: cargo test
+
+#    # Featured build:
+#    - name: Build with stable features
+#      run: cargo build --features "chrono rand serde"
+
+#    # Full build:
+#    - name: Build with all features
+#      run: cargo +nightly build --all-features
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+#    # Default tests:
+#    - name: Build tests
+#      run: cargo test --no-run
+#    - name: Run tests
+#      run: cargo test
+
+    # Featured tests:
+    - name: Build tests with stable features
+      run: cargo test --features "chrono rand serde" --no-run
+    - name: Run tests with stable features
+      run: cargo test --features "chrono rand serde"
+
+#    # Full tests:
+#    - name: Build tests with all features
+#      run: cargo +nightly test --all-features --no-run
+#    - name: Run tests with all features
+#      run: cargo +nightly test --all-features
+
+  benchmark:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    # Default benchmarks:
+    - name: Build benchmarks
+      run: cargo bench --no-run
     - name: Run benchmarks
       run: cargo bench
 
-    # With features:
-    - name: Build with features
-      run: cargo build --features "chrono rand serde"
-    - name: Run tests with features
-      run: cargo test --features "chrono rand serde"
+#    # Featured benchmarks:
+#    - name: Build benchmarks with stable features
+#      run: cargo bench --features "chrono rand serde" --no-run
+#    - name: Run benchmarks
+#      run: cargo bench --features "chrono rand serde"
 
-#    # With nightly and ALL features:
-#    - name: Build on nightly, with all features
-#      run: cargo +nightly build --all-features
-#    - name: Run tests on nightly, with all features
-#      run: cargo +nightly test --all-features
+#    # Full benchmarks:
+#    - name: Build benchmarks with all features
+#      run: cargo +nightly bench --all-features --no-run
+#    - name: Run benchmarks
+#      run: cargo +nightly bench --all-features
