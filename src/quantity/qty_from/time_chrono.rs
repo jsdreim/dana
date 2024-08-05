@@ -27,3 +27,19 @@ impl<V: Value + Copy> From<TimeDelta> for Quantity<Time, V> where
         Second.quantity(seconds) + NanoSecond.quantity(nanosec)
     }
 }
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn qty_time_delta() {
+        let q_0 = Minute.quantity(61.5);
+        let dur: TimeDelta = q_0.try_into().unwrap();
+        let q_1: Quantity<Time> = dur.into();
+
+        assert_eq!(q_0, q_1);
+        assert_eq!(q_1, q_0);
+    }
+}

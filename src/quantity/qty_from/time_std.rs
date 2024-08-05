@@ -27,3 +27,19 @@ impl From<Duration> for Quantity<Time, f64> {
         Second.quantity(duration.as_secs_f64())
     }
 }
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn qty_duration() {
+        let q_0 = Minute.quantity(61.5);
+        let dur: Duration = q_0.into();
+        let q_1: Quantity<Time> = dur.into();
+
+        assert_eq!(q_0, q_1);
+        assert_eq!(q_1, q_0);
+    }
+}
