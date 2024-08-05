@@ -109,6 +109,8 @@ pub mod symbols;
 pub mod units;
 pub mod value;
 
+pub mod error;
+
 #[cfg(feature = "simd")]
 #[allow(missing_docs)]
 pub mod simd;

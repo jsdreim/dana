@@ -1,17 +1,18 @@
 use chrono::TimeDelta;
 use num_traits::AsPrimitive;
-use crate::{Quantity, units::{*, Time::*}, Value};
+use crate::{error::TimeDeltaError, Quantity, units::{*, Time::*}, Value};
 
 
 impl<V: Value> TryFrom<Quantity<Time, V>> for TimeDelta {
-    type Error = ();
+    type Error = TimeDeltaError<V>;
 
     fn try_from(qty: Quantity<Time, V>) -> Result<Self, Self::Error> {
-        let total: f64 = qty.value_as(Second).to_f64().ok_or(())?;
+        let v: V = qty.value_as(Second);
+        let total: f64 = v.to_f64().ok_or(TimeDeltaError::CastFailed(v))?;
         let secs: i64 = total.trunc() as i64;
         let nanos: u32 = (total.fract().abs() * 1e9) as u32;
 
-        Self::new(secs, nanos).ok_or(())
+        Self::new(secs, nanos).ok_or(TimeDeltaError::OutOfBounds)
     }
 }
 
