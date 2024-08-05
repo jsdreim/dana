@@ -68,8 +68,8 @@ fn qty_valid() {
     //  Test chained definition, addition, conversion, and deref with all
     //      combinations of recursion brackets.
     //  NOTE: Deref on multiple literals should probably not be encouraged, but
-    //      to explicitly *forbid* it would likely cause more problems than the
-    //      simple *ability* to write confusing invocations. Just use recursion
+    //      to explicitly forbid it would likely cause more problems than being
+    //      able to write confusing invocations could cause. Just use recursion
     //      brackets to make it clear.
     assert_eq!(qty![*   2.0 m  +  10.0 cm   in mm ], 2.1e3);
     assert_eq!(qty![*  [2.0 m] + [10.0 cm]  in mm ], 2.1e3);
