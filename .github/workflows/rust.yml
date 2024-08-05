@@ -21,7 +21,7 @@ jobs:
 
 #    # Featured build:
 #    - name: Build with stable features
-#      run: cargo build --features "chrono rand serde"
+#      run: cargo build --features stable
 
 #    # Full build:
 #    - name: Build with all features
@@ -40,9 +40,9 @@ jobs:
 
     # Featured tests:
     - name: Build tests with stable features
-      run: cargo test --features "chrono rand serde" --no-run
+      run: cargo test --features stable --no-run
     - name: Run tests with stable features
-      run: cargo test --features "chrono rand serde"
+      run: cargo test --features stable
 
 #    # Full tests:
 #    - name: Build tests with all features
@@ -63,9 +63,9 @@ jobs:
 
 #    # Featured benchmarks:
 #    - name: Build benchmarks with stable features
-#      run: cargo bench --features "chrono rand serde" --no-run
+#      run: cargo bench --features stable --no-run
 #    - name: Run benchmarks
-#      run: cargo bench --features "chrono rand serde"
+#      run: cargo bench --features stable
 
 #    # Full benchmarks:
 #    - name: Build benchmarks with all features

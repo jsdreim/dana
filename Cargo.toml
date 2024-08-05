@@ -94,7 +94,12 @@ required-features = ["rand", "simd"]
 [features]
 default = []
 
+# Features that can be enabled on the stable toolchain:
+stable = ["chrono", "rand", "serde"]
 chrono = ["dep:chrono"]
 rand = ["dep:rand"]
 serde = ["dep:serde"]
+
+# Features that require unstable functionality:
+unstable = ["simd"]
 simd = []
