@@ -1,0 +1,12 @@
+error[E0271]: type mismatch resolving `<Length as Unit>::Dim == Dimension<Z0, PInt<UInt<UTerm, B1>>, Z0, Z0, Z0, Z0, Z0>`
+ --> tests/err_qty/mixed_sum.rs:5:16
+  |
+5 |     let _err = qty![1.0 m, 1.0 kg];
+  |                ^^^^^^^^^^^^^^^^^^^ expected `Dimension<PInt<...>, ..., ..., ..., ..., ..., ...>`, found `Dimension<Z0, ..., ..., ..., ..., ..., ...>`
+  |
+  = note: expected struct `Dimension<typenum::int::PInt<typenum::uint::UInt<typenum::uint::UTerm, typenum::bit::B1>>, typenum::int::Z0, typenum::int::Z0, typenum::int::Z0, typenum::int::Z0, typenum::int::Z0, typenum::int::Z0>`
+             found struct `Dimension<typenum::int::Z0, typenum::int::PInt<typenum::uint::UInt<typenum::uint::UTerm, typenum::bit::B1>>, typenum::int::Z0, typenum::int::Z0, typenum::int::Z0, typenum::int::Z0, typenum::int::Z0>`
+  = note: required for `Length` to implement `ConvertFrom<Mass>`
+  = note: required for `Mass` to implement `ConvertInto<Length>`
+  = note: required for `Quantity<Length, {float}>` to implement `Add<Quantity<Mass, {float}>>`
+  = note: this error originates in the macro `$crate::macros::proc::qty` which comes from the expansion of the macro `qty` (in Nightly builds, run with -Z macro-backtrace for more info)
