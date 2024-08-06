@@ -20,7 +20,6 @@ dummy!(
 ///     extremely complex unit tree needs to be used in a large number of
 ///     operations that all calculate its scale factor.
 #[derive(Clone, Copy, Hash, Eq, Ord, PartialOrd)]
-#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 #[repr(transparent)]
 pub struct UnitAnon<D: DimType, S: AnonScale = f64>(pub S, PhantomData<D>);
 

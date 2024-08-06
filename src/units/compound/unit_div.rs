@@ -6,7 +6,6 @@ use crate::{dimension::*, units::traits::*};
 
 /// One unit divided by another; For example, Meters per Second.
 #[derive(Clone, Copy, Debug, Default, Hash, Eq, PartialEq, Ord, PartialOrd)]
-#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 pub struct UnitDiv<A: Unit, B: Unit>(pub A, pub B) where
     A::Dim: Div<B::Dim>,
     <A::Dim as Div<B::Dim>>::Output: DimType,

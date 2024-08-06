@@ -9,7 +9,6 @@ use crate::{dimension::*, units::traits::*};
 /// This is equivalent both to [`One`](crate::units::One) divided by the unit,
 ///     and to the unit taken to the [power](crate::units::UnitPow) of -1.
 #[derive(Clone, Copy, Debug, Default, Hash, Eq, PartialEq, Ord, PartialOrd)]
-#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 #[repr(transparent)]
 pub struct PerUnit<U: Unit>(pub U) where
     U::Dim: Inv,

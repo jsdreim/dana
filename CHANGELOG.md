@@ -5,6 +5,7 @@
 
 ### Added
 ### Changed
+- Reworked `serde` support for compound and anonymous unit types.
 ### Fixed
 
 

@@ -17,7 +17,6 @@ pub type UnitCubed<U> = UnitPowN<U, 3>;
 
 /// A unit raised to an arbitrary power.
 #[derive(Clone, Copy, Default, Hash, Eq, Ord, PartialOrd)]
-#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 #[repr(transparent)]
 //  TODO: Switch `E` to `i32` const param.
 pub struct UnitPow<U: Unit, E: Integer>(pub U, pub PhantomData<E>) where

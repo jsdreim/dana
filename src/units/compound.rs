@@ -8,6 +8,8 @@
 
 use super::traits::*;
 
+mod serde;
+
 pub mod per_unit;
 pub mod unit_div;
 pub mod unit_mul;
