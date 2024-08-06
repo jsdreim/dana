@@ -9,6 +9,13 @@
 
 
 ---
+## 0.3.1: 2024-08-05
+
+### Fixed
+- Corrected missed `std::` usage in `dim!` macro.
+
+
+---
 ## 0.3.0: 2024-08-05
 
 ### Added

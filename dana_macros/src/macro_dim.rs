@@ -251,7 +251,7 @@ impl ToTokens for DimSpec {
                 let mut dim = first.to_token_stream();
 
                 for mul in iter {
-                    dim = quote!(<#dim as ::std::ops::Mul<#mul>>::Output);
+                    dim = quote!(<#dim as ::core::ops::Mul<#mul>>::Output);
                 }
 
                 tokens.extend(dim);
@@ -295,7 +295,7 @@ impl ToTokens for MacroDim {
     fn to_tokens(&self, tokens: &mut TokenStream) {
         match (&self.seq, &self.mul) {
             (Some(seq), Some(mul)) => tokens.extend(quote!(
-                <#seq as ::std::ops::Mul<#mul>>::Output
+                <#seq as ::core::ops::Mul<#mul>>::Output
             )),
             (Some(seq), None) => seq.to_tokens(tokens),
             (None, Some(mul)) => mul.to_tokens(tokens),
