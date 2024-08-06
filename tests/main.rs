@@ -79,7 +79,7 @@ fn test_quantity_norm() {
         let q2 = q1.normalize();
 
         // eprintln!("{q1:>9e} -> {q2:>8.3}");
-        assert_eq!(q2, q1, "Precision loss different from pure convert.");
+        assert_eq!(q2, q1, "inconsistent precision loss");
         assert_qty_approx!(<= 1e-6, q1, q2);
     }
 
