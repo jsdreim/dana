@@ -50,25 +50,25 @@ jobs:
 #    - name: Run tests with all features
 #      run: cargo +nightly test --all-features
 
-  benchmark:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-
-    # Default benchmarks:
-    - name: Build benchmarks
-      run: cargo bench --no-run
-    - name: Run benchmarks
-      run: cargo bench
-
-#    # Featured benchmarks:
-#    - name: Build benchmarks with stable features
-#      run: cargo bench --features stable --no-run
+#  benchmark:
+#    runs-on: ubuntu-latest
+#    steps:
+#    - uses: actions/checkout@v4
+#
+#    # Default benchmarks:
+#    - name: Build benchmarks
+#      run: cargo bench --no-run
 #    - name: Run benchmarks
-#      run: cargo bench --features stable
-
-#    # Full benchmarks:
-#    - name: Build benchmarks with all features
-#      run: cargo +nightly bench --all-features --no-run
-#    - name: Run benchmarks
-#      run: cargo +nightly bench --all-features
+#      run: cargo bench
+#
+##    # Featured benchmarks:
+##    - name: Build benchmarks with stable features
+##      run: cargo bench --features stable --no-run
+##    - name: Run benchmarks
+##      run: cargo bench --features stable
+#
+##    # Full benchmarks:
+##    - name: Build benchmarks with all features
+##      run: cargo +nightly bench --all-features --no-run
+##    - name: Run benchmarks
+##      run: cargo +nightly bench --all-features
