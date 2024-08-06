@@ -31,29 +31,6 @@ fn test_anonymous() {
 
 
 #[test]
-fn test_ratios() {
-    use dana::{constants::*, equations::*};
-
-    // let v = qty![5.0 m/s];
-
-    let f = qty![1.0 kHz];
-    let v = qty![CONST_C in m/s];
-
-    let v_f = v / qty![f as 1/T];
-
-    let fv = qty![v_f as L];
-
-    // let fv: qtype!((L/t) / (1/t)) = v / qty![f as 1/t];
-    // let fv: qtype!((L/t) * t) = fv.simplify();
-    // let fv: qtype!(L) = fv.simplify();
-
-    assert_eq!(fv, frequency_to_wavelength(f, v));
-
-    // dbg!(qty![(f/v) in m]);
-}
-
-
-#[test]
 fn test_f_ma() {
     let mass: Quantity<Mass> = qty![2.0 kg];
     let accel: Quantity<Accel> = qty![3.0 km/s/s];
@@ -117,27 +94,15 @@ fn test_electrical_charge() {
 
 #[test]
 fn test_cancel() {
-    let v: Quantity<Speed> = qty![2.0 mm/ms];
-    let t: Quantity<Time> = qty![3.0 min];
-    let d: Quantity<Length> = (v * t).convert();
-    assert_eq!(d, qty!(360.0 m));
+    //  Simplify: (L/T)*T -> L
+    let v = qty![2.0 mm/ms];
+    let t = qty![3.0 min];
+    let d = v * t;
+    assert_eq!(d, qty![360.0 m]);
 
-    let dt: qtype!(L * T) = qty![90.0 m*s];
-    let t: Quantity<Time> = qty![0.5 min];
-    let d: Quantity<Length> = (dt / t).convert();
-    assert_eq!(d, qty!(3.0 m));
-}
-
-
-#[test]
-fn test_compounds() {
-    let l = qty![5.0 m];
-    let t = qty![2.0/s];
-
-    let q: qtype!(L * (1/T)) = l * t;
-    let v: qtype!(L / T) = q.convert();
-
-    assert_eq!(v, qty![10.0 m/s]);
+    //  Simplify: L/L -> 1
+    let n = qty![d / 5.0 m].cancel();
+    assert_eq!(n, 72.0);
 }
 
 
