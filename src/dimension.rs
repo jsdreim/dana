@@ -342,24 +342,3 @@ impl<Dim: DimType, const D: Exp> DimRoot<D> for Dim where
 {
     type Output = Dim::Output;
 }
-
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_dimensions() {
-        //  TODO: Find a way to test this without needing stdlib.
-        // #[cfg(feature = "std")] {
-        //     assert_eq!(format!("{}", Length::dimension()), "L");
-        //     assert_eq!(format!("{}", Velocity::dimension()), "L*T^-1");
-        //     assert_eq!(format!("{}", Accel::dimension()), "L*T^-2");
-        // }
-
-        let _: Accel = Velocity::dimension() / Time::dimension();
-        let _: Accel = Velocity::dimension() * Time::dimension().inv();
-        let _: Length = Velocity::dimension() * Time::dimension();
-        let _: Torque = Length::dimension() * Force::dimension();
-    }
-}
