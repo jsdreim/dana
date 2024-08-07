@@ -312,6 +312,10 @@ define_symbols! {
         const ML = MegaLiter;
         const GL = GigaLiter;
         const TL = TeraLiter;
+
+        /// Unit alias for [`CentiMeter`](Length::CentiMeter) to the third power
+        ///     ("cubic centimeter", equal to 1 mL).
+        const cc: (L^3) = (cm^3);
     }
 
     /// Symbol module for [`Volume`] units in the US Customary system.
