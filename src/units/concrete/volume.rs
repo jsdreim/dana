@@ -1,12 +1,10 @@
 use crate::units::{Length, traits::{CanRoot, Unit, UnitConcrete, UnitStep}, UnitRescale};
 
 
-#[allow(dead_code)]
-const GAL_IMP: f64 = 4.546_090_e-3;
-#[allow(dead_code)]
-const GAL_USA: f64 = 3.785_411_784_e-3;
+const _GALLON_IMP: f64 = 4.546_090_e-3;
+const _GALLON_USA: f64 = 3.785_411_784_e-3;
 
-const GAL: f64 = GAL_USA;
+const GAL: f64 = _GALLON_USA;
 
 
 #[derive(Clone, Copy, Debug, Hash, PartialEq, PartialOrd, Eq, Ord)]
