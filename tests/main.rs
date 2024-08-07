@@ -145,12 +145,30 @@ fn test_unit_step() {
 
 #[test]
 fn test_scale() {
+    use dana::symbols::volume_si::*;
+
     let dist = Length::MilliMeter.quantity(50.0);
 
     let as_mm = dist.with_unit(Length::MilliMeter).value;
     let as_cm = dist.with_unit(Length::CentiMeter).value;
 
     assert_eq!(as_mm, as_cm * 10.0);
+
+    assert_eq!(qty![1.0 uL].cbrt(), qty![  1.0 mm]);
+    assert_eq!(qty![1.0 mL].cbrt(), qty![ 10.0 mm]);
+    assert_eq!(qty![1.0  L].cbrt(), qty![100.0 mm]);
+    assert_eq!(qty![1.0 kL].cbrt(), qty![  1.0  m]);
+    assert_eq!(qty![1.0 ML].cbrt(), qty![ 10.0  m]);
+    assert_eq!(qty![1.0 GL].cbrt(), qty![100.0  m]);
+    assert_eq!(qty![1.0 TL].cbrt(), qty![  1.0 km]);
+
+    assert_eq!(qty![1.0 uL], qty![  1.0 mm].cubed());
+    assert_eq!(qty![1.0 mL], qty![ 10.0 mm].cubed());
+    assert_eq!(qty![1.0  L], qty![100.0 mm].cubed());
+    assert_eq!(qty![1.0 kL], qty![  1.0  m].cubed());
+    assert_eq!(qty![1.0 ML], qty![ 10.0  m].cubed());
+    assert_eq!(qty![1.0 GL], qty![100.0  m].cubed());
+    assert_eq!(qty![1.0 TL], qty![  1.0 km].cubed());
 }
 
 

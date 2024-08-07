@@ -1,4 +1,4 @@
-use crate::units::traits::{Unit, UnitConcrete, UnitStep};
+use crate::units::{Length, traits::{CanRoot, Unit, UnitConcrete, UnitStep}, UnitRescale};
 
 
 #[allow(dead_code)]
@@ -49,6 +49,24 @@ impl Unit for Volume {
             Self::Pint       => GAL / 8.0,
             Self::Quart      => GAL / 4.0,
             Self::Gallon     => GAL,
+        }
+    }
+}
+
+impl CanRoot<3> for Volume {
+    type Output = UnitRescale<Length>;
+
+    fn root(self) -> Self::Output {
+        match self {
+            Self::MicroLiter => Length::MilliMeter.rescale(1.0),
+            Self::MilliLiter => Length::MilliMeter.rescale(10.0),
+            Self::Liter      => Length::MilliMeter.rescale(100.0),
+            Self::KiloLiter  => Length::     Meter.rescale(1.0),
+            Self::MegaLiter  => Length::     Meter.rescale(10.0),
+            Self::GigaLiter  => Length::     Meter.rescale(100.0),
+            Self::TeraLiter  => Length:: KiloMeter.rescale(1.0),
+
+            _ => Length::Meter.rescale((self.scale() * 1e-3).cbrt() * 10.0),
         }
     }
 }

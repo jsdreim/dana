@@ -1,4 +1,4 @@
-use crate::units::traits::{Unit, UnitConcrete, UnitStep};
+use crate::units::traits::{CanRoot, Unit, UnitConcrete, UnitStep};
 
 
 #[derive(Clone, Copy, Debug, Hash, PartialEq, PartialOrd, Eq, Ord)]
@@ -10,6 +10,11 @@ impl Unit for One {
     // type ScaleType = f64;
 
     fn scale(&self) -> f64 { 1.0 }
+}
+
+impl<const D: i32> CanRoot<D> for One {
+    type Output = Self;
+    fn root(self) -> Self::Output { self }
 }
 
 impl UnitConcrete for One {
