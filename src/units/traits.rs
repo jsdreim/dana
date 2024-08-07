@@ -1,6 +1,11 @@
 //! Module for traits describing aspects of units.
 
-use crate::{dimension::DimType, Quantity, units::UnitAnon, Value};
+use crate::{
+    dimension::DimType,
+    Quantity,
+    units::{unit_anon::UnitAnon, unit_rescale::{Rescale, UnitRescale}},
+    Value,
+};
 
 pub mod transform;
 pub use transform::*;
@@ -41,6 +46,11 @@ pub trait Unit: Copy + Default + core::fmt::Debug + core::fmt::Display + Partial
     ///     as this one.
     fn anonymous(&self) -> UnitAnon<Self::Dim> {
         UnitAnon::new(self.scale())
+    }
+
+    /// Return a [`UnitRescale`] of this unit.
+    fn rescale<S: Rescale>(self, factor: S) -> UnitRescale<Self, S> {
+        UnitRescale::new(self, factor)
     }
 
     /// Return a runtime representation of the dimension of this unit.

@@ -6,12 +6,14 @@ pub mod concrete;
 // pub mod si;
 pub mod traits;
 pub mod unit_anon;
+pub mod unit_rescale;
 
 pub use compound::types::*;
 pub use concrete::types::*;
 pub use derived::*;
 pub use traits::{Unit, UnitCompound, UnitConcrete};
 pub use unit_anon::UnitAnon;
+pub use unit_rescale::UnitRescale;
 
 
 /// Module for named compound unit types, defined as relationships between
@@ -90,5 +92,6 @@ pub mod types {
         concrete::types::*,
         derived::*,
         unit_anon::UnitAnon,
+        unit_rescale::UnitRescale,
     };
 }

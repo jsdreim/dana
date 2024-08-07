@@ -152,3 +152,46 @@ fn test_scale() {
 
     assert_eq!(as_mm, as_cm * 10.0);
 }
+
+
+#[test]
+fn test_rescale() {
+    //  Simple rescaled operations.
+    let cm10_div_s2 = cm.rescale(10.0) / s.rescale(2.0);
+    assert_eq!(qty![* [40.0 cm10_div_s2        ] in m/s], 2.0);
+    assert_eq!(qty![* [40.0 cm10_div_s2 * 3.0 s] in m  ], 6.0);
+    assert_eq!(qty![* [8.0 m / 40.0 cm10_div_s2] in s  ], 4.0);
+
+    //  Exponentiated rescale.
+    let m_x5 = m.rescale(5.0);
+    assert_eq!(qty![2.0 m_x5],           qty![10.0 m]);
+    assert_eq!(qty![2.0 m_x5].squared(), qty![10.0 m].squared());
+    assert_eq!(qty![2.0 m_x5].cubed(),   qty![10.0 m].cubed());
+
+    //  Rescaled exponentiation.
+    let m2_x4 = unit!(m^2).rescale(4.0);
+    assert_eq!(qty![36.0 m^2],        qty![9.0 m2_x4]);
+    assert_eq!(qty![36.0 m^2].sqrt(), qty![9.0 m2_x4].sqrt());
+    assert_eq!(qty![36.0 m^2].sqrt(), qty![6.0 m]);
+
+    //region Multiple rescaled exponentiations.
+    let m2_x3 = unit!(m^2).rescale(3.0);
+    let m4_x9 = unit!(m^4).rescale(9.0);
+
+    //  Sanity check: Unit relationships with base.
+    assert_eq!(m2_x3.dimension(), (m*m).dimension());
+    assert_eq!(m2_x3.scale(),     (m*m).scale() * 3.0);
+    assert_eq!(m4_x9.dimension(), (m*m*m*m).dimension());
+    assert_eq!(m4_x9.scale(),     (m*m*m*m).scale() * 9.0);
+
+    //  Sanity check: Relationship between units.
+    assert_eq!(m4_x9.dimension(), (m2_x3 * m2_x3).dimension());
+    assert_eq!(m4_x9.scale(),     (m2_x3 * m2_x3).scale());
+
+    //  Compare quantities.
+    assert_eq!(qty![36.0 m^2  ],        qty![ 12.0 m2_x3]);
+    assert_eq!(qty![36.0 m4_x9],        qty![324.0 m^4  ]);
+    assert_eq!(qty![36.0 m4_x9].sqrt(), qty![  6.0 m2_x3]);
+    assert_eq!(qty![36.0 m4_x9],        qty![  6.0 m2_x3].squared());
+    //endregion
+}
