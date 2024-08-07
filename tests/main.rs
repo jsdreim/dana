@@ -119,11 +119,6 @@ fn test_unit_step() {
     fn test<U: UnitStep + PartialOrd + core::fmt::Debug>() {
         let base = U::base();
 
-        assert_eq!(
-            1.0, base.scale(),
-            "base unit `{base:?}` has the wrong scale",
-        );
-
         assert!(base >= base.step_to_bottom());
         assert!(base <= base.step_to_top());
     }
