@@ -4,6 +4,9 @@
 ## Upcoming
 
 ### Added
+- Implemented `UnitRescale`.
+- Implemented `CanRoot<3>` for `Volume`. Output type is `UnitRescale<Length>`.
+- Added `cc` as a symbol for cubic centimeters.
 ### Changed
 - Reworked `serde` support for compound and anonymous unit types.
 ### Fixed
