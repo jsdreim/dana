@@ -154,6 +154,7 @@ fn test_scale() {
 
     assert_eq!(as_mm, as_cm * 10.0);
 
+    //region Specialized cases for metric units.
     assert_eq!(qty![1.0 uL].cbrt(), qty![  1.0 mm]);
     assert_eq!(qty![1.0 mL].cbrt(), qty![ 10.0 mm]);
     assert_eq!(qty![1.0  L].cbrt(), qty![100.0 mm]);
@@ -169,6 +170,22 @@ fn test_scale() {
     assert_eq!(qty![1.0 ML], qty![ 10.0  m].cubed());
     assert_eq!(qty![1.0 GL], qty![100.0  m].cubed());
     assert_eq!(qty![1.0 TL], qty![  1.0 km].cubed());
+    //endregion
+
+    //  General case for non-metric units.
+    for unit in [
+        Volume::Dram, Volume::FlOunce, Volume::Cup,
+        Volume::Pint, Volume::Quart, Volume::Gallon,
+    ] {
+        assert_qty_approx!(
+            qty![1.0 L in unit].cbrt(), qty![0.1 m],
+            "incorrect cube root for {unit:?}",
+        );
+        assert_qty_approx!(
+            qty![1.0 L in unit], qty![0.1 m].cubed(),
+            "incorrect cube for {m:?} to {unit:?}",
+        );
+    }
 }
 
 
