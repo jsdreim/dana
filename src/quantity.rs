@@ -300,6 +300,15 @@ impl<U: Unit, V: Value> Quantity<U, V> {
         self.value * self.unit.cancel()
     }
 }
+
+impl<U: Unit, V: Value> Quantity<crate::units::UnitPow<U, typenum::P1>, V> where
+    U::Dim: crate::dimension::DimPowType<typenum::P1>,
+{
+    /// Return an equivalent quantity with its exponent removed.
+    pub fn cancel_exponent(self) -> Quantity<U, V> {
+        self.unit.0.quantity(self.value)
+    }
+}
 //endregion
 
 
