@@ -115,7 +115,7 @@ fn test_quantity_norm() {
 
 
 #[test]
-fn test_unit_scale() {
+fn test_unit_step() {
     fn test<U: UnitStep + PartialOrd + core::fmt::Debug>() {
         let base = U::base();
 
