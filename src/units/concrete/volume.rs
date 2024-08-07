@@ -1,4 +1,8 @@
-use crate::units::{Length, traits::{CanRoot, Unit, UnitConcrete, UnitStep}, UnitRescale};
+use crate::units::{
+    Length,
+    traits::{CanRoot, Unit, UnitConcrete, UnitMixed, UnitStep},
+    UnitRescale,
+};
 
 
 const _GALLON_IMP: f64 = 4.546_090_e-3;
@@ -25,6 +29,20 @@ pub enum Volume {
     MegaLiter,
     GigaLiter,
     TeraLiter,
+}
+
+impl UnitMixed for Volume {
+    fn to_si(&self) -> Self {
+        match self {
+            Self::Dram => Self::MilliLiter,
+            Self::FlOunce => Self::MilliLiter,
+            Self::Cup => Self::MilliLiter,
+            Self::Pint => Self::Liter,
+            Self::Quart => Self::Liter,
+            Self::Gallon => Self::Liter,
+            _ => *self,
+        }
+    }
 }
 
 impl Unit for Volume {

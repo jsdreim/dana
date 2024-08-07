@@ -143,6 +143,18 @@ pub trait Unit: Copy + Default + core::fmt::Debug + core::fmt::Display + Partial
 }
 
 
+/// A mixed unit type has variants that are SI units and variants that are not.
+pub trait UnitMixed: Unit {
+    /// Return the SI unit nearest to this one.
+    fn to_si(&self) -> Self;
+
+    /// Return `true` if this unit is an SI unit.
+    fn is_si(&self) -> bool {
+        self.to_si().eq(self)
+    }
+}
+
+
 /// A "compound" unit is defined in terms of other units, and represents a
 ///     mathematical relationship between them.
 pub trait UnitCompound: Unit {}

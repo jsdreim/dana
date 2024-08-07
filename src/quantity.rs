@@ -141,6 +141,21 @@ impl<U: Unit, V: Value> Quantity<U, V> {
         }
     }
 
+    /// Return an equivalent quantity with the SI unit nearest to the current
+    ///     unit. If the current unit is already an SI unit, it will not be
+    ///     changed.
+    pub fn into_si(self) -> Self where
+        U: UnitMixed,
+    {
+        let si: U = self.unit.to_si();
+
+        if self.unit == si {
+            self
+        } else {
+            self.with_unit(si)
+        }
+    }
+
     /// Return a [`QtySimd`](crate::simd::QtySimd) array, for SIMD operations,
     ///     populated by this quantity.
     #[cfg(feature = "simd")]
