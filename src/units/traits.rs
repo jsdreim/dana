@@ -19,6 +19,9 @@ pub use unit_step::*;
 mod unit_binary;
 pub use unit_binary::*;
 
+mod unit_unary;
+pub use unit_unary::*;
+
 
 /// Trait for a type that represents a dimensional "unit".
 pub trait Unit: Copy + Default + core::fmt::Debug + core::fmt::Display + PartialEq {
