@@ -5,10 +5,10 @@ version.workspace = true
 
 authors.workspace = true
 repository.workspace = true
-readme.workspace = true
 documentation.workspace = true
+readme.workspace = true
 
-exclude.workspace = true
+include.workspace = true
 categories.workspace = true
 keywords.workspace = true
 
