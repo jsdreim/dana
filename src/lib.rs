@@ -92,7 +92,6 @@
 
 #![no_std]
 #![cfg_attr(feature = "simd", feature(portable_simd))]
-#![warn(missing_docs)]
 
 //  NOTE: Hack to allow proc macros to work both inside and outside the crate.
 extern crate self as dana;
