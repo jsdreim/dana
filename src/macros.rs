@@ -4,6 +4,8 @@
 //!     public for technical reasons; Macros are exported at the crate level and
 //!     re-exported in the [prelude].
 
+#![doc(hidden)]
+
 #[allow(unused_imports)]
 use crate::{*, prelude::*};
 
