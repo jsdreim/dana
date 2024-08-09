@@ -82,23 +82,23 @@ impl<U: Unit, E: Integer> PartialOrd for UnitPow<U, E> where Self: Unit {
 
 
 //region Exponential traits.
-impl<U: Unit, E1, const E2: i32> CanPow<E2> for UnitPow<U, E1> where
+impl<U: Unit, E1: Integer, const E2: i32> CanPow<E2> for UnitPow<U, E1> where
     ExpHack<E2>: HasTypenum,
-    E1: Integer + Mul<<ExpHack<E2> as HasTypenum>::Typenum>,
+    E1: Mul<<ExpHack<E2> as HasTypenum>::Typenum>,
     <E1 as Mul<<ExpHack<E2> as HasTypenum>::Typenum>>::Output: Integer,
-    U::Dim: DimPowType<E1>,
-    U::Dim: DimPowType<<E1 as Mul<<ExpHack<E2> as HasTypenum>::Typenum>>::Output>,
+    UnitPow<U, E1>: Unit,
+    UnitPow<U, E1::Output>: Unit,
 {
     type Output = UnitPow<U, E1::Output>;
     fn pow(self) -> Self::Output { UnitPow::new(self.0) }
 }
 
-impl<U: Unit, E, const D: i32> CanRoot<D> for UnitPow<U, E> where
+impl<U: Unit, E: Integer, const D: i32> CanRoot<D> for UnitPow<U, E> where
     ExpHack<D>: HasTypenum,
-    E: Integer + PartialDiv<<ExpHack<D> as HasTypenum>::Typenum>,
+    E: PartialDiv<<ExpHack<D> as HasTypenum>::Typenum>,
     <E as PartialDiv<<ExpHack<D> as HasTypenum>::Typenum>>::Output: Integer,
-    U::Dim: DimPowType<E>,
-    U::Dim: DimPowType<<E as PartialDiv<<ExpHack<D> as HasTypenum>::Typenum>>::Output>,
+    UnitPow<U, E>: Unit,
+    UnitPow<U, E::Output>: Unit,
 {
     type Output = UnitPow<U, E::Output>;
     fn root(self) -> Self::Output { UnitPow::new(self.0) }
