@@ -36,9 +36,8 @@ mod impl_ops {
 
     //region `Div` impls.
     impl<U: Unit, W: Unit> Div<W> for PerUnit<U> where
-        U::Dim: Inv,
-        <U::Dim as Inv>::Output: DimType + Div<W::Dim>,
-        <<U::Dim as Inv>::Output as Div<W::Dim>>::Output: DimType,
+        U::Dim: CanDimInv,
+        <U::Dim as CanDimInv>::Output: CanDimDiv<W::Dim>,
     {
         type Output = UnitDiv<Self, W>;
 
@@ -48,6 +47,7 @@ mod impl_ops {
     }
 
     impl<A: Unit, B: Unit, W: Unit> Div<W> for UnitDiv<A, B> where
+        A: CanUnitDiv<B>,
         A::Dim: Div<B::Dim>,
         <A::Dim as Div<B::Dim>>::Output: DimType + Div<W::Dim>,
         <<A::Dim as Div<B::Dim>>::Output as Div<W::Dim>>::Output: DimType,
@@ -86,9 +86,8 @@ mod impl_ops {
 
     //region `Mul` impls.
     impl<U: Unit, W: Unit> Mul<W> for PerUnit<U> where
-        U::Dim: Inv,
-        <U::Dim as Inv>::Output: DimType + Mul<W::Dim>,
-        <<U::Dim as Inv>::Output as Mul<W::Dim>>::Output: DimType,
+        U::Dim: CanDimInv,
+        <U::Dim as CanDimInv>::Output: CanDimMul<W::Dim>,
     {
         type Output = UnitMul<Self, W>;
 
@@ -136,9 +135,8 @@ mod impl_ops {
 
     //region `Inv` impls.
     impl<U: Unit> Inv for PerUnit<U> where
-        U::Dim: Inv,
-        <U::Dim as Inv>::Output: DimType + Inv,
-        <<U::Dim as Inv>::Output as Inv>::Output: DimType,
+        U::Dim: CanDimInv,
+        <U::Dim as CanDimInv>::Output: CanDimInv,
     {
         type Output = PerUnit<Self>;
 
@@ -148,10 +146,8 @@ mod impl_ops {
     }
 
     impl<A: Unit, B: Unit> Inv for UnitDiv<A, B> where
-        A::Dim: Div<B::Dim>,
-        <A::Dim as Div<B::Dim>>::Output: DimType,
-        B::Dim: Div<A::Dim>,
-        <B::Dim as Div<A::Dim>>::Output: DimType,
+        A::Dim: CanDimDiv<B::Dim>,
+        B::Dim: CanDimDiv<A::Dim>,
     {
         type Output = UnitDiv<B, A>;
 

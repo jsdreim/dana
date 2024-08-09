@@ -1,20 +1,13 @@
 //! Module for the divided unit type.
 
-use core::ops::Div;
 use crate::{dimension::*, units::traits::*};
 
 
 /// One unit divided by another; For example, Meters per Second.
 #[derive(Clone, Copy, Debug, Default, Hash, Eq, PartialEq, Ord, PartialOrd)]
-pub struct UnitDiv<A: Unit, B: Unit>(pub A, pub B) where
-    A::Dim: Div<B::Dim>,
-    <A::Dim as Div<B::Dim>>::Output: DimType,
-;
+pub struct UnitDiv<A: Unit, B: Unit>(pub A, pub B);
 
-impl<A: Unit, B: Unit> UnitDiv<A, B> where
-    A::Dim: Div<B::Dim>,
-    <A::Dim as Div<B::Dim>>::Output: DimType,
-{
+impl<A: Unit, B: Unit> UnitDiv<A, B> {
     /// Construct a new [`UnitDiv`] around the inputs.
     pub const fn new(lhs: A, rhs: B) -> Self { Self(lhs, rhs) }
 
@@ -26,10 +19,11 @@ impl<A: Unit, B: Unit> UnitDiv<A, B> where
 }
 
 impl<A: Unit, B: Unit> Unit for UnitDiv<A, B> where
-    A::Dim: Div<B::Dim>,
-    <A::Dim as Div<B::Dim>>::Output: DimType,
+    // A: CanUnitDiv<B>, // TODO
+    A::Dim: CanDimDiv<B::Dim>,
 {
-    type Dim = <A::Dim as Div<B::Dim>>::Output;
+    // type Dim = A::DimOut;
+    type Dim = <A::Dim as CanDimDiv<B::Dim>>::Output;
     // type ScaleType = f64;
 
     fn scale(&self) -> f64 {
@@ -37,10 +31,7 @@ impl<A: Unit, B: Unit> Unit for UnitDiv<A, B> where
     }
 }
 
-impl<A: Unit, B: Unit> core::fmt::Display for UnitDiv<A, B> where
-    A::Dim: Div<B::Dim>,
-    <A::Dim as Div<B::Dim>>::Output: DimType,
-{
+impl<A: Unit, B: Unit> core::fmt::Display for UnitDiv<A, B> where Self: Unit {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         if f.alternate() {
             write!(f, "({:#}/{:#})", self.0, self.1)
@@ -51,15 +42,9 @@ impl<A: Unit, B: Unit> core::fmt::Display for UnitDiv<A, B> where
 }
 
 
-impl<A: Unit, B: Unit> UnitCompound for UnitDiv<A, B> where
-    A::Dim: Div<B::Dim>,
-    <A::Dim as Div<B::Dim>>::Output: DimType,
-{}
+impl<A: Unit, B: Unit> UnitCompound for UnitDiv<A, B> where Self: Unit {}
 
-impl<A: Unit, B: Unit> UnitBinary for UnitDiv<A, B> where
-    A::Dim: Div<B::Dim>,
-    <A::Dim as Div<B::Dim>>::Output: DimType,
-{
+impl<A: Unit, B: Unit> UnitBinary for UnitDiv<A, B> where Self: Unit {
     type Lhs = A;
     type Rhs = B;
 
@@ -70,10 +55,7 @@ impl<A: Unit, B: Unit> UnitBinary for UnitDiv<A, B> where
 }
 
 
-impl<A: UnitStep, B: UnitStep> UnitStep for UnitDiv<A, B> where
-    A::Dim: Div<B::Dim>,
-    <A::Dim as Div<B::Dim>>::Output: DimType,
-{
+impl<A: UnitStep, B: UnitStep> UnitStep for UnitDiv<A, B> where Self: Unit {
     fn step_down(&self) -> Option<Self> {
         match (self.step_lhs_down(), self.step_rhs_up()) {
             (Some(lhs), Some(rhs)) => if lhs.scale() < rhs.scale() {

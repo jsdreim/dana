@@ -1,29 +1,21 @@
 //! Module for the multiplied unit type.
 
-use core::ops::Mul;
 use crate::{dimension::*, units::traits::*};
 
 
 /// Two units multiplied; For example, Newton-Meters.
 #[derive(Clone, Copy, Debug, Default, Hash, Eq, PartialEq, Ord, PartialOrd)]
-pub struct UnitMul<A: Unit, B: Unit>(pub A, pub B) where
-    A::Dim: Mul<B::Dim>,
-    <A::Dim as Mul<B::Dim>>::Output: DimType,
-;
+pub struct UnitMul<A: Unit, B: Unit>(pub A, pub B);
 
-impl<A: Unit, B: Unit> UnitMul<A, B> where
-    A::Dim: Mul<B::Dim>,
-    <A::Dim as Mul<B::Dim>>::Output: DimType,
-{
+impl<A: Unit, B: Unit> UnitMul<A, B> {
     /// Construct a new [`UnitMul`] around the inputs.
     pub const fn new(lhs: A, rhs: B) -> Self { Self(lhs, rhs) }
 }
 
 impl<A: Unit, B: Unit> Unit for UnitMul<A, B> where
-    A::Dim: Mul<B::Dim>,
-    <A::Dim as Mul<B::Dim>>::Output: DimType,
+    A::Dim: CanDimMul<B::Dim>,
 {
-    type Dim = <A::Dim as Mul<B::Dim>>::Output;
+    type Dim = <A::Dim as CanDimMul<B::Dim>>::Output;
     // type ScaleType = f64;
 
     fn scale(&self) -> f64 {
@@ -31,10 +23,7 @@ impl<A: Unit, B: Unit> Unit for UnitMul<A, B> where
     }
 }
 
-impl<A: Unit, B: Unit> core::fmt::Display for UnitMul<A, B> where
-    A::Dim: Mul<B::Dim>,
-    <A::Dim as Mul<B::Dim>>::Output: DimType,
-{
+impl<A: Unit, B: Unit> core::fmt::Display for UnitMul<A, B> where Self: Unit {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         if f.alternate() {
             write!(f, "({:#}*{:#})", self.0, self.1)
@@ -45,15 +34,9 @@ impl<A: Unit, B: Unit> core::fmt::Display for UnitMul<A, B> where
 }
 
 
-impl<A: Unit, B: Unit> UnitCompound for UnitMul<A, B> where
-    A::Dim: Mul<B::Dim>,
-    <A::Dim as Mul<B::Dim>>::Output: DimType,
-{}
+impl<A: Unit, B: Unit> UnitCompound for UnitMul<A, B> where Self: Unit {}
 
-impl<A: Unit, B: Unit> UnitBinary for UnitMul<A, B> where
-    A::Dim: Mul<B::Dim>,
-    <A::Dim as Mul<B::Dim>>::Output: DimType,
-{
+impl<A: Unit, B: Unit> UnitBinary for UnitMul<A, B> where Self: Unit {
     type Lhs = A;
     type Rhs = B;
 
@@ -64,10 +47,7 @@ impl<A: Unit, B: Unit> UnitBinary for UnitMul<A, B> where
 }
 
 
-impl<A: UnitStep, B: UnitStep> UnitStep for UnitMul<A, B> where
-    A::Dim: Mul<B::Dim>,
-    <A::Dim as Mul<B::Dim>>::Output: DimType,
-{
+impl<A: UnitStep, B: UnitStep> UnitStep for UnitMul<A, B> where Self: Unit {
     fn step_down(&self) -> Option<Self> {
         match (self.step_lhs_down(), self.step_rhs_down()) {
             (Some(lhs), Some(rhs)) => if lhs.scale() < rhs.scale() {

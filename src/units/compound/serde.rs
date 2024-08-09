@@ -1,14 +1,15 @@
 #![cfg(feature = "serde")]
 
-use core::ops::{Div, Mul};
-use num_traits::Inv;
 use serde::{
     de::{DeserializeOwned, Unexpected},
     Deserialize, Deserializer,
     Serialize, Serializer,
 };
 use typenum::Integer;
-use crate::{dimension::{DimPowType, DimType}, prelude::*};
+use crate::{
+    dimension::{CanDimDiv, CanDimInv, CanDimMul, DimPowType, DimType},
+    prelude::*,
+};
 
 
 /// Helper enum for de/serialization of unit div/mul.
@@ -22,7 +23,7 @@ enum SerdeBinary<A: Unit, B: Unit> {
 
 //region Division.
 impl<A: Unit, B: Unit> Serialize for UnitDiv<A, B> where
-    A::Dim: Div<B::Dim>, <A::Dim as Div<B::Dim>>::Output: DimType,
+    A::Dim: CanDimDiv<B::Dim>,
     A: Serialize, B: Serialize,
 {
     fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
@@ -31,7 +32,7 @@ impl<A: Unit, B: Unit> Serialize for UnitDiv<A, B> where
 }
 
 impl<'de, A: Unit, B: Unit> Deserialize<'de> for UnitDiv<A, B> where
-    A::Dim: Div<B::Dim>, <A::Dim as Div<B::Dim>>::Output: DimType,
+    A::Dim: CanDimDiv<B::Dim>,
     A: DeserializeOwned, B: DeserializeOwned,
 {
     fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
@@ -50,7 +51,7 @@ impl<'de, A: Unit, B: Unit> Deserialize<'de> for UnitDiv<A, B> where
 
 //region Multiplication.
 impl<A: Unit, B: Unit> Serialize for UnitMul<A, B> where
-    A::Dim: Mul<B::Dim>, <A::Dim as Mul<B::Dim>>::Output: DimType,
+    A::Dim: CanDimMul<B::Dim>,
     A: Serialize, B: Serialize,
 {
     fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
@@ -59,7 +60,7 @@ impl<A: Unit, B: Unit> Serialize for UnitMul<A, B> where
 }
 
 impl<'de, A: Unit, B: Unit> Deserialize<'de> for UnitMul<A, B> where
-    A::Dim: Mul<B::Dim>, <A::Dim as Mul<B::Dim>>::Output: DimType,
+    A::Dim: CanDimMul<B::Dim>,
     A: DeserializeOwned, B: DeserializeOwned,
 {
     fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
@@ -83,7 +84,7 @@ struct SerdeInv<U: Unit> {
 }
 
 impl<U: Unit> Serialize for PerUnit<U> where
-    U::Dim: Inv, <U::Dim as Inv>::Output: DimType,
+    U::Dim: CanDimInv,
     U: Serialize,
 {
     fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
@@ -92,7 +93,7 @@ impl<U: Unit> Serialize for PerUnit<U> where
 }
 
 impl<'de, U: Unit> Deserialize<'de> for PerUnit<U> where
-    U::Dim: Inv, <U::Dim as Inv>::Output: DimType,
+    U::Dim: CanDimInv,
     U: DeserializeOwned,
 {
     fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {

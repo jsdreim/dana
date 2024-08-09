@@ -1,9 +1,13 @@
 //! Module for traits describing aspects of units.
 
 use crate::{
-    dimension::DimType,
+    dimension::{CanDimDiv, CanDimInv, CanDimMul, DimType},
     Quantity,
-    units::{unit_anon::UnitAnon, unit_rescale::{Rescale, UnitRescale}},
+    units::{
+        compound::*,
+        unit_anon::UnitAnon,
+        unit_rescale::{Rescale, UnitRescale},
+    },
     Value,
 };
 
@@ -182,4 +186,52 @@ pub trait UnitConcrete: Unit + UnitStep {
     /// Return a textual representation of this unit. Usually a base symbol with
     ///     an optional SI scaling prefix.
     fn symbol(&self) -> &'static str;
+}
+
+
+/// Trait for a type that, when inverted, yields a [`Unit`] type.
+pub trait CanUnitInv {
+    /// The [`Dimension`](crate::dimension::Dimension) of the output type.
+    type DimOut: DimType;
+    /// The output [`Unit`] type.
+    type Output: Unit<Dim=Self::DimOut>;
+}
+
+impl<U: Unit> CanUnitInv for U where
+    U::Dim: CanDimInv,
+{
+    type DimOut = <U::Dim as CanDimInv>::Output;
+    type Output = PerUnit<U>;
+}
+
+
+/// Trait for a type that, when divided, yields a [`Unit`] type.
+pub trait CanUnitDiv<U> {
+    /// The [`Dimension`](crate::dimension::Dimension) of the output type.
+    type DimOut: DimType;
+    /// The output [`Unit`] type.
+    type Output: Unit<Dim=Self::DimOut>;
+}
+
+impl<A: Unit, B: Unit> CanUnitDiv<B> for A where
+    A::Dim: CanDimDiv<B::Dim>,
+{
+    type DimOut = <A::Dim as CanDimDiv<B::Dim>>::Output;
+    type Output = UnitDiv<A, B>;
+}
+
+
+/// Trait for a type that, when multiplied, yields a [`Unit`] type.
+pub trait CanUnitMul<U> {
+    /// The [`Dimension`](crate::dimension::Dimension) of the output type.
+    type DimOut: DimType;
+    /// The output [`Unit`] type.
+    type Output: Unit<Dim=Self::DimOut>;
+}
+
+impl<A: Unit, B: Unit> CanUnitMul<B> for A where
+    A::Dim: CanDimMul<B::Dim>,
+{
+    type DimOut = <A::Dim as CanDimMul<B::Dim>>::Output;
+    type Output = UnitMul<A, B>;
 }

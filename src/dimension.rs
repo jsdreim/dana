@@ -208,6 +208,16 @@ for Dimension<L1, M1, T1, I1, K1, N1, J1> where
     }
 }
 
+pub trait CanDimDiv<D> {
+    type Output: DimType;
+}
+
+impl<A: DimType, B: DimType> CanDimDiv<B> for A where
+    A: Div<B>, A::Output: DimType,
+{
+    type Output = A::Output;
+}
+
 
 /// Multiplication.
 impl<
@@ -234,6 +244,16 @@ for Dimension<L1, M1, T1, I1, K1, N1, J1> where
     }
 }
 
+pub trait CanDimMul<D> {
+    type Output: DimType;
+}
+
+impl<A: DimType, B: DimType> CanDimMul<B> for A where
+    A: Mul<B>, A::Output: DimType,
+{
+    type Output = A::Output;
+}
+
 
 /// Inversion.
 impl<
@@ -252,6 +272,16 @@ impl<
     >;
 
     fn inv(self) -> Self::Output { Default::default() }
+}
+
+pub trait CanDimInv {
+    type Output: DimType;
+}
+
+impl<D: DimType> CanDimInv for D where
+    D: Inv, D::Output: DimType,
+{
+    type Output = D::Output;
 }
 
 

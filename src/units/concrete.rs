@@ -7,7 +7,11 @@
 
 #![allow(missing_docs)]
 
-use super::traits::*;
+use core::ops::{Div, Mul};
+use crate::{
+    dimension::{CanDimDiv, CanDimMul, DimPowType, /*DimType,*/ ExpHack, HasTypenum},
+    units::{compound::*, traits::*},
+};
 
 
 /// # New Unit Checklist
@@ -64,28 +68,24 @@ macro_rules! concrete_types {
         }
 
         /// Unit division.
-        impl<U: $crate::Unit> ::core::ops::Div<U> for $unit where
-            $crate::dimension::$unit: ::core::ops::Div<<U as $crate::Unit>::Dim>,
-            <$crate::dimension::$unit as ::core::ops::Div<<U as $crate::Unit>::Dim>>::Output:
-                $crate::dimension::DimType,
+        impl<U: Unit> Div<U> for $unit where
+            $crate::dimension::$unit: CanDimDiv<<U as Unit>::Dim>,
         {
-            type Output = $crate::units::UnitDiv<Self, U>;
+            type Output = UnitDiv<Self, U>;
 
             fn div(self, rhs: U) -> Self::Output {
-                $crate::units::UnitDiv::new(self, rhs)
+                UnitDiv::new(self, rhs)
             }
         }
 
         /// Unit multiplication.
-        impl<U: $crate::Unit> ::core::ops::Mul<U> for $unit where
-            $crate::dimension::$unit: ::core::ops::Mul<<U as $crate::Unit>::Dim>,
-            <$crate::dimension::$unit as ::core::ops::Mul<<U as $crate::Unit>::Dim>>::Output:
-                $crate::dimension::DimType,
+        impl<U: Unit> Mul<U> for $unit where
+            $crate::dimension::$unit: CanDimMul<<U as Unit>::Dim>,
         {
-            type Output = $crate::units::UnitMul<Self, U>;
+            type Output = UnitMul<Self, U>;
 
             fn mul(self, rhs: U) -> Self::Output {
-                $crate::units::UnitMul::new(self, rhs)
+                UnitMul::new(self, rhs)
             }
         }
 
@@ -93,24 +93,22 @@ macro_rules! concrete_types {
         impl ::num_traits::Inv for $unit where
             $crate::dimension::$unit: ::num_traits::Inv,
         {
-            type Output = $crate::units::compound::PerUnit<Self>;
+            type Output = PerUnit<Self>;
 
             fn inv(self) -> Self::Output {
-                $crate::units::compound::PerUnit::new(self)
+                PerUnit::new(self)
             }
         }
 
         /// Unit exponentiation.
-        impl<const E: i32> $crate::units::traits::CanPow<E> for $unit where
-            $crate::dimension::ExpHack<E>: $crate::dimension::HasTypenum,
-            $crate::dimension::$unit: $crate::dimension::DimPowType<
-                <$crate::dimension::ExpHack<E> as $crate::dimension::HasTypenum>::Typenum,
-            >,
+        impl<const E: i32> CanPow<E> for $unit where
+            ExpHack<E>: HasTypenum,
+            $crate::dimension::$unit: DimPowType<<ExpHack<E> as HasTypenum>::Typenum>,
         {
-            type Output = $crate::units::UnitPow<Self, <$crate::dimension::ExpHack<E> as $crate::dimension::HasTypenum>::Typenum>;
+            type Output = UnitPow<Self, <ExpHack<E> as HasTypenum>::Typenum>;
 
             fn pow(self) -> Self::Output {
-                $crate::units::UnitPow::new(self)
+                UnitPow::new(self)
             }
         }
         )+
