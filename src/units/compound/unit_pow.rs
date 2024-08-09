@@ -49,6 +49,18 @@ impl<U: Unit, E: Integer> Unit for UnitPow<U, E> where
     }
 }
 
+impl<U: Unit, E: Integer> UnitCompound for UnitPow<U, E> where
+    U::Dim: DimPowType<E>,
+{}
+
+impl<U: Unit, E: Integer> UnitUnary for UnitPow<U, E> where
+    U::Dim: DimPowType<E>,
+{
+    type Inner = U;
+    fn unary(inner: Self::Inner) -> Self { Self::new(inner) }
+    fn inner(&self) -> Self::Inner { self.0 }
+}
+
 impl<U: Unit + core::fmt::Debug, E: Integer> core::fmt::Debug for UnitPow<U, E> where
     U::Dim: DimPowType<E>,
 {

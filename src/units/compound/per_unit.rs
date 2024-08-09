@@ -38,6 +38,20 @@ impl<U: Unit> Unit for PerUnit<U> where
     }
 }
 
+impl<U: Unit> UnitCompound for PerUnit<U> where
+    U::Dim: Inv,
+    <U::Dim as Inv>::Output: DimType,
+{}
+
+impl<U: Unit> UnitUnary for PerUnit<U> where
+    U::Dim: Inv,
+    <U::Dim as Inv>::Output: DimType,
+{
+    type Inner = U;
+    fn unary(inner: Self::Inner) -> Self { Self::new(inner) }
+    fn inner(&self) -> Self::Inner { self.0 }
+}
+
 impl<U: Unit> core::fmt::Display for PerUnit<U> where
     U::Dim: Inv,
     <U::Dim as Inv>::Output: DimType,
