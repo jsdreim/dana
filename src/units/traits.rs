@@ -10,11 +10,11 @@ use crate::{
 mod exponential;
 pub use exponential::*;
 
+mod step;
+pub use step::*;
+
 pub mod transform;
 pub use transform::*;
-
-mod unit_step;
-pub use unit_step::*;
 
 mod unit_binary;
 pub use unit_binary::*;
