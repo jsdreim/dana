@@ -1,6 +1,6 @@
 //! Module for the exponentiated unit type.
 
-use core::{marker::PhantomData, ops::Mul};
+use core::{cmp::Ordering, fmt::{Debug, Display}, marker::PhantomData, ops::Mul};
 use typenum::{Integer, PartialDiv};
 use crate::{dimension::*, units::traits::*};
 
@@ -16,26 +16,14 @@ pub type UnitCubed<U> = UnitPowN<U, 3>;
 
 
 /// A unit raised to an arbitrary power.
-#[derive(Clone, Copy, Default, Hash, Eq, Ord, PartialOrd)]
+#[derive(Clone, Copy, Default, Hash)]
 #[repr(transparent)]
 //  TODO: Switch `E` to `i32` const param.
-pub struct UnitPow<U: Unit, E: Integer>(pub U, pub PhantomData<E>) where
-    U::Dim: DimPowType<E>,
-;
+pub struct UnitPow<U: Unit, E: Integer>(pub U, pub PhantomData<E>);
 
-impl<U: Unit, E: Integer> UnitPow<U, E> where
-    U::Dim: DimPowType<E>,
-{
+impl<U: Unit, E: Integer> UnitPow<U, E> {
     /// Construct a new [`UnitPow`] around the input.
     pub const fn new(unit: U) -> Self { Self(unit, PhantomData) }
-}
-
-impl<U: Unit, E: Integer> PartialEq for UnitPow<U, E> where
-    U::Dim: DimPowType<E>,
-{
-    fn eq(&self, other: &Self) -> bool {
-        self.scale().eq(&other.scale())
-    }
 }
 
 impl<U: Unit, E: Integer> Unit for UnitPow<U, E> where
@@ -49,33 +37,48 @@ impl<U: Unit, E: Integer> Unit for UnitPow<U, E> where
     }
 }
 
-impl<U: Unit, E: Integer> UnitCompound for UnitPow<U, E> where
-    U::Dim: DimPowType<E>,
-{}
+impl<U: Unit, E: Integer> UnitCompound for UnitPow<U, E> where Self: Unit {}
 
-impl<U: Unit, E: Integer> UnitUnary for UnitPow<U, E> where
-    U::Dim: DimPowType<E>,
-{
+impl<U: Unit, E: Integer> UnitUnary for UnitPow<U, E> where Self: Unit {
     type Inner = U;
     fn unary(inner: Self::Inner) -> Self { Self::new(inner) }
     fn inner(&self) -> Self::Inner { self.0 }
 }
 
-impl<U: Unit + core::fmt::Debug, E: Integer> core::fmt::Debug for UnitPow<U, E> where
-    U::Dim: DimPowType<E>,
-{
+impl<U: Unit + Debug, E: Integer> Debug for UnitPow<U, E> where Self: Unit {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         write!(f, "UnitPow({:?}, {:?})", self.0, E::I32)
     }
 }
 
-impl<U: Unit, E: Integer> core::fmt::Display for UnitPow<U, E> where
-    U::Dim: DimPowType<E>,
-{
+impl<U: Unit, E: Integer> Display for UnitPow<U, E> where Self: Unit {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         write!(f, "{:#}^{}", self.0, E::I32)
     }
 }
+
+
+//region Non-derivable comparison traits.
+impl<U: Unit, E: Integer> PartialEq for UnitPow<U, E> where Self: Unit {
+    fn eq(&self, other: &Self) -> bool {
+        self.scale().eq(&other.scale())
+    }
+}
+
+impl<U: Unit, E: Integer> Eq for UnitPow<U, E> where Self: Unit {}
+
+impl<U: Unit, E: Integer> PartialOrd for UnitPow<U, E> where Self: Unit {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        self.scale().partial_cmp(&other.scale())
+    }
+}
+
+// impl<U: Unit, E: Integer> Ord for UnitPow<U, E> where Self: Unit {
+//     fn cmp(&self, other: &Self) -> Ordering {
+//         self.scale().cmp(&other.scale())
+//     }
+// }
+//endregion
 
 
 //region Exponential traits.
@@ -103,9 +106,7 @@ impl<U: Unit, E, const D: i32> CanRoot<D> for UnitPow<U, E> where
 //endregion
 
 
-impl<U: UnitStep, E: Integer> UnitStep for UnitPow<U, E> where
-    U::Dim: DimPowType<E>,
-{
+impl<U: UnitStep, E: Integer> UnitStep for UnitPow<U, E> where Self: Unit {
     fn step_down(&self) -> Option<Self> {
         Some(Self::new(self.0.step_down()?))
     }
