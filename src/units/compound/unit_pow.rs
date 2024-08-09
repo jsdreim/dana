@@ -58,6 +58,17 @@ impl<U: Unit, E: Integer> Display for UnitPow<U, E> where Self: Unit {
 }
 
 
+impl<U: UnitStep, E: Integer> UnitStep for UnitPow<U, E> where Self: Unit {
+    fn step_down(&self) -> Option<Self> {
+        Some(Self::new(self.0.step_down()?))
+    }
+
+    fn step_up(&self) -> Option<Self> {
+        Some(Self::new(self.0.step_up()?))
+    }
+}
+
+
 //region Non-derivable comparison traits.
 impl<U: Unit, E: Integer> PartialEq for UnitPow<U, E> where Self: Unit {
     fn eq(&self, other: &Self) -> bool {
@@ -104,14 +115,3 @@ impl<U: Unit, E: Integer, const D: i32> CanRoot<D> for UnitPow<U, E> where
     fn root(self) -> Self::Output { UnitPow::new(self.0) }
 }
 //endregion
-
-
-impl<U: UnitStep, E: Integer> UnitStep for UnitPow<U, E> where Self: Unit {
-    fn step_down(&self) -> Option<Self> {
-        Some(Self::new(self.0.step_down()?))
-    }
-
-    fn step_up(&self) -> Option<Self> {
-        Some(Self::new(self.0.step_up()?))
-    }
-}
