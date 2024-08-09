@@ -36,20 +36,17 @@ mod impl_ops {
 
     //region `Div` impls.
     impl<U: Unit, W: Unit> Div<W> for PerUnit<U> where
-        Self: Unit,
-        <Self as Unit>::Dim: CanDimDiv<<W as Unit>::Dim>,
+        Self: CanUnitDiv<W>,
     {
         type Output = UnitDiv<Self, W>;
 
         fn div(self, rhs: W) -> Self::Output {
-            UnitDiv::new(self, rhs)
+            Self::Output::new(self, rhs)
         }
     }
 
     impl<A: Unit, B: Unit, W: Unit> Div<W> for UnitDiv<A, B> where
-        // Self: CanUnitDiv<W>, // TODO
-        Self: Unit,
-        <Self as Unit>::Dim: CanDimDiv<<W as Unit>::Dim>,
+        Self: CanUnitDiv<W>,
     {
         type Output = UnitDiv<Self, W>;
 
@@ -59,8 +56,7 @@ mod impl_ops {
     }
 
     impl<A: Unit, B: Unit, W: Unit> Div<W> for UnitMul<A, B> where
-        Self: Unit,
-        <Self as Unit>::Dim: CanDimDiv<<W as Unit>::Dim>,
+        Self: CanUnitDiv<W>,
     {
         type Output = UnitDiv<Self, W>;
 
@@ -70,8 +66,7 @@ mod impl_ops {
     }
 
     impl<U: Unit, E: Integer, W: Unit> Div<W> for UnitPow<U, E> where
-        Self: Unit,
-        <Self as Unit>::Dim: CanDimDiv<<W as Unit>::Dim>,
+        Self: CanUnitDiv<W>,
     {
         type Output = UnitDiv<Self, W>;
 
@@ -83,92 +78,82 @@ mod impl_ops {
 
     //region `Mul` impls.
     impl<U: Unit, W: Unit> Mul<W> for PerUnit<U> where
-        Self: Unit,
-        <Self as Unit>::Dim: CanDimMul<<W as Unit>::Dim>,
+        Self: CanUnitMul<W>,
     {
         type Output = UnitMul<Self, W>;
 
         fn mul(self, rhs: W) -> Self::Output {
-            UnitMul::new(self, rhs)
+            Self::Output::new(self, rhs)
         }
     }
 
     impl<A: Unit, B: Unit, W: Unit> Mul<W> for UnitDiv<A, B> where
-        Self: Unit,
-        <Self as Unit>::Dim: CanDimMul<<W as Unit>::Dim>,
+        Self: CanUnitMul<W>,
     {
         type Output = UnitMul<Self, W>;
 
         fn mul(self, rhs: W) -> Self::Output {
-            UnitMul::new(self, rhs)
+            Self::Output::new(self, rhs)
         }
     }
 
     impl<A: Unit, B: Unit, W: Unit> Mul<W> for UnitMul<A, B> where
-        Self: Unit,
-        <Self as Unit>::Dim: CanDimMul<<W as Unit>::Dim>,
+        Self: CanUnitMul<W>,
     {
         type Output = UnitMul<Self, W>;
 
         fn mul(self, rhs: W) -> Self::Output {
-            UnitMul::new(self, rhs)
+            Self::Output::new(self, rhs)
         }
     }
 
     impl<U: Unit, E: Integer, W: Unit> Mul<W> for UnitPow<U, E> where
-        Self: Unit,
-        <Self as Unit>::Dim: CanDimMul<<W as Unit>::Dim>,
+        Self: CanUnitMul<W>,
     {
         type Output = UnitMul<Self, W>;
 
         fn mul(self, rhs: W) -> Self::Output {
-            UnitMul::new(self, rhs)
+            Self::Output::new(self, rhs)
         }
     }
     //endregion
 
     //region `Inv` impls.
     impl<U: Unit> Inv for PerUnit<U> where
-        Self: Unit,
-        <Self as Unit>::Dim: CanDimInv,
+        Self: CanUnitInv,
     {
         type Output = PerUnit<Self>;
 
         fn inv(self) -> Self::Output {
-            PerUnit::new(self)
+            Self::Output::new(self)
         }
     }
 
-    impl<A: Unit, B: Unit> Inv for UnitDiv<A, B> where
-        A::Dim: CanDimDiv<B::Dim>,
-        B::Dim: CanDimDiv<A::Dim>,
-    {
+    impl<A: Unit, B: Unit> Inv for UnitDiv<A, B> {
         type Output = UnitDiv<B, A>;
 
         fn inv(self) -> Self::Output {
-            UnitDiv::new(self.1, self.0)
+            Self::Output::new(self.1, self.0)
         }
     }
 
     impl<A: Unit, B: Unit> Inv for UnitMul<A, B> where
-        Self: Unit,
-        <Self as Unit>::Dim: CanDimInv,
+        Self: CanUnitInv,
     {
         type Output = PerUnit<Self>;
 
         fn inv(self) -> Self::Output {
-            PerUnit::new(self)
+            Self::Output::new(self)
         }
     }
 
     impl<U: Unit, E: Integer> Inv for UnitPow<U, E> where
-        Self: Unit,
-        <Self as Unit>::Dim: CanDimInv,
+        Self: CanUnitInv,
     {
         type Output = PerUnit<Self>;
 
         fn inv(self) -> Self::Output {
-            PerUnit::new(self)
+            Self::Output::new(self)
         }
     }
     //endregion
@@ -183,7 +168,7 @@ mod impl_ops {
         type Output = UnitPowN<Self, E>;
 
         fn pow(self) -> Self::Output {
-            UnitPow::new(self)
+            Self::Output::new(self)
         }
     }
 
@@ -195,7 +180,7 @@ mod impl_ops {
         type Output = UnitPowN<Self, E>;
 
         fn pow(self) -> Self::Output {
-            UnitPow::new(self)
+            Self::Output::new(self)
         }
     }
 
@@ -207,7 +192,7 @@ mod impl_ops {
         type Output = UnitPowN<Self, E>;
 
         fn pow(self) -> Self::Output {
-            UnitPow::new(self)
+            Self::Output::new(self)
         }
     }
     //endregion

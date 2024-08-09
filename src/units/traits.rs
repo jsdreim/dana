@@ -190,7 +190,7 @@ pub trait UnitConcrete: Unit + UnitStep {
 
 
 /// Trait for a type that, when inverted, yields a [`Unit`] type.
-pub trait CanUnitInv {
+pub trait CanUnitInv: Unit {
     /// The [`Dimension`](crate::dimension::Dimension) of the output type.
     type DimOut: DimType;
     /// The output [`Unit`] type.
@@ -206,7 +206,7 @@ impl<U: Unit> CanUnitInv for U where
 
 
 /// Trait for a type that, when divided, yields a [`Unit`] type.
-pub trait CanUnitDiv<U> {
+pub trait CanUnitDiv<U>: Unit {
     /// The [`Dimension`](crate::dimension::Dimension) of the output type.
     type DimOut: DimType;
     /// The output [`Unit`] type.
@@ -222,7 +222,7 @@ impl<A: Unit, B: Unit> CanUnitDiv<B> for A where
 
 
 /// Trait for a type that, when multiplied, yields a [`Unit`] type.
-pub trait CanUnitMul<U> {
+pub trait CanUnitMul<U>: Unit {
     /// The [`Dimension`](crate::dimension::Dimension) of the output type.
     type DimOut: DimType;
     /// The output [`Unit`] type.

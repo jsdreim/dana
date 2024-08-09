@@ -22,7 +22,7 @@ impl<U: Unit> PerUnit<U> {
 impl<U: Unit> Unit for PerUnit<U> where
     U::Dim: CanDimInv,
 {
-    type Dim = <U as CanUnitInv>::DimOut;
+    type Dim = <U::Dim as CanDimInv>::Output;
     // type ScaleType = f64;
 
     fn scale(&self) -> f64 {
