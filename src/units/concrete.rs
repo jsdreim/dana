@@ -9,7 +9,7 @@
 
 use core::ops::{Div, Mul};
 use crate::{
-    dimension::{CanDimDiv, CanDimMul, DimPowType, /*DimType,*/ ExpHack, HasTypenum},
+    dimension::{DimPowType, ExpHack, HasTypenum},
     units::{compound::*, traits::*},
 };
 
@@ -68,9 +68,7 @@ macro_rules! concrete_types {
         }
 
         /// Unit division.
-        impl<U: Unit> Div<U> for $unit where
-            $crate::dimension::$unit: CanDimDiv<<U as Unit>::Dim>,
-        {
+        impl<U: Unit> Div<U> for $unit where Self: CanUnitDiv<U> {
             type Output = UnitDiv<Self, U>;
 
             fn div(self, rhs: U) -> Self::Output {
@@ -79,9 +77,7 @@ macro_rules! concrete_types {
         }
 
         /// Unit multiplication.
-        impl<U: Unit> Mul<U> for $unit where
-            $crate::dimension::$unit: CanDimMul<<U as Unit>::Dim>,
-        {
+        impl<U: Unit> Mul<U> for $unit where Self: CanUnitMul<U> {
             type Output = UnitMul<Self, U>;
 
             fn mul(self, rhs: U) -> Self::Output {
@@ -90,9 +86,7 @@ macro_rules! concrete_types {
         }
 
         /// Unit inversion.
-        impl ::num_traits::Inv for $unit where
-            $crate::dimension::$unit: ::num_traits::Inv,
-        {
+        impl ::num_traits::Inv for $unit where Self: CanUnitInv {
             type Output = PerUnit<Self>;
 
             fn inv(self) -> Self::Output {
@@ -103,7 +97,7 @@ macro_rules! concrete_types {
         /// Unit exponentiation.
         impl<const E: i32> CanPow<E> for $unit where
             ExpHack<E>: HasTypenum,
-            $crate::dimension::$unit: DimPowType<<ExpHack<E> as HasTypenum>::Typenum>,
+            Self::Dim: DimPowType<<ExpHack<E> as HasTypenum>::Typenum>,
         {
             type Output = UnitPow<Self, <ExpHack<E> as HasTypenum>::Typenum>;
 
