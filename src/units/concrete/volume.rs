@@ -73,6 +73,8 @@ impl CanRoot<3> for Volume {
     type Output = UnitRescale<Length>;
 
     fn root(self) -> Self::Output {
+        use num_traits::real::Real;
+
         match self {
             Self::MicroLiter => Length::MilliMeter.rescale(1.0),
             Self::MilliLiter => Length::MilliMeter.rescale(10.0),
@@ -82,7 +84,7 @@ impl CanRoot<3> for Volume {
             Self::GigaLiter  => Length::     Meter.rescale(100.0),
             Self::TeraLiter  => Length:: KiloMeter.rescale(1.0),
 
-            _ => Length::Meter.rescale((self.scale() * 1e-3).cbrt() * 10.0),
+            _ => Length::Meter.rescale(Real::cbrt(self.scale() * 1e-3) * 10.0),
         }
     }
 }

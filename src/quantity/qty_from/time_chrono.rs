@@ -1,5 +1,5 @@
 use chrono::TimeDelta;
-use num_traits::AsPrimitive;
+use num_traits::{AsPrimitive, real::Real};
 use crate::{error::TimeDeltaError, Quantity, units::{*, Time::*}, Value};
 
 
@@ -10,7 +10,7 @@ impl<V: Value> TryFrom<Quantity<Time, V>> for TimeDelta {
         let v: V = qty.value_as(Second);
         let total: f64 = v.to_f64().ok_or(TimeDeltaError::CastFailed(v))?;
         let secs: i64 = total.trunc() as i64;
-        let nanos: u32 = (total.fract().abs() * 1e9) as u32;
+        let nanos: u32 = (Real::fract(total).abs() * 1e9) as u32;
 
         Self::new(secs, nanos).ok_or(TimeDeltaError::OutOfBounds)
     }

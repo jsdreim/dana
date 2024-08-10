@@ -33,7 +33,7 @@ impl<U: Unit, E: Integer> Unit for UnitPow<U, E> where
     // type ScaleType = f64;
 
     fn scale(&self) -> f64 {
-        self.0.scale().powi(E::I32)
+        num_traits::Pow::pow(self.0.scale(), E::I32)
     }
 }
 
