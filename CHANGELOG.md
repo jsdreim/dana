@@ -15,6 +15,7 @@
 - Simplified trait bounds for unit operations.
 - Renamed types and traits in `dimension` module.
 ### Fixed
+- Removed accidental requirements for standard library features on dependencies.
 
 
 ---
