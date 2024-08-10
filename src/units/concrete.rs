@@ -67,7 +67,7 @@ macro_rules! concrete_types {
             }
         }
 
-        /// Unit division.
+        //  Unit division.
         impl<U: Unit> Div<U> for $unit where Self: CanUnitDiv<U> {
             type Output = UnitDiv<Self, U>;
 
@@ -76,7 +76,7 @@ macro_rules! concrete_types {
             }
         }
 
-        /// Unit multiplication.
+        //  Unit multiplication.
         impl<U: Unit> Mul<U> for $unit where Self: CanUnitMul<U> {
             type Output = UnitMul<Self, U>;
 
@@ -85,7 +85,7 @@ macro_rules! concrete_types {
             }
         }
 
-        /// Unit inversion.
+        //  Unit inversion.
         impl ::num_traits::Inv for $unit where Self: CanUnitInv {
             type Output = PerUnit<Self>;
 
@@ -94,7 +94,7 @@ macro_rules! concrete_types {
             }
         }
 
-        /// Unit exponentiation.
+        //  Unit exponentiation.
         impl<const E: i32> CanPow<E> for $unit where
             ExpHack<E>: HasTypenum,
             Self::Dim: DimPowType<<ExpHack<E> as HasTypenum>::Typenum>,
