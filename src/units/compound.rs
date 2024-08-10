@@ -10,10 +10,10 @@ use super::traits::*;
 
 mod serde;
 
-pub mod per_unit;
-pub mod unit_div;
-pub mod unit_mul;
-pub mod unit_pow;
+mod per_unit;
+mod unit_div;
+mod unit_mul;
+mod unit_pow;
 
 pub use per_unit::PerUnit;
 pub use unit_div::UnitDiv;
@@ -21,10 +21,10 @@ pub use unit_mul::UnitMul;
 pub use unit_pow::*;
 
 
-/// Module to re-export all compound unit types.
-pub mod types {
-    pub use super::{PerUnit, UnitDiv, UnitMul, unit_pow::*};
-}
+// /// Module to re-export all compound unit types.
+// pub mod types {
+//     pub use super::{PerUnit, UnitDiv, UnitMul, unit_pow::*};
+// }
 
 
 /// Operator implementations grouped together, to compare them more easily.

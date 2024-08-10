@@ -25,7 +25,7 @@ macro_rules! concrete_mod {
     //  Doc comment provided, use it directly.
     ($(#[$attr:meta])+ $vis:vis use $module:ident::$unit:ident;) => {
         $(#[$attr])+
-        $vis mod $module;
+        mod $module;
         $vis use $module::$unit;
     };
     //  Doc comment not provided, generate one.
@@ -36,7 +36,7 @@ macro_rules! concrete_mod {
             "(", stringify!($module), "::", stringify!($unit), ")",
             " concrete unit type.",
         )]
-        $vis mod $module;
+        mod $module;
         $vis use $module::$unit;
     };
 }
@@ -51,10 +51,10 @@ macro_rules! concrete_types {
             pub use $module::$unit;
         })+
 
-        /// Module to re-export all concrete unit types.
-        pub mod types {
-            pub use super::{$($module::$unit,)+};
-        }
+        // /// Module to re-export all concrete unit types.
+        // pub mod types {
+        //     pub use super::{$($module::$unit,)+};
+        // }
 
         $(
         impl Default for $unit {

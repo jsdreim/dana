@@ -8,8 +8,8 @@ pub mod traits;
 pub mod unit_anon;
 pub mod unit_rescale;
 
-pub use compound::types::*;
-pub use concrete::types::*;
+pub use compound::*;
+pub use concrete::*;
 pub use derived::*;
 pub use traits::{Unit, UnitCompound, UnitConcrete};
 pub use unit_anon::UnitAnon;
@@ -88,8 +88,8 @@ pub mod derived {
 /// Module to re-export all unit types.
 pub mod types {
     pub use super::{
-        compound::types::*,
-        concrete::types::*,
+        compound::*,
+        concrete::*,
         derived::*,
         unit_anon::UnitAnon,
         unit_rescale::UnitRescale,
