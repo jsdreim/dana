@@ -1,7 +1,16 @@
 # Changelog
 
+
 ---
 ## Upcoming
+
+### Added
+### Changed
+### Fixed
+
+
+---
+## 0.4.0: 2024-08-10
 
 ### Added
 - Implemented `UnitRescale` type.
