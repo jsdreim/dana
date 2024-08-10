@@ -212,7 +212,7 @@ impl ToTokens for DimPow {
             let ident = syn::Ident::new(&label, *span);
 
             base = quote!(
-                <#base as ::dana::dimension::DimPowType<::typenum::#ident>>::Output
+                <#base as ::dana::dimension::CanDimPowType<::typenum::#ident>>::Output
             );
         }
 

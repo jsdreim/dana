@@ -71,10 +71,10 @@ impl<U: Unit, S: Rescale> Inv for UnitRescale<U, S> where
 
 
 impl<U: Unit, S: Rescale, const E: i32> CanPow<E> for UnitRescale<U, S> where
-    ExpHack<E>: HasTypenum,
-    U::Dim: DimPowType<<ExpHack<E> as HasTypenum>::Typenum>,
+    Exponent<E>: HasTypenum,
+    U::Dim: CanDimPowType<<Exponent<E> as HasTypenum>::Typenum>,
 {
-    type Output = UnitPow<Self, <ExpHack<E> as HasTypenum>::Typenum>;
+    type Output = UnitPow<Self, <Exponent<E> as HasTypenum>::Typenum>;
     fn pow(self) -> Self::Output { UnitPow::new(self) }
 }
 

@@ -6,7 +6,7 @@ use crate::{dimension::*, units::traits::*};
 
 
 /// Type alias allowing specification of a [`UnitPow`] by integer parameter.
-pub type UnitPowN<U, const E: i32> = UnitPow<U, <ExpHack<E> as HasTypenum>::Typenum>;
+pub type UnitPowN<U, const E: i32> = UnitPow<U, <Exponent<E> as HasTypenum>::Typenum>;
 
 /// Type alias for a unit to the second power.
 pub type UnitSquared<U> = UnitPowN<U, 2>;
@@ -27,9 +27,9 @@ impl<U: Unit, E: Integer> UnitPow<U, E> {
 }
 
 impl<U: Unit, E: Integer> Unit for UnitPow<U, E> where
-    U::Dim: DimPowType<E>,
+    U::Dim: CanDimPowType<E>,
 {
-    type Dim = <U::Dim as DimPowType<E>>::Output;
+    type Dim = <U::Dim as CanDimPowType<E>>::Output;
     // type ScaleType = f64;
 
     fn scale(&self) -> f64 {
@@ -94,9 +94,9 @@ impl<U: Unit, E: Integer> PartialOrd for UnitPow<U, E> where Self: Unit {
 
 //region Exponential traits.
 impl<U: Unit, E1: Integer, const E2: i32> CanPow<E2> for UnitPow<U, E1> where
-    ExpHack<E2>: HasTypenum,
-    E1: Mul<<ExpHack<E2> as HasTypenum>::Typenum>,
-    <E1 as Mul<<ExpHack<E2> as HasTypenum>::Typenum>>::Output: Integer,
+    Exponent<E2>: HasTypenum,
+    E1: Mul<<Exponent<E2> as HasTypenum>::Typenum>,
+    <E1 as Mul<<Exponent<E2> as HasTypenum>::Typenum>>::Output: Integer,
     UnitPow<U, E1>: Unit,
     UnitPow<U, E1::Output>: Unit,
 {
@@ -105,9 +105,9 @@ impl<U: Unit, E1: Integer, const E2: i32> CanPow<E2> for UnitPow<U, E1> where
 }
 
 impl<U: Unit, E: Integer, const D: i32> CanRoot<D> for UnitPow<U, E> where
-    ExpHack<D>: HasTypenum,
-    E: PartialDiv<<ExpHack<D> as HasTypenum>::Typenum>,
-    <E as PartialDiv<<ExpHack<D> as HasTypenum>::Typenum>>::Output: Integer,
+    Exponent<D>: HasTypenum,
+    E: PartialDiv<<Exponent<D> as HasTypenum>::Typenum>,
+    <E as PartialDiv<<Exponent<D> as HasTypenum>::Typenum>>::Output: Integer,
     UnitPow<U, E>: Unit,
     UnitPow<U, E::Output>: Unit,
 {

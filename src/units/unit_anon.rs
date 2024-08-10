@@ -104,10 +104,10 @@ impl<D: DimType, S: AnonScale> Inv for UnitAnon<D, S> where
 
 
 impl<D: DimType, S: AnonScale, const E: i32> CanPow<E> for UnitAnon<D, S> where
-    ExpHack<E>: HasTypenum,
-    D: DimPowType<<ExpHack<E> as HasTypenum>::Typenum>,
+    Exponent<E>: HasTypenum,
+    D: CanDimPowType<<Exponent<E> as HasTypenum>::Typenum>,
 {
-    type Output = crate::units::UnitPow<Self, <ExpHack<E> as HasTypenum>::Typenum>;
+    type Output = crate::units::UnitPow<Self, <Exponent<E> as HasTypenum>::Typenum>;
 
     fn pow(self) -> Self::Output {
         crate::units::UnitPow::new(self)
@@ -116,7 +116,7 @@ impl<D: DimType, S: AnonScale, const E: i32> CanPow<E> for UnitAnon<D, S> where
 
 
 impl<D: DimType, S: AnonScale, const E: i32> CanRoot<E> for UnitAnon<D, S> where
-    D: DimRoot<E>,
+    D: CanDimRoot<E>,
     S: Real + Inv<Output=S>,
 {
     type Output = UnitAnon<D::Output, S>;

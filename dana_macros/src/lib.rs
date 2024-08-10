@@ -31,7 +31,7 @@ pub fn impl_typenums(_: TokenStream) -> TokenStream {
         );
 
         out.extend(quote::quote! {
-            impl HasTypenum for ExpHack<#i> {
+            impl HasTypenum for Exponent<#i> {
                 type Typenum = ::typenum::consts::#ident;
             }
         });

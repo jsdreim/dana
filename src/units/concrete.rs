@@ -9,7 +9,7 @@
 
 use core::ops::{Div, Mul};
 use crate::{
-    dimension::{DimPowType, ExpHack, HasTypenum},
+    dimension::{CanDimPowType, Exponent, HasTypenum},
     units::{compound::*, traits::*},
 };
 
@@ -96,10 +96,10 @@ macro_rules! concrete_types {
 
         //  Unit exponentiation.
         impl<const E: i32> CanPow<E> for $unit where
-            ExpHack<E>: HasTypenum,
-            Self::Dim: DimPowType<<ExpHack<E> as HasTypenum>::Typenum>,
+            Exponent<E>: HasTypenum,
+            Self::Dim: CanDimPowType<<Exponent<E> as HasTypenum>::Typenum>,
         {
-            type Output = UnitPow<Self, <ExpHack<E> as HasTypenum>::Typenum>;
+            type Output = UnitPow<Self, <Exponent<E> as HasTypenum>::Typenum>;
 
             fn pow(self) -> Self::Output {
                 UnitPow::new(self)

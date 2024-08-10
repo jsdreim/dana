@@ -15,7 +15,7 @@ dummy!(
 
 
 /// Integer type used for dimension exponents.
-pub type Exp = i32;
+pub type ExpInt = i32;
 
 /// Number of fundamental quantities.
 pub const LEN: usize = 7;
@@ -98,24 +98,24 @@ pub trait DimType: Sealed + Copy + core::fmt::Display {
     type ExpLum: Int;
 
     /// Exponent constant for Length.
-    const EXP_LEN:  Exp = <Self::ExpLen as Integer>::I32;
+    const EXP_LEN:  ExpInt = <Self::ExpLen as Integer>::I32;
     /// Exponent constant for Mass.
-    const EXP_MASS: Exp = <Self::ExpMass as Integer>::I32;
+    const EXP_MASS: ExpInt = <Self::ExpMass as Integer>::I32;
     /// Exponent constant for Time.
-    const EXP_TIME: Exp = <Self::ExpTime as Integer>::I32;
+    const EXP_TIME: ExpInt = <Self::ExpTime as Integer>::I32;
     /// Exponent constant for Electrical Current.
-    const EXP_CURR: Exp = <Self::ExpCurr as Integer>::I32;
+    const EXP_CURR: ExpInt = <Self::ExpCurr as Integer>::I32;
     /// Exponent constant for Temperature.
-    const EXP_TEMP: Exp = <Self::ExpTemp as Integer>::I32;
+    const EXP_TEMP: ExpInt = <Self::ExpTemp as Integer>::I32;
     /// Exponent constant for Substance Amount.
-    const EXP_AMT:  Exp = <Self::ExpAmt as Integer>::I32;
+    const EXP_AMT:  ExpInt = <Self::ExpAmt as Integer>::I32;
     /// Exponent constant for Luminous Intensity.
-    const EXP_LUM:  Exp = <Self::ExpLum as Integer>::I32;
+    const EXP_LUM:  ExpInt = <Self::ExpLum as Integer>::I32;
     //endregion
 
     //region Arrays.
     /// Exponents of the seven fundamental quantities.
-    const ARRAY: [Exp; LEN] = [
+    const ARRAY: [ExpInt; LEN] = [
         Self::EXP_LEN,
         Self::EXP_MASS,
         Self::EXP_TIME,
@@ -126,7 +126,7 @@ pub trait DimType: Sealed + Copy + core::fmt::Display {
     ];
 
     /// Labels of the seven fundamental quantities, paired with their exponents.
-    const CHARS: [(char, Exp); LEN] = [
+    const CHARS: [(char, ExpInt); LEN] = [
         ('L', Self::EXP_LEN),
         ('M', Self::EXP_MASS),
         ('T', Self::EXP_TIME),
@@ -292,7 +292,7 @@ impl<D: DimType> CanDimInv for D where
 
 
 /// Indicates that a [`Dimension`] may be raised to an [`Integer`] power.
-pub trait DimPowType<E: Int>: DimType {
+pub trait CanDimPowType<E: Int>: DimType {
     /// The output of the operation.
     type Output: DimType;
 }
@@ -302,7 +302,7 @@ impl<
     I: Int + Mul<E>, K: Int + Mul<E>, N: Int + Mul<E>,
     J: Int + Mul<E>,
     E: Int,
-> DimPowType<E> for Dimension<L, M, T, I, K, N, J> where
+> CanDimPowType<E> for Dimension<L, M, T, I, K, N, J> where
     L::Output: Int, M::Output: Int, T::Output: Int,
     I::Output: Int, K::Output: Int, N::Output: Int,
     J::Output: Int,
@@ -316,7 +316,7 @@ impl<
 
 
 /// Indicates that a [`Dimension`] may be taken to a [`NonZero`] [`Integer`] root.
-pub trait DimRootType<D: Int + NonZero>: DimType {
+pub trait CanDimRootType<D: Int + NonZero>: DimType {
     /// The output of the operation.
     type Output: DimType;
 }
@@ -326,7 +326,7 @@ impl<
     I: Int + PartialDiv<D>, K: Int + PartialDiv<D>, N: Int + PartialDiv<D>,
     J: Int + PartialDiv<D>,
     D: Int + NonZero,
-> DimRootType<D> for Dimension<L, M, T, I, K, N, J> where
+> CanDimRootType<D> for Dimension<L, M, T, I, K, N, J> where
     L::Output: Int, M::Output: Int, T::Output: Int,
     I::Output: Int, K::Output: Int, N::Output: Int,
     J::Output: Int,
@@ -339,8 +339,8 @@ impl<
 }
 
 
-/// Zero-size generic representing a specific `i32` at the type level.
-pub struct ExpHack<const E: Exp>;
+/// Zero-size generic representing a specific `i32` exponent at the type level.
+pub struct Exponent<const E: ExpInt>;
 
 /// Trait for associating a type with a specific [`typenum`] [`Integer`].
 pub trait HasTypenum {
@@ -352,29 +352,29 @@ dana_macros::impl_typenums!();
 
 
 /// Indicates that a [`Dimension`] may be raised to an arbitrary `i32` power.
-pub trait DimPow<const E: Exp>: DimType {
+pub trait CanDimPow<const E: ExpInt>: DimType {
     /// The output of the operation.
     type Output: DimType;
 }
 
-impl<Dim: DimType, const E: Exp> DimPow<E> for Dim where
-    ExpHack<E>: HasTypenum,
-    Dim: DimPowType<<ExpHack<E> as HasTypenum>::Typenum>,
+impl<Dim: DimType, const E: ExpInt> CanDimPow<E> for Dim where
+    Exponent<E>: HasTypenum,
+    Dim: CanDimPowType<<Exponent<E> as HasTypenum>::Typenum>,
 {
     type Output = Dim::Output;
 }
 
 
 /// Indicates that a [`Dimension`] may be taken to an arbitrary `i32` root.
-pub trait DimRoot<const D: Exp>: DimType {
+pub trait CanDimRoot<const D: ExpInt>: DimType {
     /// The output of the operation.
     type Output: DimType;
 }
 
-impl<Dim: DimType, const D: Exp> DimRoot<D> for Dim where
-    ExpHack<D>: HasTypenum,
-    <ExpHack<D> as HasTypenum>::Typenum: NonZero,
-    Dim: DimRootType<<ExpHack<D> as HasTypenum>::Typenum>,
+impl<Dim: DimType, const D: ExpInt> CanDimRoot<D> for Dim where
+    Exponent<D>: HasTypenum,
+    <Exponent<D> as HasTypenum>::Typenum: NonZero,
+    Dim: CanDimRootType<<Exponent<D> as HasTypenum>::Typenum>,
 {
     type Output = Dim::Output;
 }

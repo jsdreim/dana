@@ -106,9 +106,9 @@ mod impl_ops {
         ),*>)?),* $(,)?) => {
             $(impl<$($($param $(: $bound)?,)*)? const __E: i32>
             CanPow<__E> for $name$(<$($param),*>)? where
-                ExpHack<__E>: HasTypenum,
+                Exponent<__E>: HasTypenum,
                 Self: Unit,
-                Self::Dim: DimPowType<<ExpHack<__E> as HasTypenum>::Typenum>,
+                Self::Dim: CanDimPowType<<Exponent<__E> as HasTypenum>::Typenum>,
             {
                 type Output = UnitPowN<Self, __E>;
 

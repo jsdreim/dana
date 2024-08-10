@@ -7,7 +7,7 @@ use serde::{
 };
 use typenum::Integer;
 use crate::{
-    dimension::{CanDimDiv, CanDimInv, CanDimMul, DimPowType, DimType},
+    dimension::{CanDimDiv, CanDimInv, CanDimMul, CanDimPowType, DimType},
     prelude::*,
 };
 
@@ -113,7 +113,7 @@ struct SerdePow<U: Unit> {
 }
 
 impl<U: Unit, E: Integer> Serialize for UnitPow<U, E> where
-    U::Dim: DimPowType<E>,
+    U::Dim: CanDimPowType<E>,
     U: Serialize,
 {
     fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
@@ -130,7 +130,7 @@ impl serde::de::Expected for ExpectedInt {
 }
 
 impl<'de, U: Unit, E: Integer> Deserialize<'de> for UnitPow<U, E> where
-    U::Dim: DimPowType<E>,
+    U::Dim: CanDimPowType<E>,
     U: DeserializeOwned,
 {
     fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {

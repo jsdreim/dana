@@ -13,6 +13,7 @@
 ### Changed
 - Reworked `serde` support for compound and anonymous unit types.
 - Simplified trait bounds for unit operations.
+- Renamed types and traits in `dimension` module.
 ### Fixed
 
 
