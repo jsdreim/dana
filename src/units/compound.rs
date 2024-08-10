@@ -34,100 +34,61 @@ mod impl_ops {
     use typenum::Integer;
     use crate::{dimension::*, units::compound::*};
 
-    //region `Div` impls.
-    impl<U: Unit, W: Unit> Div<W> for PerUnit<U> where
-        Self: CanUnitDiv<W>,
-    {
-        type Output = UnitDiv<Self, W>;
+    //region `Div`/`Mul` impls.
+    macro_rules! impl_div_mul {
+        ($($name:ident $(<$(
+        $param:ident $(: $bound:ident)?
+        ),*>)?),* $(,)?) => {
+            $(impl<$($($param $(: $bound)?,)*)? __W: Unit>
+            Div<__W> for $name$(<$($param),*>)? where Self: CanUnitDiv<__W> {
+                type Output = UnitDiv<Self, __W>;
 
-        fn div(self, rhs: W) -> Self::Output {
-            Self::Output::new(self, rhs)
-        }
+                fn div(self, rhs: __W) -> Self::Output {
+                    Self::Output::new(self, rhs)
+                }
+            })*
+
+            $(impl<$($($param $(: $bound)?,)*)? __W: Unit>
+            Mul<__W> for $name$(<$($param),*>)? where Self: CanUnitMul<__W> {
+                type Output = UnitMul<Self, __W>;
+
+                fn mul(self, rhs: __W) -> Self::Output {
+                    Self::Output::new(self, rhs)
+                }
+            })*
+        };
     }
 
-    impl<A: Unit, B: Unit, W: Unit> Div<W> for UnitDiv<A, B> where
-        Self: CanUnitDiv<W>,
-    {
-        type Output = UnitDiv<Self, W>;
-
-        fn div(self, rhs: W) -> Self::Output {
-            Self::Output::new(self, rhs)
-        }
-    }
-
-    impl<A: Unit, B: Unit, W: Unit> Div<W> for UnitMul<A, B> where
-        Self: CanUnitDiv<W>,
-    {
-        type Output = UnitDiv<Self, W>;
-
-        fn div(self, rhs: W) -> Self::Output {
-            Self::Output::new(self, rhs)
-        }
-    }
-
-    impl<U: Unit, E: Integer, W: Unit> Div<W> for UnitPow<U, E> where
-        Self: CanUnitDiv<W>,
-    {
-        type Output = UnitDiv<Self, W>;
-
-        fn div(self, rhs: W) -> Self::Output {
-            Self::Output::new(self, rhs)
-        }
-    }
-    //endregion
-
-    //region `Mul` impls.
-    impl<U: Unit, W: Unit> Mul<W> for PerUnit<U> where
-        Self: CanUnitMul<W>,
-    {
-        type Output = UnitMul<Self, W>;
-
-        fn mul(self, rhs: W) -> Self::Output {
-            Self::Output::new(self, rhs)
-        }
-    }
-
-    impl<A: Unit, B: Unit, W: Unit> Mul<W> for UnitDiv<A, B> where
-        Self: CanUnitMul<W>,
-    {
-        type Output = UnitMul<Self, W>;
-
-        fn mul(self, rhs: W) -> Self::Output {
-            Self::Output::new(self, rhs)
-        }
-    }
-
-    impl<A: Unit, B: Unit, W: Unit> Mul<W> for UnitMul<A, B> where
-        Self: CanUnitMul<W>,
-    {
-        type Output = UnitMul<Self, W>;
-
-        fn mul(self, rhs: W) -> Self::Output {
-            Self::Output::new(self, rhs)
-        }
-    }
-
-    impl<U: Unit, E: Integer, W: Unit> Mul<W> for UnitPow<U, E> where
-        Self: CanUnitMul<W>,
-    {
-        type Output = UnitMul<Self, W>;
-
-        fn mul(self, rhs: W) -> Self::Output {
-            Self::Output::new(self, rhs)
-        }
-    }
+    impl_div_mul!(
+        PerUnit<U: Unit>,
+        UnitDiv<A: Unit, B: Unit>,
+        UnitMul<A: Unit, B: Unit>,
+        UnitPow<U: Unit, E: Integer>,
+    );
     //endregion
 
     //region `Inv` impls.
-    impl<U: Unit> Inv for PerUnit<U> where
-        Self: CanUnitInv,
-    {
-        type Output = PerUnit<Self>;
+    macro_rules! impl_inv {
+        ($($name:ident $(<$(
+        $param:ident $(: $bound:ident)?
+        ),*>)?),* $(,)?) => {
+            $(impl$(<$($param $(: $bound)?),*>)?
+            Inv for $name$(<$($param),*>)? where Self: CanUnitInv {
+                type Output = PerUnit<Self>;
 
-        fn inv(self) -> Self::Output {
-            Self::Output::new(self)
-        }
+                fn inv(self) -> Self::Output {
+                    Self::Output::new(self)
+                }
+            })*
+        };
     }
+
+    impl_inv!(
+        PerUnit<U: Unit>,
+        // UnitDiv<A: Unit, B: Unit>,
+        UnitMul<A: Unit, B: Unit>,
+        UnitPow<U: Unit, E: Integer>,
+    );
 
     impl<A: Unit, B: Unit> Inv for UnitDiv<A, B> {
         type Output = UnitDiv<B, A>;
@@ -136,64 +97,33 @@ mod impl_ops {
             Self::Output::new(self.1, self.0)
         }
     }
-
-    impl<A: Unit, B: Unit> Inv for UnitMul<A, B> where
-        Self: CanUnitInv,
-    {
-        type Output = PerUnit<Self>;
-
-        fn inv(self) -> Self::Output {
-            Self::Output::new(self)
-        }
-    }
-
-    impl<U: Unit, E: Integer> Inv for UnitPow<U, E> where
-        Self: CanUnitInv,
-    {
-        type Output = PerUnit<Self>;
-
-        fn inv(self) -> Self::Output {
-            Self::Output::new(self)
-        }
-    }
     //endregion
 
     //region `CanPow` impls.
-    impl<U: Unit, const E: i32> CanPow<E> for PerUnit<U> where
-        ExpHack<E>: HasTypenum,
-        Self: Unit,
-        Self::Dim: DimPowType<<ExpHack<E> as HasTypenum>::Typenum>,
-        // Self::Dim: DimPow<E>, // TODO
-    {
-        type Output = UnitPowN<Self, E>;
+    macro_rules! impl_pow {
+        ($($name:ident $(<$(
+        $param:ident $(: $bound:ident)?
+        ),*>)?),* $(,)?) => {
+            $(impl<$($($param $(: $bound)?,)*)? const __E: i32>
+            CanPow<__E> for $name$(<$($param),*>)? where
+                ExpHack<__E>: HasTypenum,
+                Self: Unit,
+                Self::Dim: DimPowType<<ExpHack<__E> as HasTypenum>::Typenum>,
+            {
+                type Output = UnitPowN<Self, __E>;
 
-        fn pow(self) -> Self::Output {
-            Self::Output::new(self)
-        }
+                fn pow(self) -> Self::Output {
+                    Self::Output::new(self)
+                }
+            })*
+        };
     }
 
-    impl<A: Unit, B: Unit, const E: i32> CanPow<E> for UnitDiv<A, B> where
-        ExpHack<E>: HasTypenum,
-        Self: Unit,
-        Self::Dim: DimPowType<<ExpHack<E> as HasTypenum>::Typenum>,
-    {
-        type Output = UnitPowN<Self, E>;
-
-        fn pow(self) -> Self::Output {
-            Self::Output::new(self)
-        }
-    }
-
-    impl<A: Unit, B: Unit, const E: i32> CanPow<E> for UnitMul<A, B> where
-        ExpHack<E>: HasTypenum,
-        Self: Unit,
-        Self::Dim: DimPowType<<ExpHack<E> as HasTypenum>::Typenum>,
-    {
-        type Output = UnitPowN<Self, E>;
-
-        fn pow(self) -> Self::Output {
-            Self::Output::new(self)
-        }
-    }
+    impl_pow!(
+        PerUnit<U: Unit>,
+        UnitDiv<A: Unit, B: Unit>,
+        UnitMul<A: Unit, B: Unit>,
+        // UnitPow<U: Unit, E: Integer>,
+    );
     //endregion
 }
