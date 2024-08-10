@@ -4,11 +4,15 @@
 ## Upcoming
 
 ### Added
-- Implemented `UnitRescale`.
+- Implemented `UnitRescale` type.
 - Implemented `CanRoot<3>` for `Volume`. Output type is `UnitRescale<Length>`.
 - Added `cc` as a symbol for cubic centimeters.
+- Added `Quantity::cancel_exponent` method.
+- Implemented `UnitMixed` trait.
+- Implemented `UnitUnary` trait.
 ### Changed
 - Reworked `serde` support for compound and anonymous unit types.
+- Simplified trait bounds for unit operations.
 ### Fixed
 
 
