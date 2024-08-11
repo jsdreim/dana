@@ -4,6 +4,7 @@
 pub mod compound;
 pub mod concrete;
 // pub mod si;
+pub mod prefix;
 pub mod traits;
 pub mod unit_anon;
 pub mod unit_rescale;
