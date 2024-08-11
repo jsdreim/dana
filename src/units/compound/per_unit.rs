@@ -1,6 +1,6 @@
 //! Module for the reciprocal unit type.
 
-use crate::{dimension::*, units::traits::*};
+use crate::units::traits::*;
 
 
 /// The reciprocal of a unit.
@@ -19,10 +19,8 @@ impl<U: Unit> PerUnit<U> {
     pub const fn denominator(&self) -> U { self.0 }
 }
 
-impl<U: Unit> Unit for PerUnit<U> where
-    U::Dim: CanDimInv,
-{
-    type Dim = <U::Dim as CanDimInv>::Output;
+impl<U: CanUnitInv> Unit for PerUnit<U> {
+    type Dim = U::DimOut;
     // type ScaleType = f64;
 
     fn scale(&self) -> f64 {

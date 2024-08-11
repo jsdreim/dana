@@ -1,6 +1,6 @@
 //! Module for the divided unit type.
 
-use crate::{dimension::*, units::traits::*};
+use crate::units::traits::*;
 
 
 /// One unit divided by another; For example, Meters per Second.
@@ -18,12 +18,8 @@ impl<A: Unit, B: Unit> UnitDiv<A, B> {
     pub const fn denominator(&self) -> B { self.1 }
 }
 
-impl<A: Unit, B: Unit> Unit for UnitDiv<A, B> where
-    // A: CanUnitDiv<B>, // TODO
-    A::Dim: CanDimDiv<B::Dim>,
-{
-    // type Dim = A::DimOut;
-    type Dim = <A::Dim as CanDimDiv<B::Dim>>::Output;
+impl<A: CanUnitDiv<B>, B: Unit> Unit for UnitDiv<A, B> {
+    type Dim = A::DimOut;
     // type ScaleType = f64;
 
     fn scale(&self) -> f64 {

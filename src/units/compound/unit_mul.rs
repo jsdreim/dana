@@ -1,6 +1,6 @@
 //! Module for the multiplied unit type.
 
-use crate::{dimension::*, units::traits::*};
+use crate::units::traits::*;
 
 
 /// Two units multiplied; For example, Newton-Meters.
@@ -12,10 +12,8 @@ impl<A: Unit, B: Unit> UnitMul<A, B> {
     pub const fn new(lhs: A, rhs: B) -> Self { Self(lhs, rhs) }
 }
 
-impl<A: Unit, B: Unit> Unit for UnitMul<A, B> where
-    A::Dim: CanDimMul<B::Dim>,
-{
-    type Dim = <A::Dim as CanDimMul<B::Dim>>::Output;
+impl<A: CanUnitMul<B>, B: Unit> Unit for UnitMul<A, B> {
+    type Dim = A::DimOut;
     // type ScaleType = f64;
 
     fn scale(&self) -> f64 {
