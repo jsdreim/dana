@@ -1,5 +1,7 @@
 //! Module for experimental SI prefix enum.
 
+use crate::units::{traits::*, unit_prefixed::UnitPrefixed};
+
 
 /// A [metric prefix](https://en.wikipedia.org/wiki/Metric_prefix), used to
 ///     scale a unit.
@@ -151,4 +153,17 @@ impl Prefix {
             Self::Quetta => 'Q',
         }
     }
+
+    /// Return the provided unit, modified by this prefix.
+    pub const fn unit<U: Unit>(self, unit: U) -> UnitPrefixed<U> {
+        UnitPrefixed::new(unit, Some(self))
+    }
 }
+
+/*impl<U: Unit> FnOnce<(U,)> for Prefix {
+    type Output = UnitPrefixed<U>;
+
+    extern "rust-call" fn call_once(self, args: (U,)) -> Self::Output {
+        args.0.prefixed(Some(self))
+    }
+}*/

@@ -5,7 +5,9 @@ use crate::{
     Quantity,
     units::{
         compound::*,
+        prefix::Prefix,
         unit_anon::UnitAnon,
+        unit_prefixed::UnitPrefixed,
         unit_rescale::{Rescale, UnitRescale},
     },
     Value,
@@ -66,6 +68,11 @@ pub trait Unit: Copy + Default + core::fmt::Debug + core::fmt::Display + Partial
     /// Return a [`UnitRescale`] of this unit.
     fn rescale<S: Rescale>(self, factor: S) -> UnitRescale<Self, S> {
         UnitRescale::new(self, factor)
+    }
+
+    /// Return a [`UnitPrefixed`] modifying this unit with the given prefix.
+    fn prefixed(self, prefix: Option<Prefix>) -> UnitPrefixed<Self> {
+        UnitPrefixed::new(self, prefix)
     }
 
     /// Return a runtime representation of the dimension of this unit.

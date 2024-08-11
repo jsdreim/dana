@@ -7,6 +7,7 @@ pub mod concrete;
 pub mod prefix;
 pub mod traits;
 pub mod unit_anon;
+pub mod unit_prefixed;
 pub mod unit_rescale;
 
 pub use compound::*;
