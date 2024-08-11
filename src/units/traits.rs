@@ -193,6 +193,7 @@ pub trait UnitConcrete: Unit + UnitStep {
 pub trait CanUnitInv: Unit {
     /// The [`Dimension`](crate::dimension::Dimension) of the output type.
     type DimOut: DimType;
+
     /// The output [`Unit`] type.
     type Output: Unit<Dim=Self::DimOut>;
 }
@@ -209,6 +210,7 @@ impl<U: Unit> CanUnitInv for U where
 pub trait CanUnitDiv<U>: Unit {
     /// The [`Dimension`](crate::dimension::Dimension) of the output type.
     type DimOut: DimType;
+
     /// The output [`Unit`] type.
     type Output: Unit<Dim=Self::DimOut>;
 }
@@ -225,6 +227,7 @@ impl<A: Unit, B: Unit> CanUnitDiv<B> for A where
 pub trait CanUnitMul<U>: Unit {
     /// The [`Dimension`](crate::dimension::Dimension) of the output type.
     type DimOut: DimType;
+
     /// The output [`Unit`] type.
     type Output: Unit<Dim=Self::DimOut>;
 }
