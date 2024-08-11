@@ -35,7 +35,7 @@ pub trait Unit: Copy + Default + core::fmt::Debug + core::fmt::Display + Partial
     // type ScaleType: crate::Scalar;
 
     //region Unit scale methods.
-    /// Return the scale of this unit, relative to the base unit of this type.
+    /// Return the scale of this unit.
     fn scale(&self) -> f64;
 
     /// Given a unit of the same dimension, return the multiplication factor
@@ -55,7 +55,7 @@ pub trait Unit: Copy + Default + core::fmt::Debug + core::fmt::Display + Partial
     }
     //endregion
 
-    /// Return the base unit of this type, with a scale of 1.
+    /// Return the base unit of this type.
     fn base() -> Self { Default::default() }
 
     /// Return an [anonymous unit](UnitAnon) with the same dimension and scale
@@ -180,7 +180,7 @@ pub trait UnitCompound: Unit {}
 ///     physical property. It typically has multiple variants with different
 ///     scales.
 pub trait UnitConcrete: Unit + UnitStep {
-    /// The SI base unit has a scale of 1.
+    /// The SI base unit.
     const BASE: Self;
 
     /// Return a textual representation of this unit. Usually a base symbol with
