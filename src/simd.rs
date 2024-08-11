@@ -50,6 +50,14 @@ impl<U, V, const N: usize, S> QtySimd<U, V, N, S> where
         )
     }
 
+    /// Construct from an array of values and a unit.
+    pub fn from_values(values: [V; N], unit: U) -> Self {
+        Self::from_scales(
+            values,
+            [crate::_conv_f64(unit.scale()); N],
+        )
+    }
+
     /// Construct from a [`Quantity`] array.
     pub fn from_qty_array(array: [Quantity<U, V>; N]) -> Self {
         Self::from_units(
