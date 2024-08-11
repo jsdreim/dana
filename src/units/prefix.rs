@@ -33,6 +33,9 @@ pub enum Prefix {
     /// Prefix with a scale of `10^-1`.
     Deci = -1,
 
+    // /// No prefix.
+    // Empty = 0, // TODO?
+
     /// Prefix with a scale of `10^1`.
     Deca = 1,
     /// Prefix with a scale of `10^2`.
@@ -157,6 +160,72 @@ impl Prefix {
     /// Return the provided unit, modified by this prefix.
     pub const fn unit<U: Unit>(self, unit: U) -> UnitPrefixed<U> {
         UnitPrefixed::new(unit, Some(self))
+    }
+}
+
+impl Prefix {
+    /// Return the next prefix down in the scale, or `None` if this is already
+    ///     the smallest variant.
+    pub const fn step_down(&self) -> Option<Self> {
+        match self {
+            Self::Quecto => None,
+            Self::Ronto  => Some(Self::Quecto),
+            Self::Yocto  => Some(Self::Ronto),
+            Self::Zepto  => Some(Self::Yocto),
+            Self::Atto   => Some(Self::Zepto),
+            Self::Femto  => Some(Self::Atto),
+            Self::Pico   => Some(Self::Femto),
+            Self::Nano   => Some(Self::Pico),
+            Self::Micro  => Some(Self::Nano),
+            Self::Milli  => Some(Self::Micro),
+            Self::Centi  => Some(Self::Milli),
+            Self::Deci   => Some(Self::Centi),
+
+            Self::Deca   => Some(Self::Deci),
+            Self::Hecto  => Some(Self::Deca),
+            Self::Kilo   => Some(Self::Hecto),
+            Self::Mega   => Some(Self::Kilo),
+            Self::Giga   => Some(Self::Mega),
+            Self::Tera   => Some(Self::Giga),
+            Self::Peta   => Some(Self::Tera),
+            Self::Exa    => Some(Self::Peta),
+            Self::Zetta  => Some(Self::Exa),
+            Self::Yotta  => Some(Self::Zetta),
+            Self::Ronna  => Some(Self::Yotta),
+            Self::Quetta => Some(Self::Ronna),
+        }
+    }
+
+    /// Return the next prefix up in the scale, or `None` if this is already the
+    ///     largest variant.
+    pub const fn step_up(&self) -> Option<Self> {
+        match self {
+            Self::Quecto => Some(Self::Ronto),
+            Self::Ronto  => Some(Self::Yocto),
+            Self::Yocto  => Some(Self::Zepto),
+            Self::Zepto  => Some(Self::Atto),
+            Self::Atto   => Some(Self::Femto),
+            Self::Femto  => Some(Self::Pico),
+            Self::Pico   => Some(Self::Nano),
+            Self::Nano   => Some(Self::Micro),
+            Self::Micro  => Some(Self::Milli),
+            Self::Milli  => Some(Self::Centi),
+            Self::Centi  => Some(Self::Deci),
+            Self::Deci   => Some(Self::Deca),
+
+            Self::Deca   => Some(Self::Hecto),
+            Self::Hecto  => Some(Self::Kilo),
+            Self::Kilo   => Some(Self::Mega),
+            Self::Mega   => Some(Self::Giga),
+            Self::Giga   => Some(Self::Tera),
+            Self::Tera   => Some(Self::Peta),
+            Self::Peta   => Some(Self::Exa),
+            Self::Exa    => Some(Self::Zetta),
+            Self::Zetta  => Some(Self::Yotta),
+            Self::Yotta  => Some(Self::Ronna),
+            Self::Ronna  => Some(Self::Quetta),
+            Self::Quetta => None,
+        }
     }
 }
 

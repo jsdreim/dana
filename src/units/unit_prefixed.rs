@@ -89,3 +89,27 @@ impl<U: Unit, const E: i32> CanRoot<E> for UnitPrefixed<U> where
     }
 }
 //endregion
+
+
+//  TODO: Reevaluate everything.
+impl<U: UnitStep> UnitStep for UnitPrefixed<U> {
+    fn step_down(&self) -> Option<Self> {
+        match self.prefix {
+            Some(prefix) => match prefix.step_down() {
+                Some(next) => Some(Self::new(self.unit, Some(next))),
+                None => Some(Self::new(self.unit.step_down()?, self.prefix)),
+            }
+            None => Some(Self::new(self.unit.step_down()?, self.prefix)),
+        }
+    }
+
+    fn step_up(&self) -> Option<Self> {
+        match self.prefix {
+            Some(prefix) => match prefix.step_up() {
+                Some(next) => Some(Self::new(self.unit, Some(next))),
+                None => Some(Self::new(self.unit.step_up()?, self.prefix)),
+            }
+            None => Some(Self::new(self.unit.step_up()?, self.prefix)),
+        }
+    }
+}
