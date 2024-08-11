@@ -1,3 +1,5 @@
+#![allow(missing_docs)]
+
 use criterion::{Criterion, criterion_group, criterion_main};
 use dana::{constants::*, qty, Quantity, symbols::physics::*, units::*};
 

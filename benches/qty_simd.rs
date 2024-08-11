@@ -1,4 +1,5 @@
 #![feature(portable_simd)]
+#![allow(missing_docs)]
 
 use core::{array::from_fn, ops::{Add, Mul}, simd::*};
 use criterion::{black_box, Criterion, criterion_group, criterion_main};

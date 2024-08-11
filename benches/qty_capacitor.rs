@@ -1,3 +1,5 @@
+#![allow(missing_docs)]
+
 use criterion::{black_box, Criterion, criterion_group, criterion_main};
 use dana::{qty, Quantity, symbols::electrical::*, units::*};
 
