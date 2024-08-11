@@ -21,7 +21,7 @@ impl<A: CanUnitMul<B>, B: Unit> Unit for UnitMul<A, B> {
     }
 }
 
-impl<A: Unit, B: Unit> core::fmt::Display for UnitMul<A, B> where Self: Unit {
+impl<A: Unit, B: Unit> core::fmt::Display for UnitMul<A, B> {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         if f.alternate() {
             write!(f, "({:#}*{:#})", self.0, self.1)

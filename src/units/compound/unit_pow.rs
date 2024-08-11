@@ -45,13 +45,13 @@ impl<U: Unit, E: Integer> UnitUnary for UnitPow<U, E> where Self: Unit {
     fn inner(&self) -> Self::Inner { self.0 }
 }
 
-impl<U: Unit + Debug, E: Integer> Debug for UnitPow<U, E> where Self: Unit {
+impl<U: Unit + Debug, E: Integer> Debug for UnitPow<U, E> {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         write!(f, "UnitPow({:?}, {:?})", self.0, E::I32)
     }
 }
 
-impl<U: Unit, E: Integer> Display for UnitPow<U, E> where Self: Unit {
+impl<U: Unit, E: Integer> Display for UnitPow<U, E> {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         write!(f, "{:#}^{}", self.0, E::I32)
     }
@@ -76,7 +76,7 @@ impl<U: Unit, E: Integer> PartialEq for UnitPow<U, E> where Self: Unit {
     }
 }
 
-impl<U: Unit, E: Integer> Eq for UnitPow<U, E> where Self: Unit {}
+impl<U: Unit, E: Integer> Eq for UnitPow<U, E> where Self: PartialEq {}
 
 impl<U: Unit, E: Integer> PartialOrd for UnitPow<U, E> where Self: Unit {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {

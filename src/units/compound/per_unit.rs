@@ -36,7 +36,7 @@ impl<U: Unit> UnitUnary for PerUnit<U> where Self: Unit {
     fn inner(&self) -> Self::Inner { self.0 }
 }
 
-impl<U: Unit> core::fmt::Display for PerUnit<U> where Self: Unit {
+impl<U: Unit> core::fmt::Display for PerUnit<U> {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         // write!(f, "1/{:#}", self.0)
         // write!(f, "{:#}⁻¹", self.0)
