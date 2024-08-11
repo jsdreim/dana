@@ -208,7 +208,14 @@ for Dimension<L1, M1, T1, I1, K1, N1, J1> where
     }
 }
 
-/// Trait for a type that, when divided, yields a [`Dimension`].
+/// Helper trait for a type that, when divided, yields a [`Dimension`].
+///
+/// The auto-implementation of this trait does the following:
+/// - Ensures that the type implements [`DimType`] and [`Div`].
+/// - Ensures that the output also implements [`DimType`].
+///
+/// Bundling these conditions into one trait allows downstream constraints to be
+///     simpler and more readable.
 pub trait CanDimDiv<D> {
     /// The output [`Dimension`].
     type Output: DimType;
@@ -246,7 +253,14 @@ for Dimension<L1, M1, T1, I1, K1, N1, J1> where
     }
 }
 
-/// Trait for a type that, when multiplied, yields a [`Dimension`].
+/// Helper trait for a type that, when multiplied, yields a [`Dimension`].
+///
+/// The auto-implementation of this trait does the following:
+/// - Ensures that the type implements [`DimType`] and [`Mul`].
+/// - Ensures that the output also implements [`DimType`].
+///
+/// Bundling these conditions into one trait allows downstream constraints to be
+///     simpler and more readable.
 pub trait CanDimMul<D> {
     /// The output [`Dimension`].
     type Output: DimType;
@@ -278,7 +292,14 @@ impl<
     fn inv(self) -> Self::Output { Default::default() }
 }
 
-/// Trait for a type that, when inverted, yields a [`Dimension`].
+/// Helper trait for a type that, when inverted, yields a [`Dimension`].
+///
+/// The auto-implementation of this trait does the following:
+/// - Ensures that the type implements [`DimType`] and [`Inv`].
+/// - Ensures that the output also implements [`DimType`].
+///
+/// Bundling these conditions into one trait allows downstream constraints to be
+///     simpler and more readable.
 pub trait CanDimInv {
     /// The output [`Dimension`].
     type Output: DimType;

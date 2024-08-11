@@ -1,7 +1,7 @@
 //! Module for traits describing aspects of units.
 
 use crate::{
-    dimension::{CanDimDiv, CanDimInv, CanDimMul, DimType},
+    dimension::*,
     Quantity,
     units::{
         compound::*,
@@ -29,8 +29,7 @@ pub use unit_unary::*;
 
 /// Trait for a type that represents a dimensional "unit".
 pub trait Unit: Copy + Default + core::fmt::Debug + core::fmt::Display + PartialEq {
-    /// The [`Dimension`](crate::dimension::Dimension) represented by units of
-    ///     this type.
+    /// The [`Dimension`] represented by units of this type.
     type Dim: DimType;
     // type ScaleType: crate::Scalar;
 
@@ -189,9 +188,17 @@ pub trait UnitConcrete: Unit + UnitStep {
 }
 
 
-/// Trait for a type that, when inverted, yields a [`Unit`] type.
+/// Helper trait for a type that, when inverted, yields a [`Unit`] type.
+///
+/// The auto-implementation of this trait does the following:
+/// - Ensures that the type implements [`Unit`].
+/// - Ensures that the dimension of the type implements [`CanDimInv`].
+/// - Defines the output type as a [`UnitInv`] with the correct [`Dimension`].
+///
+/// Bundling these conditions into one trait allows downstream constraints to be
+///     simpler and more readable.
 pub trait CanUnitInv: Unit {
-    /// The [`Dimension`](crate::dimension::Dimension) of the output type.
+    /// The [`Dimension`] of the output type.
     type DimOut: DimType;
 
     /// The output [`Unit`] type.
@@ -206,9 +213,17 @@ impl<U: Unit> CanUnitInv for U where
 }
 
 
-/// Trait for a type that, when divided, yields a [`Unit`] type.
+/// Helper trait for a type that, when divided, yields a [`Unit`] type.
+///
+/// The auto-implementation of this trait does the following:
+/// - Ensures that the type implements [`Unit`].
+/// - Ensures that the dimension of the type implements [`CanDimDiv`].
+/// - Defines the output type as a [`UnitDiv`] with the correct [`Dimension`].
+///
+/// Bundling these conditions into one trait allows downstream constraints to be
+///     simpler and more readable.
 pub trait CanUnitDiv<U>: Unit {
-    /// The [`Dimension`](crate::dimension::Dimension) of the output type.
+    /// The [`Dimension`] of the output type.
     type DimOut: DimType;
 
     /// The output [`Unit`] type.
@@ -223,9 +238,17 @@ impl<A: Unit, B: Unit> CanUnitDiv<B> for A where
 }
 
 
-/// Trait for a type that, when multiplied, yields a [`Unit`] type.
+/// Helper trait for a type that, when multiplied, yields a [`Unit`] type.
+///
+/// The auto-implementation of this trait does the following:
+/// - Ensures that the type implements [`Unit`].
+/// - Ensures that the dimension of the type implements [`CanDimMul`].
+/// - Defines the output type as a [`UnitMul`] with the correct [`Dimension`].
+///
+/// Bundling these conditions into one trait allows downstream constraints to be
+///     simpler and more readable.
 pub trait CanUnitMul<U>: Unit {
-    /// The [`Dimension`](crate::dimension::Dimension) of the output type.
+    /// The [`Dimension`] of the output type.
     type DimOut: DimType;
 
     /// The output [`Unit`] type.
