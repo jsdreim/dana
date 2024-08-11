@@ -95,10 +95,10 @@ impl<D: DimType, S: AnonScale, U: Unit> Mul<U> for UnitAnon<D, S> where
 impl<D: DimType, S: AnonScale> Inv for UnitAnon<D, S> where
     D: Inv, D::Output: DimType,
 {
-    type Output = crate::units::compound::PerUnit<Self>;
+    type Output = crate::units::compound::UnitInv<Self>;
 
     fn inv(self) -> Self::Output {
-        crate::units::compound::PerUnit::new(self)
+        crate::units::compound::UnitInv::new(self)
     }
 }
 

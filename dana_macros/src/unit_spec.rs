@@ -404,7 +404,7 @@ impl<U: UnitCore> UnitSpec<U> {
             }
             Self::Inv(unit) => {
                 let ts = unit.as_type();
-                quote!(::dana::units::PerUnit<#ts>)
+                quote!(::dana::units::UnitInv<#ts>)
             }
             Self::Pow(base, exp) => {
                 let ts = base.as_type();
@@ -429,7 +429,7 @@ impl<U: UnitCore> UnitSpec<U> {
             }
             Self::Inv(unit) => {
                 let ts = unit.as_expr();
-                quote!(::dana::units::PerUnit::new(#ts))
+                quote!(::dana::units::UnitInv::new(#ts))
             }
             Self::Pow(base, exp) => {
                 let ts = base.as_expr();

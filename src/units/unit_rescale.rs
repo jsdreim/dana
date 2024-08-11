@@ -65,8 +65,8 @@ impl<U: Unit, S: Rescale, W: Unit> Mul<W> for UnitRescale<U, S> where
 impl<U: Unit, S: Rescale> Inv for UnitRescale<U, S> where
     U::Dim: Inv, <U::Dim as Inv>::Output: DimType,
 {
-    type Output = PerUnit<Self>;
-    fn inv(self) -> Self::Output { PerUnit::new(self) }
+    type Output = UnitInv<Self>;
+    fn inv(self) -> Self::Output { UnitInv::new(self) }
 }
 
 

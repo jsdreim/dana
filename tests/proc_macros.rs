@@ -50,15 +50,16 @@ fn qty_valid() {
     let _qty: Quantity<L> = qty![1.0 m,];
 
     let _qty: Quantity<UnitSquared<L>> = qty![1.0 m^2];
-    let _qty: Quantity<UnitMul<L, PerUnit<L>>> = qty![1.0 m * 1/m];
-    let _qty: Quantity<UnitMul<L, PerUnit<L>>> = qty![1.0 m * 1/(m)];
+    let _qty: Quantity<UnitMul<L, UnitInv<L>>> = qty![1.0 m * 1/m];
+    let _qty: Quantity<UnitMul<L, UnitInv<L>>> = qty![1.0 m * 1/(m)];
 
     //  Test inverse-unit definitions.
-    let _qty: Quantity<PerUnit<T>> = qty![1.0/s];
-    let _qty: Quantity<PerUnit<PerUnit<T>>> = qty![1.0/1/s]; // TODO: Discourage?
-    let _qty: Quantity<PerUnit<UnitSquared<L>>> = qty![1.0/m^2];
-    let _qty: Quantity<UnitDiv<PerUnit<L>, T>> = qty![1.0/m/s];
-    let _qty: Quantity<UnitMul<PerUnit<L>, M>> = qty![1.0/m*kg];
+    let _qty: Quantity<UnitInv<T>> = qty![1.0/s];
+    let _qty: Quantity<UnitInv<T>> = qty![1.0 * 1/s];
+    let _qty: Quantity<UnitInv<UnitInv<T>>> = qty![1.0/1/s]; // TODO: Discourage?
+    let _qty: Quantity<UnitInv<UnitSquared<L>>> = qty![1.0/m^2];
+    let _qty: Quantity<UnitDiv<UnitInv<L>, T>> = qty![1.0/m/s];
+    let _qty: Quantity<UnitMul<UnitInv<L>, M>> = qty![1.0/m*kg];
 
     //  Test sum definitions.
     assert_eq!(qty![250.0 cm], qty![2.0 m,  50.0 cm]);

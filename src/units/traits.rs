@@ -201,7 +201,7 @@ impl<U: Unit> CanUnitInv for U where
     U::Dim: CanDimInv,
 {
     type DimOut = <U::Dim as CanDimInv>::Output;
-    type Output = PerUnit<U>;
+    type Output = UnitInv<U>;
 }
 
 

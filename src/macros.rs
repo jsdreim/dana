@@ -275,7 +275,7 @@ macro_rules! qtype {($($t:tt)*) => {$crate::macros::proc::qtype!($($t)*)}}
 ///     that will be applied to the two sides of the operator. The following
 ///     operators are supported:
 /// - `unit^N`: [`UnitPow`]
-/// - `1 / unit`: [`PerUnit`]
+/// - `1 / unit`: [`UnitInv`]
 /// - `lhs / rhs`: [`UnitDiv`]
 /// - `lhs * rhs`: [`UnitMul`]
 ///
@@ -286,7 +286,7 @@ macro_rules! qtype {($($t:tt)*) => {$crate::macros::proc::qtype!($($t)*)}}
 /// ```
 /// use dana::prelude::*;
 ///
-/// let _: PerUnit<Time> = unit!(1 / Time::Second);
+/// let _: UnitInv<Time> = unit!(1 / Time::Second);
 /// let _: UnitDiv<Length, Time> = unit!(Length::Meter / Time::Second);
 /// let _: UnitMul<Force, Length> = unit!(Force::Newton * Length::Meter);
 /// let _: UnitSquared<Length> = unit!(Length::Meter^2);
@@ -300,7 +300,7 @@ macro_rules! qtype {($($t:tt)*) => {$crate::macros::proc::qtype!($($t)*)}}
 /// ```
 /// use dana::{prelude::*, symbols::physics::*};
 ///
-/// let _: PerUnit<Time> = unit!(1/s);
+/// let _: UnitInv<Time> = unit!(1/s);
 /// let _: UnitDiv<Length, Time> = unit!(m/s);
 /// let _: UnitMul<Length, Force> = unit!(m*N);
 /// let _: UnitSquared<Length> = unit!(m^2);

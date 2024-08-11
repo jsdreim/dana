@@ -10,20 +10,26 @@ use super::traits::*;
 
 mod serde;
 
-mod per_unit;
 mod unit_div;
+mod unit_inv;
 mod unit_mul;
 mod unit_pow;
 
-pub use per_unit::PerUnit;
 pub use unit_div::UnitDiv;
+pub use unit_inv::UnitInv;
 pub use unit_mul::UnitMul;
 pub use unit_pow::*;
 
 
+/// Legacy alias for [`UnitInv`].
+//  TODO: Remove for `0.6.0`.
+#[deprecated(since = "0.5.0", note = "renamed to `UnitInv`")]
+pub type PerUnit<U> = UnitInv<U>;
+
+
 // /// Module to re-export all compound unit types.
 // pub mod types {
-//     pub use super::{PerUnit, UnitDiv, UnitMul, unit_pow::*};
+//     pub use super::{UnitDiv, UnitInv, UnitMul, unit_pow::*};
 // }
 
 
@@ -60,7 +66,7 @@ mod impl_ops {
     }
 
     impl_div_mul!(
-        PerUnit<U: Unit>,
+        UnitInv<U: Unit>,
         UnitDiv<A: Unit, B: Unit>,
         UnitMul<A: Unit, B: Unit>,
         UnitPow<U: Unit, E: Integer>,
@@ -74,7 +80,7 @@ mod impl_ops {
         ),*>)?),* $(,)?) => {
             $(impl$(<$($param $(: $bound)?),*>)?
             Inv for $name$(<$($param),*>)? where Self: CanUnitInv {
-                type Output = PerUnit<Self>;
+                type Output = UnitInv<Self>;
 
                 fn inv(self) -> Self::Output {
                     Self::Output::new(self)
@@ -84,7 +90,7 @@ mod impl_ops {
     }
 
     impl_inv!(
-        PerUnit<U: Unit>,
+        UnitInv<U: Unit>,
         // UnitDiv<A: Unit, B: Unit>,
         UnitMul<A: Unit, B: Unit>,
         UnitPow<U: Unit, E: Integer>,
@@ -120,7 +126,7 @@ mod impl_ops {
     }
 
     impl_pow!(
-        PerUnit<U: Unit>,
+        UnitInv<U: Unit>,
         UnitDiv<A: Unit, B: Unit>,
         UnitMul<A: Unit, B: Unit>,
         // UnitPow<U: Unit, E: Integer>,

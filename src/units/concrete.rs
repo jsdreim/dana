@@ -87,10 +87,10 @@ macro_rules! concrete_types {
 
         //  Unit inversion.
         impl ::num_traits::Inv for $unit where Self: CanUnitInv {
-            type Output = PerUnit<Self>;
+            type Output = UnitInv<Self>;
 
             fn inv(self) -> Self::Output {
-                PerUnit::new(self)
+                UnitInv::new(self)
             }
         }
 

@@ -83,7 +83,7 @@ struct SerdeInv<U: Unit> {
     inv: U,
 }
 
-impl<U: Unit> Serialize for PerUnit<U> where
+impl<U: Unit> Serialize for UnitInv<U> where
     U::Dim: CanDimInv,
     U: Serialize,
 {
@@ -92,7 +92,7 @@ impl<U: Unit> Serialize for PerUnit<U> where
     }
 }
 
-impl<'de, U: Unit> Deserialize<'de> for PerUnit<U> where
+impl<'de, U: Unit> Deserialize<'de> for UnitInv<U> where
     U::Dim: CanDimInv,
     U: DeserializeOwned,
 {
