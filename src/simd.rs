@@ -169,8 +169,7 @@ impl<U, V, W, const N: usize, S> Div<QtySimd<W, V, N, S>> for QtySimd<U, V, N, S
     LaneCount<N>: SupportedLaneCount,
     Simd<V, N>: Div<Output=Simd<V, N>>,
     Simd<S, N>: Div<Output=Simd<S, N>>,
-    U: Unit + Div<W>, W: Unit,
-    U::Output: Unit,
+    U: CanUnitDiv<W>, W: Unit,
     V: QtySimdValue,
     S: QtySimdScale,
 {
@@ -189,8 +188,7 @@ impl<U, V, W, const N: usize, S> Mul<QtySimd<W, V, N, S>> for QtySimd<U, V, N, S
     LaneCount<N>: SupportedLaneCount,
     Simd<V, N>: Mul<Output=Simd<V, N>>,
     Simd<S, N>: Mul<Output=Simd<S, N>>,
-    U: Unit + Mul<W>, W: Unit,
-    U::Output: Unit,
+    U: CanUnitMul<W>, W: Unit,
     V: QtySimdValue,
     S: QtySimdScale,
 {
